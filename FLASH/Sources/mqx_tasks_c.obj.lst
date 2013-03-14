@@ -1,0 +1,1977 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"mqx_tasks.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	I2c0_DeviceData
+  18              		.section	.bss.I2c0_DeviceData,"aw",%nobits
+  19              		.align	2
+  22              	I2c0_DeviceData:
+  23 0000 00000000 		.space	4
+  24              		.comm	I2c0_DataState,2,4
+  25              		.global	I2c1_DeviceData
+  26              		.section	.bss.I2c1_DeviceData,"aw",%nobits
+  27              		.align	2
+  30              	I2c1_DeviceData:
+  31 0000 00000000 		.space	4
+  32              		.comm	I2c1_DataState,2,4
+  33              		.global	Dac0_DeviceData
+  34              		.section	.bss.Dac0_DeviceData,"aw",%nobits
+  35              		.align	2
+  38              	Dac0_DeviceData:
+  39 0000 00000000 		.space	4
+  40              		.comm	Dac0_Data,4,4
+  41              		.global	PWMTimerRG_DeviceData
+  42              		.section	.bss.PWMTimerRG_DeviceData,"aw",%nobits
+  43              		.align	2
+  46              	PWMTimerRG_DeviceData:
+  47 0000 00000000 		.space	4
+  48              		.global	PWMTimerB_DeviceData
+  49              		.section	.bss.PWMTimerB_DeviceData,"aw",%nobits
+  50              		.align	2
+  53              	PWMTimerB_DeviceData:
+  54 0000 00000000 		.space	4
+  55              		.section	.text.I2c0_ReadAccRegs,"ax",%progbits
+  56              		.align	2
+  57              		.global	I2c0_ReadAccRegs
+  58              		.code	16
+  59              		.thumb_func
+  61              	I2c0_ReadAccRegs:
+  62              	.LFB0:
+  63              		.file 1 "../Sources/mqx_tasks.c"
+   1:../Sources/mqx_tasks.c **** /** ###################################################################
+   2:../Sources/mqx_tasks.c **** **     Filename    : mqx_tasks.c
+   3:../Sources/mqx_tasks.c **** **     Project     : ProcessorExpert
+   4:../Sources/mqx_tasks.c **** **     Processor   : MKL25Z128VLK4
+   5:../Sources/mqx_tasks.c **** **     Component   : Events
+   6:../Sources/mqx_tasks.c **** **     Version     : Driver 01.00
+   7:../Sources/mqx_tasks.c **** **     Compiler    : GNU C Compiler
+   8:../Sources/mqx_tasks.c **** **     Date/Time   : 2013-02-15, 14:02, # CodeGen: 0
+   9:../Sources/mqx_tasks.c **** **     Abstract    :
+  10:../Sources/mqx_tasks.c **** **         This is user's event module.
+  11:../Sources/mqx_tasks.c **** **         Put your event handler code here.
+  12:../Sources/mqx_tasks.c **** **     Settings    :
+  13:../Sources/mqx_tasks.c **** **     Contents    :
+  14:../Sources/mqx_tasks.c **** **         Task_Default - void Task_Default(void* task_init_data);
+  15:../Sources/mqx_tasks.c **** **
+  16:../Sources/mqx_tasks.c **** ** ###################################################################*/
+  17:../Sources/mqx_tasks.c **** /* MODULE mqx_tasks */
+  18:../Sources/mqx_tasks.c **** 
+  19:../Sources/mqx_tasks.c **** #include "Cpu.h"
+  20:../Sources/mqx_tasks.c **** #include "Events.h"
+  21:../Sources/mqx_tasks.c **** #include "mqx_tasks.h"
+  22:../Sources/mqx_tasks.c **** 
+  23:../Sources/mqx_tasks.c **** /* User includes (#include below this line is not maintained by Processor Expert) */
+  24:../Sources/mqx_tasks.c **** 
+  25:../Sources/mqx_tasks.c **** #include <stdlib.h>
+  26:../Sources/mqx_tasks.c **** #include <string.h>
+  27:../Sources/mqx_tasks.c **** #include <math.h>
+  28:../Sources/mqx_tasks.c **** 
+  29:../Sources/mqx_tasks.c **** /* MMA8451Q IOMap */
+  30:../Sources/mqx_tasks.c **** /* External 3-axis accelerometer data register addresses */
+  31:../Sources/mqx_tasks.c **** #define OUT_X_MSB 0x01
+  32:../Sources/mqx_tasks.c **** #define OUT_X_LSB 0x02
+  33:../Sources/mqx_tasks.c **** #define OUT_Y_MSB 0x03
+  34:../Sources/mqx_tasks.c **** #define OUT_Y_LSB 0x04
+  35:../Sources/mqx_tasks.c **** #define OUT_Z_MSB 0x05
+  36:../Sources/mqx_tasks.c **** #define OUT_Z_LSB 0x06
+  37:../Sources/mqx_tasks.c **** /* External 3-axis accelerometer control register addresses */
+  38:../Sources/mqx_tasks.c **** #define CTRL_REG_1 0x2A
+  39:../Sources/mqx_tasks.c **** /* External 3-axis accelerometer control register bit masks */
+  40:../Sources/mqx_tasks.c **** #define ACTIVE_BIT_MASK 0x01
+  41:../Sources/mqx_tasks.c **** #define F_READ_BIT_MASK 0x02
+  42:../Sources/mqx_tasks.c **** #define ACC_REG_SIZE 1U
+  43:../Sources/mqx_tasks.c **** #define READ_COUNT 5U
+  44:../Sources/mqx_tasks.c **** 
+  45:../Sources/mqx_tasks.c **** 
+  46:../Sources/mqx_tasks.c **** #define ADS1015_CONV_REG		0x00U
+  47:../Sources/mqx_tasks.c **** #define ADS1015_CONV_REG_LEN	0x02U
+  48:../Sources/mqx_tasks.c **** 
+  49:../Sources/mqx_tasks.c **** 
+  50:../Sources/mqx_tasks.c **** #define ADS1015_CTRL_REG		0x01U
+  51:../Sources/mqx_tasks.c **** #define ADS1015_THRE_LO_REG		0x02U
+  52:../Sources/mqx_tasks.c **** #define ADS1015_THRE_HI_REG		0x03U
+  53:../Sources/mqx_tasks.c **** #define ADS1015_CTRL_REG_LEN	0x02U
+  54:../Sources/mqx_tasks.c **** 
+  55:../Sources/mqx_tasks.c **** #define PI 3.14159265F
+  56:../Sources/mqx_tasks.c **** #define DAC_2V	2482UL
+  57:../Sources/mqx_tasks.c **** #define DAC_3V	3724UL
+  58:../Sources/mqx_tasks.c **** #define DAC_1V	1241UL
+  59:../Sources/mqx_tasks.c **** 
+  60:../Sources/mqx_tasks.c **** 
+  61:../Sources/mqx_tasks.c **** LDD_TDeviceData *I2c0_DeviceData = NULL;
+  62:../Sources/mqx_tasks.c **** TDataState I2c0_DataState;
+  63:../Sources/mqx_tasks.c **** 
+  64:../Sources/mqx_tasks.c **** LDD_TDeviceData *I2c1_DeviceData = NULL;
+  65:../Sources/mqx_tasks.c **** TDataState I2c1_DataState;
+  66:../Sources/mqx_tasks.c **** 
+  67:../Sources/mqx_tasks.c **** 
+  68:../Sources/mqx_tasks.c **** LDD_TDeviceData *Dac0_DeviceData = NULL;
+  69:../Sources/mqx_tasks.c **** TDacUsrData Dac0_Data;
+  70:../Sources/mqx_tasks.c **** 
+  71:../Sources/mqx_tasks.c **** 
+  72:../Sources/mqx_tasks.c **** 
+  73:../Sources/mqx_tasks.c **** LDD_TDeviceData *PWMTimerRG_DeviceData = NULL;
+  74:../Sources/mqx_tasks.c **** LDD_TDeviceData *PWMTimerB_DeviceData = NULL;
+  75:../Sources/mqx_tasks.c **** 
+  76:../Sources/mqx_tasks.c **** 
+  77:../Sources/mqx_tasks.c **** bool I2c0_ReadAccRegs(LDD_TDeviceData *I2CPtr, TDataState *I2c0_DataState, uint8_t Address, uint8_t
+  78:../Sources/mqx_tasks.c **** {
+  64              		.loc 1 78 0
+  65              		.cfi_startproc
+  66 0000 80B5     		push	{r7, lr}
+  67              	.LCFI0:
+  68              		.cfi_def_cfa_offset 8
+  69              		.cfi_offset 7, -8
+  70              		.cfi_offset 14, -4
+  71 0002 86B0     		sub	sp, sp, #24
+  72              	.LCFI1:
+  73              		.cfi_def_cfa_offset 32
+  74 0004 00AF     		add	r7, sp, #0
+  75              	.LCFI2:
+  76              		.cfi_def_cfa_register 7
+  77 0006 F860     		str	r0, [r7, #12]
+  78 0008 B960     		str	r1, [r7, #8]
+  79 000a 111C     		mov	r1, r2
+  80 000c 1A1C     		mov	r2, r3
+  81 000e FB1D     		add	r3, r7, #7
+  82 0010 1970     		strb	r1, [r3]
+  83 0012 BB1D     		add	r3, r7, #6
+  84 0014 1A70     		strb	r2, [r3]
+  79:../Sources/mqx_tasks.c **** 	LDD_I2C_TBusState BusState;
+  80:../Sources/mqx_tasks.c **** 	I2c0_DataState->Sent = FALSE;
+  85              		.loc 1 80 0
+  86 0016 BB68     		ldr	r3, [r7, #8]
+  87 0018 0022     		mov	r2, #0
+  88 001a 1A70     		strb	r2, [r3]
+  81:../Sources/mqx_tasks.c **** 	uint32_t u32_retry = 0UL;
+  89              		.loc 1 81 0
+  90 001c 0023     		mov	r3, #0
+  91 001e 7B61     		str	r3, [r7, #20]
+  82:../Sources/mqx_tasks.c **** 	
+  83:../Sources/mqx_tasks.c **** 	DrvI2c0_MasterSendBlock(I2CPtr, &Address, sizeof(Address), LDD_I2C_NO_SEND_STOP);
+  92              		.loc 1 83 0
+  93 0020 FA68     		ldr	r2, [r7, #12]
+  94 0022 FB1D     		add	r3, r7, #7
+  95 0024 101C     		mov	r0, r2
+  96 0026 191C     		mov	r1, r3
+  97 0028 0122     		mov	r2, #1
+  98 002a 0023     		mov	r3, #0
+  99 002c FFF7FEFF 		bl	DrvI2c0_MasterSendBlock
+  84:../Sources/mqx_tasks.c **** 
+  85:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Sent) && (u32_retry < 100000))
+ 100              		.loc 1 85 0
+ 101 0030 02E0     		b	.L2
+ 102              	.L4:
+  86:../Sources/mqx_tasks.c **** 	{
+  87:../Sources/mqx_tasks.c **** 		u32_retry++;
+ 103              		.loc 1 87 0
+ 104 0032 7B69     		ldr	r3, [r7, #20]
+ 105 0034 0133     		add	r3, r3, #1
+ 106 0036 7B61     		str	r3, [r7, #20]
+ 107              	.L2:
+  85:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Sent) && (u32_retry < 100000))
+ 108              		.loc 1 85 0
+ 109 0038 BB68     		ldr	r3, [r7, #8]
+ 110 003a 1B78     		ldrb	r3, [r3]
+ 111 003c DBB2     		uxtb	r3, r3
+ 112 003e 002B     		cmp	r3, #0
+ 113 0040 03D1     		bne	.L3
+  85:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Sent) && (u32_retry < 100000))
+ 114              		.loc 1 85 0 is_stmt 0
+ 115 0042 7A69     		ldr	r2, [r7, #20]
+ 116 0044 1F4B     		ldr	r3, .L12
+ 117 0046 9A42     		cmp	r2, r3
+ 118 0048 F3D9     		bls	.L4
+ 119              	.L3:
+  88:../Sources/mqx_tasks.c **** 	}
+  89:../Sources/mqx_tasks.c **** 
+  90:../Sources/mqx_tasks.c **** 	if (!I2c0_DataState->Sent)
+ 120              		.loc 1 90 0 is_stmt 1
+ 121 004a BB68     		ldr	r3, [r7, #8]
+ 122 004c 1B78     		ldrb	r3, [r3]
+ 123 004e DBB2     		uxtb	r3, r3
+ 124 0050 002B     		cmp	r3, #0
+ 125 0052 01D1     		bne	.L5
+  91:../Sources/mqx_tasks.c **** 	{
+  92:../Sources/mqx_tasks.c **** 		return FALSE;
+ 126              		.loc 1 92 0
+ 127 0054 0023     		mov	r3, #0
+ 128 0056 30E0     		b	.L11
+ 129              	.L5:
+  93:../Sources/mqx_tasks.c **** 	}
+  94:../Sources/mqx_tasks.c **** 	
+  95:../Sources/mqx_tasks.c **** 	I2c0_DataState->Received = FALSE;
+ 130              		.loc 1 95 0
+ 131 0058 BB68     		ldr	r3, [r7, #8]
+ 132 005a 0022     		mov	r2, #0
+ 133 005c 5A70     		strb	r2, [r3, #1]
+  96:../Sources/mqx_tasks.c **** 	DrvI2c0_MasterReceiveBlock(I2CPtr, Buffer, RegCount, LDD_I2C_SEND_STOP);
+ 134              		.loc 1 96 0
+ 135 005e BB1D     		add	r3, r7, #6
+ 136 0060 1B78     		ldrb	r3, [r3]
+ 137 0062 9BB2     		uxth	r3, r3
+ 138 0064 F968     		ldr	r1, [r7, #12]
+ 139 0066 3A6A     		ldr	r2, [r7, #32]
+ 140 0068 081C     		mov	r0, r1
+ 141 006a 111C     		mov	r1, r2
+ 142 006c 1A1C     		mov	r2, r3
+ 143 006e 0123     		mov	r3, #1
+ 144 0070 FFF7FEFF 		bl	DrvI2c0_MasterReceiveBlock
+  97:../Sources/mqx_tasks.c **** 
+  98:../Sources/mqx_tasks.c **** 	u32_retry = 0UL;
+ 145              		.loc 1 98 0
+ 146 0074 0023     		mov	r3, #0
+ 147 0076 7B61     		str	r3, [r7, #20]
+  99:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Received) && (u32_retry < 100000))
+ 148              		.loc 1 99 0
+ 149 0078 02E0     		b	.L7
+ 150              	.L9:
+ 100:../Sources/mqx_tasks.c **** 	{
+ 101:../Sources/mqx_tasks.c **** 		u32_retry++;
+ 151              		.loc 1 101 0
+ 152 007a 7B69     		ldr	r3, [r7, #20]
+ 153 007c 0133     		add	r3, r3, #1
+ 154 007e 7B61     		str	r3, [r7, #20]
+ 155              	.L7:
+  99:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Received) && (u32_retry < 100000))
+ 156              		.loc 1 99 0
+ 157 0080 BB68     		ldr	r3, [r7, #8]
+ 158 0082 5B78     		ldrb	r3, [r3, #1]
+ 159 0084 DBB2     		uxtb	r3, r3
+ 160 0086 002B     		cmp	r3, #0
+ 161 0088 03D1     		bne	.L8
+  99:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Received) && (u32_retry < 100000))
+ 162              		.loc 1 99 0 is_stmt 0
+ 163 008a 7A69     		ldr	r2, [r7, #20]
+ 164 008c 0D4B     		ldr	r3, .L12
+ 165 008e 9A42     		cmp	r2, r3
+ 166 0090 F3D9     		bls	.L9
+ 167              	.L8:
+ 102:../Sources/mqx_tasks.c **** 	}
+ 103:../Sources/mqx_tasks.c **** 	
+ 104:../Sources/mqx_tasks.c **** 	do
+ 105:../Sources/mqx_tasks.c **** 	{
+ 106:../Sources/mqx_tasks.c **** 		DrvI2c0_CheckBus(I2CPtr, &BusState);
+ 168              		.loc 1 106 0 is_stmt 1
+ 169 0092 FA68     		ldr	r2, [r7, #12]
+ 170 0094 3B1C     		mov	r3, r7
+ 171 0096 1333     		add	r3, r3, #19
+ 172 0098 101C     		mov	r0, r2
+ 173 009a 191C     		mov	r1, r3
+ 174 009c FFF7FEFF 		bl	DrvI2c0_CheckBus
+ 107:../Sources/mqx_tasks.c **** 	}while (BusState != LDD_I2C_IDLE);
+ 175              		.loc 1 107 0
+ 176 00a0 3B1C     		mov	r3, r7
+ 177 00a2 1333     		add	r3, r3, #19
+ 178 00a4 1B78     		ldrb	r3, [r3]
+ 179 00a6 012B     		cmp	r3, #1
+ 180 00a8 F3D1     		bne	.L8
+ 108:../Sources/mqx_tasks.c **** 
+ 109:../Sources/mqx_tasks.c **** 	if (!I2c0_DataState->Received)
+ 181              		.loc 1 109 0
+ 182 00aa BB68     		ldr	r3, [r7, #8]
+ 183 00ac 5B78     		ldrb	r3, [r3, #1]
+ 184 00ae DBB2     		uxtb	r3, r3
+ 185 00b0 002B     		cmp	r3, #0
+ 186 00b2 01D1     		bne	.L10
+ 110:../Sources/mqx_tasks.c **** 	{
+ 111:../Sources/mqx_tasks.c **** 		return FALSE;
+ 187              		.loc 1 111 0
+ 188 00b4 0023     		mov	r3, #0
+ 189 00b6 00E0     		b	.L11
+ 190              	.L10:
+ 112:../Sources/mqx_tasks.c **** 	}
+ 113:../Sources/mqx_tasks.c **** 
+ 114:../Sources/mqx_tasks.c **** 	return TRUE;
+ 191              		.loc 1 114 0
+ 192 00b8 0123     		mov	r3, #1
+ 193              	.L11:
+ 115:../Sources/mqx_tasks.c **** }
+ 194              		.loc 1 115 0
+ 195 00ba 181C     		mov	r0, r3
+ 196 00bc BD46     		mov	sp, r7
+ 197 00be 06B0     		add	sp, sp, #24
+ 198              		@ sp needed for prologue
+ 199 00c0 80BD     		pop	{r7, pc}
+ 200              	.L13:
+ 201 00c2 C046     		.align	2
+ 202              	.L12:
+ 203 00c4 9F860100 		.word	99999
+ 204              		.cfi_endproc
+ 205              	.LFE0:
+ 207              		.section	.text.I2c0_WriteAccRegs,"ax",%progbits
+ 208              		.align	2
+ 209              		.global	I2c0_WriteAccRegs
+ 210              		.code	16
+ 211              		.thumb_func
+ 213              	I2c0_WriteAccRegs:
+ 214              	.LFB1:
+ 116:../Sources/mqx_tasks.c **** 
+ 117:../Sources/mqx_tasks.c **** 
+ 118:../Sources/mqx_tasks.c **** bool I2c0_WriteAccRegs(LDD_TDeviceData *I2CPtr, TDataState *I2c0_DataState, uint8_t Address, uint8_
+ 119:../Sources/mqx_tasks.c **** {
+ 215              		.loc 1 119 0
+ 216              		.cfi_startproc
+ 217 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 218              	.LCFI3:
+ 219              		.cfi_def_cfa_offset 20
+ 220              		.cfi_offset 4, -20
+ 221              		.cfi_offset 5, -16
+ 222              		.cfi_offset 6, -12
+ 223              		.cfi_offset 7, -8
+ 224              		.cfi_offset 14, -4
+ 225 0002 91B0     		sub	sp, sp, #68
+ 226              	.LCFI4:
+ 227              		.cfi_def_cfa_offset 88
+ 228 0004 00AF     		add	r7, sp, #0
+ 229              	.LCFI5:
+ 230              		.cfi_def_cfa_register 7
+ 231 0006 7862     		str	r0, [r7, #36]
+ 232 0008 3962     		str	r1, [r7, #32]
+ 233 000a 111C     		mov	r1, r2
+ 234 000c 1A1C     		mov	r2, r3
+ 235 000e 3B1C     		mov	r3, r7
+ 236 0010 1F33     		add	r3, r3, #31
+ 237 0012 1970     		strb	r1, [r3]
+ 238 0014 3B1C     		mov	r3, r7
+ 239 0016 1E33     		add	r3, r3, #30
+ 240 0018 1A70     		strb	r2, [r3]
+ 241 001a 6B46     		mov	r3, sp
+ 242 001c 1E1C     		mov	r6, r3
+ 120:../Sources/mqx_tasks.c **** 	LDD_I2C_TBusState BusState;
+ 121:../Sources/mqx_tasks.c **** 	const uint8_t MAX_REG_COUNT = 16;
+ 243              		.loc 1 121 0
+ 244 001e 3B1C     		mov	r3, r7
+ 245 0020 3B33     		add	r3, r3, #59
+ 246 0022 1022     		mov	r2, #16
+ 247 0024 1A70     		strb	r2, [r3]
+ 122:../Sources/mqx_tasks.c **** 	uint8_t SendBuffer[MAX_REG_COUNT];
+ 248              		.loc 1 122 0
+ 249 0026 3B1C     		mov	r3, r7
+ 250 0028 3B33     		add	r3, r3, #59
+ 251 002a 1B78     		ldrb	r3, [r3]
+ 252 002c 013B     		sub	r3, r3, #1
+ 253 002e 7B63     		str	r3, [r7, #52]
+ 254 0030 3B1C     		mov	r3, r7
+ 255 0032 3B33     		add	r3, r3, #59
+ 256 0034 1B78     		ldrb	r3, [r3]
+ 257 0036 3B61     		str	r3, [r7, #16]
+ 258 0038 0023     		mov	r3, #0
+ 259 003a 7B61     		str	r3, [r7, #20]
+ 260 003c 3A69     		ldr	r2, [r7, #16]
+ 261 003e 530F     		lsr	r3, r2, #29
+ 262 0040 7A69     		ldr	r2, [r7, #20]
+ 263 0042 D200     		lsl	r2, r2, #3
+ 264 0044 FA60     		str	r2, [r7, #12]
+ 265 0046 FA68     		ldr	r2, [r7, #12]
+ 266 0048 1A43     		orr	r2, r3
+ 267 004a FA60     		str	r2, [r7, #12]
+ 268 004c 3B69     		ldr	r3, [r7, #16]
+ 269 004e DB00     		lsl	r3, r3, #3
+ 270 0050 3B1C     		mov	r3, r7
+ 271 0052 3B33     		add	r3, r3, #59
+ 272 0054 1B78     		ldrb	r3, [r3]
+ 273 0056 1C1C     		mov	r4, r3
+ 274 0058 0023     		mov	r3, #0
+ 275 005a 1D1C     		mov	r5, r3
+ 276 005c 630F     		lsr	r3, r4, #29
+ 277 005e EA00     		lsl	r2, r5, #3
+ 278 0060 7A60     		str	r2, [r7, #4]
+ 279 0062 7A68     		ldr	r2, [r7, #4]
+ 280 0064 1A43     		orr	r2, r3
+ 281 0066 7A60     		str	r2, [r7, #4]
+ 282 0068 E300     		lsl	r3, r4, #3
+ 283 006a 3B1C     		mov	r3, r7
+ 284 006c 3B33     		add	r3, r3, #59
+ 285 006e 1B78     		ldrb	r3, [r3]
+ 286 0070 0733     		add	r3, r3, #7
+ 287 0072 DB08     		lsr	r3, r3, #3
+ 288 0074 DB00     		lsl	r3, r3, #3
+ 289 0076 6A46     		mov	r2, sp
+ 290 0078 D21A     		sub	r2, r2, r3
+ 291 007a 9546     		mov	sp, r2
+ 292 007c 6B46     		mov	r3, sp
+ 293 007e 0033     		add	r3, r3, #0
+ 294 0080 3B63     		str	r3, [r7, #48]
+ 123:../Sources/mqx_tasks.c **** 	uint32_t u32_retry = 0UL;
+ 295              		.loc 1 123 0
+ 296 0082 0023     		mov	r3, #0
+ 297 0084 FB63     		str	r3, [r7, #60]
+ 124:../Sources/mqx_tasks.c **** 	
+ 125:../Sources/mqx_tasks.c **** 	SendBuffer[0] = Address;
+ 298              		.loc 1 125 0
+ 299 0086 3B6B     		ldr	r3, [r7, #48]
+ 300 0088 3A1C     		mov	r2, r7
+ 301 008a 1F32     		add	r2, r2, #31
+ 302 008c 1278     		ldrb	r2, [r2]
+ 303 008e 1A70     		strb	r2, [r3]
+ 126:../Sources/mqx_tasks.c **** 	
+ 127:../Sources/mqx_tasks.c **** 	memcpy(&SendBuffer[1], Data, RegCount);
+ 304              		.loc 1 127 0
+ 305 0090 3B6B     		ldr	r3, [r7, #48]
+ 306 0092 591C     		add	r1, r3, #1
+ 307 0094 3B1C     		mov	r3, r7
+ 308 0096 1E33     		add	r3, r3, #30
+ 309 0098 1B78     		ldrb	r3, [r3]
+ 310 009a BA6D     		ldr	r2, [r7, #88]
+ 311 009c 081C     		mov	r0, r1
+ 312 009e 111C     		mov	r1, r2
+ 313 00a0 1A1C     		mov	r2, r3
+ 314 00a2 FFF7FEFF 		bl	memcpy
+ 128:../Sources/mqx_tasks.c **** 	I2c0_DataState->Sent = FALSE;
+ 315              		.loc 1 128 0
+ 316 00a6 3B6A     		ldr	r3, [r7, #32]
+ 317 00a8 0022     		mov	r2, #0
+ 318 00aa 1A70     		strb	r2, [r3]
+ 129:../Sources/mqx_tasks.c **** 	
+ 130:../Sources/mqx_tasks.c **** 	DrvI2c0_MasterSendBlock(I2CPtr, &SendBuffer, RegCount + 1, LDD_I2C_SEND_STOP);
+ 319              		.loc 1 130 0
+ 320 00ac 3A6B     		ldr	r2, [r7, #48]
+ 321 00ae 3B1C     		mov	r3, r7
+ 322 00b0 1E33     		add	r3, r3, #30
+ 323 00b2 1B78     		ldrb	r3, [r3]
+ 324 00b4 9BB2     		uxth	r3, r3
+ 325 00b6 0133     		add	r3, r3, #1
+ 326 00b8 9BB2     		uxth	r3, r3
+ 327 00ba 796A     		ldr	r1, [r7, #36]
+ 328 00bc 081C     		mov	r0, r1
+ 329 00be 111C     		mov	r1, r2
+ 330 00c0 1A1C     		mov	r2, r3
+ 331 00c2 0123     		mov	r3, #1
+ 332 00c4 FFF7FEFF 		bl	DrvI2c0_MasterSendBlock
+ 131:../Sources/mqx_tasks.c **** 
+ 132:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Sent)&& (u32_retry < 100000))
+ 333              		.loc 1 132 0
+ 334 00c8 02E0     		b	.L15
+ 335              	.L17:
+ 133:../Sources/mqx_tasks.c **** 	{
+ 134:../Sources/mqx_tasks.c **** 		u32_retry++;
+ 336              		.loc 1 134 0
+ 337 00ca FB6B     		ldr	r3, [r7, #60]
+ 338 00cc 0133     		add	r3, r3, #1
+ 339 00ce FB63     		str	r3, [r7, #60]
+ 340              	.L15:
+ 132:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Sent)&& (u32_retry < 100000))
+ 341              		.loc 1 132 0
+ 342 00d0 3B6A     		ldr	r3, [r7, #32]
+ 343 00d2 1B78     		ldrb	r3, [r3]
+ 344 00d4 DBB2     		uxtb	r3, r3
+ 345 00d6 002B     		cmp	r3, #0
+ 346 00d8 03D1     		bne	.L16
+ 132:../Sources/mqx_tasks.c **** 	while ((!I2c0_DataState->Sent)&& (u32_retry < 100000))
+ 347              		.loc 1 132 0 is_stmt 0
+ 348 00da FA6B     		ldr	r2, [r7, #60]
+ 349 00dc 0D4B     		ldr	r3, .L21
+ 350 00de 9A42     		cmp	r2, r3
+ 351 00e0 F3D9     		bls	.L17
+ 352              	.L16:
+ 135:../Sources/mqx_tasks.c **** 	}
+ 136:../Sources/mqx_tasks.c **** 
+ 137:../Sources/mqx_tasks.c **** 	do
+ 138:../Sources/mqx_tasks.c **** 	{
+ 139:../Sources/mqx_tasks.c **** 		DrvI2c0_CheckBus(I2CPtr, &BusState);
+ 353              		.loc 1 139 0 is_stmt 1
+ 354 00e2 7A6A     		ldr	r2, [r7, #36]
+ 355 00e4 3B1C     		mov	r3, r7
+ 356 00e6 2F33     		add	r3, r3, #47
+ 357 00e8 101C     		mov	r0, r2
+ 358 00ea 191C     		mov	r1, r3
+ 359 00ec FFF7FEFF 		bl	DrvI2c0_CheckBus
+ 140:../Sources/mqx_tasks.c **** 	}while(BusState != LDD_I2C_IDLE); 
+ 360              		.loc 1 140 0
+ 361 00f0 3B1C     		mov	r3, r7
+ 362 00f2 2F33     		add	r3, r3, #47
+ 363 00f4 1B78     		ldrb	r3, [r3]
+ 364 00f6 012B     		cmp	r3, #1
+ 365 00f8 F3D1     		bne	.L16
+ 141:../Sources/mqx_tasks.c **** 
+ 142:../Sources/mqx_tasks.c **** 	if (!I2c0_DataState->Sent)
+ 366              		.loc 1 142 0
+ 367 00fa 3B6A     		ldr	r3, [r7, #32]
+ 368 00fc 1B78     		ldrb	r3, [r3]
+ 369 00fe DBB2     		uxtb	r3, r3
+ 370 0100 002B     		cmp	r3, #0
+ 371 0102 01D1     		bne	.L18
+ 143:../Sources/mqx_tasks.c **** 	{
+ 144:../Sources/mqx_tasks.c **** 		return FALSE;
+ 372              		.loc 1 144 0
+ 373 0104 0023     		mov	r3, #0
+ 374 0106 00E0     		b	.L19
+ 375              	.L18:
+ 145:../Sources/mqx_tasks.c **** 	}
+ 146:../Sources/mqx_tasks.c **** 	
+ 147:../Sources/mqx_tasks.c **** 	return TRUE;
+ 376              		.loc 1 147 0
+ 377 0108 0123     		mov	r3, #1
+ 378              	.L19:
+ 379 010a B546     		mov	sp, r6
+ 148:../Sources/mqx_tasks.c **** }
+ 380              		.loc 1 148 0
+ 381 010c 181C     		mov	r0, r3
+ 382 010e BD46     		mov	sp, r7
+ 383 0110 11B0     		add	sp, sp, #68
+ 384              		@ sp needed for prologue
+ 385 0112 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 386              	.L22:
+ 387              		.align	2
+ 388              	.L21:
+ 389 0114 9F860100 		.word	99999
+ 390              		.cfi_endproc
+ 391              	.LFE1:
+ 393              		.section	.text.I2c1_ReadAccRegs,"ax",%progbits
+ 394              		.align	2
+ 395              		.global	I2c1_ReadAccRegs
+ 396              		.code	16
+ 397              		.thumb_func
+ 399              	I2c1_ReadAccRegs:
+ 400              	.LFB2:
+ 149:../Sources/mqx_tasks.c **** 
+ 150:../Sources/mqx_tasks.c **** bool I2c1_ReadAccRegs(LDD_TDeviceData *I2CPtr, TDataState *I2c1_DataState, uint8_t Address, uint8_t
+ 151:../Sources/mqx_tasks.c **** {
+ 401              		.loc 1 151 0
+ 402              		.cfi_startproc
+ 403 0000 80B5     		push	{r7, lr}
+ 404              	.LCFI6:
+ 405              		.cfi_def_cfa_offset 8
+ 406              		.cfi_offset 7, -8
+ 407              		.cfi_offset 14, -4
+ 408 0002 86B0     		sub	sp, sp, #24
+ 409              	.LCFI7:
+ 410              		.cfi_def_cfa_offset 32
+ 411 0004 00AF     		add	r7, sp, #0
+ 412              	.LCFI8:
+ 413              		.cfi_def_cfa_register 7
+ 414 0006 F860     		str	r0, [r7, #12]
+ 415 0008 B960     		str	r1, [r7, #8]
+ 416 000a 111C     		mov	r1, r2
+ 417 000c 1A1C     		mov	r2, r3
+ 418 000e FB1D     		add	r3, r7, #7
+ 419 0010 1970     		strb	r1, [r3]
+ 420 0012 BB1D     		add	r3, r7, #6
+ 421 0014 1A70     		strb	r2, [r3]
+ 152:../Sources/mqx_tasks.c **** 	LDD_I2C_TBusState BusState;
+ 153:../Sources/mqx_tasks.c **** 	I2c1_DataState->Sent = FALSE;
+ 422              		.loc 1 153 0
+ 423 0016 BB68     		ldr	r3, [r7, #8]
+ 424 0018 0022     		mov	r2, #0
+ 425 001a 1A70     		strb	r2, [r3]
+ 154:../Sources/mqx_tasks.c **** 	uint32_t u32_retry = 0UL;
+ 426              		.loc 1 154 0
+ 427 001c 0023     		mov	r3, #0
+ 428 001e 7B61     		str	r3, [r7, #20]
+ 155:../Sources/mqx_tasks.c **** 	
+ 156:../Sources/mqx_tasks.c **** 	DrvI2c1_MasterSendBlock(I2CPtr, &Address, sizeof(Address), LDD_I2C_NO_SEND_STOP);
+ 429              		.loc 1 156 0
+ 430 0020 FA68     		ldr	r2, [r7, #12]
+ 431 0022 FB1D     		add	r3, r7, #7
+ 432 0024 101C     		mov	r0, r2
+ 433 0026 191C     		mov	r1, r3
+ 434 0028 0122     		mov	r2, #1
+ 435 002a 0023     		mov	r3, #0
+ 436 002c FFF7FEFF 		bl	DrvI2c1_MasterSendBlock
+ 157:../Sources/mqx_tasks.c **** 
+ 158:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Sent) && (u32_retry < 100000))
+ 437              		.loc 1 158 0
+ 438 0030 02E0     		b	.L24
+ 439              	.L26:
+ 159:../Sources/mqx_tasks.c **** 	{
+ 160:../Sources/mqx_tasks.c **** 		u32_retry++;
+ 440              		.loc 1 160 0
+ 441 0032 7B69     		ldr	r3, [r7, #20]
+ 442 0034 0133     		add	r3, r3, #1
+ 443 0036 7B61     		str	r3, [r7, #20]
+ 444              	.L24:
+ 158:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Sent) && (u32_retry < 100000))
+ 445              		.loc 1 158 0
+ 446 0038 BB68     		ldr	r3, [r7, #8]
+ 447 003a 1B78     		ldrb	r3, [r3]
+ 448 003c DBB2     		uxtb	r3, r3
+ 449 003e 002B     		cmp	r3, #0
+ 450 0040 03D1     		bne	.L25
+ 158:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Sent) && (u32_retry < 100000))
+ 451              		.loc 1 158 0 is_stmt 0
+ 452 0042 7A69     		ldr	r2, [r7, #20]
+ 453 0044 1F4B     		ldr	r3, .L34
+ 454 0046 9A42     		cmp	r2, r3
+ 455 0048 F3D9     		bls	.L26
+ 456              	.L25:
+ 161:../Sources/mqx_tasks.c **** 	}
+ 162:../Sources/mqx_tasks.c **** 
+ 163:../Sources/mqx_tasks.c **** 	if (!I2c1_DataState->Sent)
+ 457              		.loc 1 163 0 is_stmt 1
+ 458 004a BB68     		ldr	r3, [r7, #8]
+ 459 004c 1B78     		ldrb	r3, [r3]
+ 460 004e DBB2     		uxtb	r3, r3
+ 461 0050 002B     		cmp	r3, #0
+ 462 0052 01D1     		bne	.L27
+ 164:../Sources/mqx_tasks.c **** 	{
+ 165:../Sources/mqx_tasks.c **** 		return FALSE;
+ 463              		.loc 1 165 0
+ 464 0054 0023     		mov	r3, #0
+ 465 0056 30E0     		b	.L33
+ 466              	.L27:
+ 166:../Sources/mqx_tasks.c **** 	}
+ 167:../Sources/mqx_tasks.c **** 	
+ 168:../Sources/mqx_tasks.c **** 	I2c1_DataState->Received = FALSE;
+ 467              		.loc 1 168 0
+ 468 0058 BB68     		ldr	r3, [r7, #8]
+ 469 005a 0022     		mov	r2, #0
+ 470 005c 5A70     		strb	r2, [r3, #1]
+ 169:../Sources/mqx_tasks.c **** 	DrvI2c1_MasterReceiveBlock(I2CPtr, Buffer, RegCount, LDD_I2C_SEND_STOP);
+ 471              		.loc 1 169 0
+ 472 005e BB1D     		add	r3, r7, #6
+ 473 0060 1B78     		ldrb	r3, [r3]
+ 474 0062 9BB2     		uxth	r3, r3
+ 475 0064 F968     		ldr	r1, [r7, #12]
+ 476 0066 3A6A     		ldr	r2, [r7, #32]
+ 477 0068 081C     		mov	r0, r1
+ 478 006a 111C     		mov	r1, r2
+ 479 006c 1A1C     		mov	r2, r3
+ 480 006e 0123     		mov	r3, #1
+ 481 0070 FFF7FEFF 		bl	DrvI2c1_MasterReceiveBlock
+ 170:../Sources/mqx_tasks.c **** 
+ 171:../Sources/mqx_tasks.c **** 	u32_retry = 0UL;
+ 482              		.loc 1 171 0
+ 483 0074 0023     		mov	r3, #0
+ 484 0076 7B61     		str	r3, [r7, #20]
+ 172:../Sources/mqx_tasks.c **** 	
+ 173:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Received) && (u32_retry < 100000))
+ 485              		.loc 1 173 0
+ 486 0078 02E0     		b	.L29
+ 487              	.L31:
+ 174:../Sources/mqx_tasks.c **** 	{
+ 175:../Sources/mqx_tasks.c **** 		u32_retry++;
+ 488              		.loc 1 175 0
+ 489 007a 7B69     		ldr	r3, [r7, #20]
+ 490 007c 0133     		add	r3, r3, #1
+ 491 007e 7B61     		str	r3, [r7, #20]
+ 492              	.L29:
+ 173:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Received) && (u32_retry < 100000))
+ 493              		.loc 1 173 0
+ 494 0080 BB68     		ldr	r3, [r7, #8]
+ 495 0082 5B78     		ldrb	r3, [r3, #1]
+ 496 0084 DBB2     		uxtb	r3, r3
+ 497 0086 002B     		cmp	r3, #0
+ 498 0088 03D1     		bne	.L30
+ 173:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Received) && (u32_retry < 100000))
+ 499              		.loc 1 173 0 is_stmt 0
+ 500 008a 7A69     		ldr	r2, [r7, #20]
+ 501 008c 0D4B     		ldr	r3, .L34
+ 502 008e 9A42     		cmp	r2, r3
+ 503 0090 F3D9     		bls	.L31
+ 504              	.L30:
+ 176:../Sources/mqx_tasks.c **** 	}
+ 177:../Sources/mqx_tasks.c **** 	
+ 178:../Sources/mqx_tasks.c **** 	do
+ 179:../Sources/mqx_tasks.c **** 	{
+ 180:../Sources/mqx_tasks.c **** 		DrvI2c1_CheckBus(I2CPtr, &BusState);
+ 505              		.loc 1 180 0 is_stmt 1
+ 506 0092 FA68     		ldr	r2, [r7, #12]
+ 507 0094 3B1C     		mov	r3, r7
+ 508 0096 1333     		add	r3, r3, #19
+ 509 0098 101C     		mov	r0, r2
+ 510 009a 191C     		mov	r1, r3
+ 511 009c FFF7FEFF 		bl	DrvI2c1_CheckBus
+ 181:../Sources/mqx_tasks.c **** 	}while (BusState != LDD_I2C_IDLE);
+ 512              		.loc 1 181 0
+ 513 00a0 3B1C     		mov	r3, r7
+ 514 00a2 1333     		add	r3, r3, #19
+ 515 00a4 1B78     		ldrb	r3, [r3]
+ 516 00a6 012B     		cmp	r3, #1
+ 517 00a8 F3D1     		bne	.L30
+ 182:../Sources/mqx_tasks.c **** 
+ 183:../Sources/mqx_tasks.c **** 	if (!I2c1_DataState->Received)
+ 518              		.loc 1 183 0
+ 519 00aa BB68     		ldr	r3, [r7, #8]
+ 520 00ac 5B78     		ldrb	r3, [r3, #1]
+ 521 00ae DBB2     		uxtb	r3, r3
+ 522 00b0 002B     		cmp	r3, #0
+ 523 00b2 01D1     		bne	.L32
+ 184:../Sources/mqx_tasks.c **** 	{
+ 185:../Sources/mqx_tasks.c **** 		return FALSE;
+ 524              		.loc 1 185 0
+ 525 00b4 0023     		mov	r3, #0
+ 526 00b6 00E0     		b	.L33
+ 527              	.L32:
+ 186:../Sources/mqx_tasks.c **** 	}
+ 187:../Sources/mqx_tasks.c **** 
+ 188:../Sources/mqx_tasks.c **** 	return TRUE;
+ 528              		.loc 1 188 0
+ 529 00b8 0123     		mov	r3, #1
+ 530              	.L33:
+ 189:../Sources/mqx_tasks.c **** }
+ 531              		.loc 1 189 0
+ 532 00ba 181C     		mov	r0, r3
+ 533 00bc BD46     		mov	sp, r7
+ 534 00be 06B0     		add	sp, sp, #24
+ 535              		@ sp needed for prologue
+ 536 00c0 80BD     		pop	{r7, pc}
+ 537              	.L35:
+ 538 00c2 C046     		.align	2
+ 539              	.L34:
+ 540 00c4 9F860100 		.word	99999
+ 541              		.cfi_endproc
+ 542              	.LFE2:
+ 544              		.section	.text.I2c1_WriteAccRegs,"ax",%progbits
+ 545              		.align	2
+ 546              		.global	I2c1_WriteAccRegs
+ 547              		.code	16
+ 548              		.thumb_func
+ 550              	I2c1_WriteAccRegs:
+ 551              	.LFB3:
+ 190:../Sources/mqx_tasks.c **** 
+ 191:../Sources/mqx_tasks.c **** 
+ 192:../Sources/mqx_tasks.c **** bool I2c1_WriteAccRegs(LDD_TDeviceData *I2CPtr, TDataState *I2c1_DataState, uint8_t Address, uint8_
+ 193:../Sources/mqx_tasks.c **** {
+ 552              		.loc 1 193 0
+ 553              		.cfi_startproc
+ 554 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 555              	.LCFI9:
+ 556              		.cfi_def_cfa_offset 20
+ 557              		.cfi_offset 4, -20
+ 558              		.cfi_offset 5, -16
+ 559              		.cfi_offset 6, -12
+ 560              		.cfi_offset 7, -8
+ 561              		.cfi_offset 14, -4
+ 562 0002 91B0     		sub	sp, sp, #68
+ 563              	.LCFI10:
+ 564              		.cfi_def_cfa_offset 88
+ 565 0004 00AF     		add	r7, sp, #0
+ 566              	.LCFI11:
+ 567              		.cfi_def_cfa_register 7
+ 568 0006 7862     		str	r0, [r7, #36]
+ 569 0008 3962     		str	r1, [r7, #32]
+ 570 000a 111C     		mov	r1, r2
+ 571 000c 1A1C     		mov	r2, r3
+ 572 000e 3B1C     		mov	r3, r7
+ 573 0010 1F33     		add	r3, r3, #31
+ 574 0012 1970     		strb	r1, [r3]
+ 575 0014 3B1C     		mov	r3, r7
+ 576 0016 1E33     		add	r3, r3, #30
+ 577 0018 1A70     		strb	r2, [r3]
+ 578 001a 6B46     		mov	r3, sp
+ 579 001c 1E1C     		mov	r6, r3
+ 194:../Sources/mqx_tasks.c **** 	LDD_I2C_TBusState BusState;
+ 195:../Sources/mqx_tasks.c **** 	const uint8_t MAX_REG_COUNT = 16;
+ 580              		.loc 1 195 0
+ 581 001e 3B1C     		mov	r3, r7
+ 582 0020 3B33     		add	r3, r3, #59
+ 583 0022 1022     		mov	r2, #16
+ 584 0024 1A70     		strb	r2, [r3]
+ 196:../Sources/mqx_tasks.c **** 	uint8_t SendBuffer[MAX_REG_COUNT];
+ 585              		.loc 1 196 0
+ 586 0026 3B1C     		mov	r3, r7
+ 587 0028 3B33     		add	r3, r3, #59
+ 588 002a 1B78     		ldrb	r3, [r3]
+ 589 002c 013B     		sub	r3, r3, #1
+ 590 002e 7B63     		str	r3, [r7, #52]
+ 591 0030 3B1C     		mov	r3, r7
+ 592 0032 3B33     		add	r3, r3, #59
+ 593 0034 1B78     		ldrb	r3, [r3]
+ 594 0036 3B61     		str	r3, [r7, #16]
+ 595 0038 0023     		mov	r3, #0
+ 596 003a 7B61     		str	r3, [r7, #20]
+ 597 003c 3A69     		ldr	r2, [r7, #16]
+ 598 003e 530F     		lsr	r3, r2, #29
+ 599 0040 7A69     		ldr	r2, [r7, #20]
+ 600 0042 D200     		lsl	r2, r2, #3
+ 601 0044 FA60     		str	r2, [r7, #12]
+ 602 0046 FA68     		ldr	r2, [r7, #12]
+ 603 0048 1A43     		orr	r2, r3
+ 604 004a FA60     		str	r2, [r7, #12]
+ 605 004c 3B69     		ldr	r3, [r7, #16]
+ 606 004e DB00     		lsl	r3, r3, #3
+ 607 0050 3B1C     		mov	r3, r7
+ 608 0052 3B33     		add	r3, r3, #59
+ 609 0054 1B78     		ldrb	r3, [r3]
+ 610 0056 1C1C     		mov	r4, r3
+ 611 0058 0023     		mov	r3, #0
+ 612 005a 1D1C     		mov	r5, r3
+ 613 005c 630F     		lsr	r3, r4, #29
+ 614 005e EA00     		lsl	r2, r5, #3
+ 615 0060 7A60     		str	r2, [r7, #4]
+ 616 0062 7A68     		ldr	r2, [r7, #4]
+ 617 0064 1A43     		orr	r2, r3
+ 618 0066 7A60     		str	r2, [r7, #4]
+ 619 0068 E300     		lsl	r3, r4, #3
+ 620 006a 3B1C     		mov	r3, r7
+ 621 006c 3B33     		add	r3, r3, #59
+ 622 006e 1B78     		ldrb	r3, [r3]
+ 623 0070 0733     		add	r3, r3, #7
+ 624 0072 DB08     		lsr	r3, r3, #3
+ 625 0074 DB00     		lsl	r3, r3, #3
+ 626 0076 6A46     		mov	r2, sp
+ 627 0078 D21A     		sub	r2, r2, r3
+ 628 007a 9546     		mov	sp, r2
+ 629 007c 6B46     		mov	r3, sp
+ 630 007e 0033     		add	r3, r3, #0
+ 631 0080 3B63     		str	r3, [r7, #48]
+ 197:../Sources/mqx_tasks.c **** 	uint32_t u32_retry = 0UL;
+ 632              		.loc 1 197 0
+ 633 0082 0023     		mov	r3, #0
+ 634 0084 FB63     		str	r3, [r7, #60]
+ 198:../Sources/mqx_tasks.c **** 
+ 199:../Sources/mqx_tasks.c **** 	
+ 200:../Sources/mqx_tasks.c **** 	SendBuffer[0] = Address;
+ 635              		.loc 1 200 0
+ 636 0086 3B6B     		ldr	r3, [r7, #48]
+ 637 0088 3A1C     		mov	r2, r7
+ 638 008a 1F32     		add	r2, r2, #31
+ 639 008c 1278     		ldrb	r2, [r2]
+ 640 008e 1A70     		strb	r2, [r3]
+ 201:../Sources/mqx_tasks.c **** 	memcpy(&SendBuffer[1], Data, RegCount);
+ 641              		.loc 1 201 0
+ 642 0090 3B6B     		ldr	r3, [r7, #48]
+ 643 0092 591C     		add	r1, r3, #1
+ 644 0094 3B1C     		mov	r3, r7
+ 645 0096 1E33     		add	r3, r3, #30
+ 646 0098 1B78     		ldrb	r3, [r3]
+ 647 009a BA6D     		ldr	r2, [r7, #88]
+ 648 009c 081C     		mov	r0, r1
+ 649 009e 111C     		mov	r1, r2
+ 650 00a0 1A1C     		mov	r2, r3
+ 651 00a2 FFF7FEFF 		bl	memcpy
+ 202:../Sources/mqx_tasks.c **** 	I2c1_DataState->Sent = FALSE;
+ 652              		.loc 1 202 0
+ 653 00a6 3B6A     		ldr	r3, [r7, #32]
+ 654 00a8 0022     		mov	r2, #0
+ 655 00aa 1A70     		strb	r2, [r3]
+ 203:../Sources/mqx_tasks.c **** 	
+ 204:../Sources/mqx_tasks.c **** 	DrvI2c1_MasterSendBlock(I2CPtr, &SendBuffer, RegCount + 1, LDD_I2C_SEND_STOP);
+ 656              		.loc 1 204 0
+ 657 00ac 3A6B     		ldr	r2, [r7, #48]
+ 658 00ae 3B1C     		mov	r3, r7
+ 659 00b0 1E33     		add	r3, r3, #30
+ 660 00b2 1B78     		ldrb	r3, [r3]
+ 661 00b4 9BB2     		uxth	r3, r3
+ 662 00b6 0133     		add	r3, r3, #1
+ 663 00b8 9BB2     		uxth	r3, r3
+ 664 00ba 796A     		ldr	r1, [r7, #36]
+ 665 00bc 081C     		mov	r0, r1
+ 666 00be 111C     		mov	r1, r2
+ 667 00c0 1A1C     		mov	r2, r3
+ 668 00c2 0123     		mov	r3, #1
+ 669 00c4 FFF7FEFF 		bl	DrvI2c1_MasterSendBlock
+ 205:../Sources/mqx_tasks.c **** 
+ 206:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Sent)&& (u32_retry < 100000))
+ 670              		.loc 1 206 0
+ 671 00c8 02E0     		b	.L37
+ 672              	.L39:
+ 207:../Sources/mqx_tasks.c **** 	{
+ 208:../Sources/mqx_tasks.c **** 		u32_retry++;
+ 673              		.loc 1 208 0
+ 674 00ca FB6B     		ldr	r3, [r7, #60]
+ 675 00cc 0133     		add	r3, r3, #1
+ 676 00ce FB63     		str	r3, [r7, #60]
+ 677              	.L37:
+ 206:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Sent)&& (u32_retry < 100000))
+ 678              		.loc 1 206 0
+ 679 00d0 3B6A     		ldr	r3, [r7, #32]
+ 680 00d2 1B78     		ldrb	r3, [r3]
+ 681 00d4 DBB2     		uxtb	r3, r3
+ 682 00d6 002B     		cmp	r3, #0
+ 683 00d8 03D1     		bne	.L38
+ 206:../Sources/mqx_tasks.c **** 	while ((!I2c1_DataState->Sent)&& (u32_retry < 100000))
+ 684              		.loc 1 206 0 is_stmt 0
+ 685 00da FA6B     		ldr	r2, [r7, #60]
+ 686 00dc 0D4B     		ldr	r3, .L43
+ 687 00de 9A42     		cmp	r2, r3
+ 688 00e0 F3D9     		bls	.L39
+ 689              	.L38:
+ 209:../Sources/mqx_tasks.c **** 	}
+ 210:../Sources/mqx_tasks.c **** 
+ 211:../Sources/mqx_tasks.c **** 	do
+ 212:../Sources/mqx_tasks.c **** 	{
+ 213:../Sources/mqx_tasks.c **** 		DrvI2c1_CheckBus(I2CPtr, &BusState);
+ 690              		.loc 1 213 0 is_stmt 1
+ 691 00e2 7A6A     		ldr	r2, [r7, #36]
+ 692 00e4 3B1C     		mov	r3, r7
+ 693 00e6 2F33     		add	r3, r3, #47
+ 694 00e8 101C     		mov	r0, r2
+ 695 00ea 191C     		mov	r1, r3
+ 696 00ec FFF7FEFF 		bl	DrvI2c1_CheckBus
+ 214:../Sources/mqx_tasks.c **** 	}while(BusState != LDD_I2C_IDLE); 
+ 697              		.loc 1 214 0
+ 698 00f0 3B1C     		mov	r3, r7
+ 699 00f2 2F33     		add	r3, r3, #47
+ 700 00f4 1B78     		ldrb	r3, [r3]
+ 701 00f6 012B     		cmp	r3, #1
+ 702 00f8 F3D1     		bne	.L38
+ 215:../Sources/mqx_tasks.c **** 
+ 216:../Sources/mqx_tasks.c **** 	if (!I2c1_DataState->Sent)
+ 703              		.loc 1 216 0
+ 704 00fa 3B6A     		ldr	r3, [r7, #32]
+ 705 00fc 1B78     		ldrb	r3, [r3]
+ 706 00fe DBB2     		uxtb	r3, r3
+ 707 0100 002B     		cmp	r3, #0
+ 708 0102 01D1     		bne	.L40
+ 217:../Sources/mqx_tasks.c **** 	{
+ 218:../Sources/mqx_tasks.c **** 		return FALSE;
+ 709              		.loc 1 218 0
+ 710 0104 0023     		mov	r3, #0
+ 711 0106 00E0     		b	.L41
+ 712              	.L40:
+ 219:../Sources/mqx_tasks.c **** 	}
+ 220:../Sources/mqx_tasks.c **** 	
+ 221:../Sources/mqx_tasks.c **** 	return TRUE;
+ 713              		.loc 1 221 0
+ 714 0108 0123     		mov	r3, #1
+ 715              	.L41:
+ 716 010a B546     		mov	sp, r6
+ 222:../Sources/mqx_tasks.c **** }
+ 717              		.loc 1 222 0
+ 718 010c 181C     		mov	r0, r3
+ 719 010e BD46     		mov	sp, r7
+ 720 0110 11B0     		add	sp, sp, #68
+ 721              		@ sp needed for prologue
+ 722 0112 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 723              	.L44:
+ 724              		.align	2
+ 725              	.L43:
+ 726 0114 9F860100 		.word	99999
+ 727              		.cfi_endproc
+ 728              	.LFE3:
+ 730              		.section	.rodata
+ 731              		.align	2
+ 732              	.LC2:
+ 733 0000 50726F6A 		.ascii	"Project description:\000"
+ 733      65637420 
+ 733      64657363 
+ 733      72697074 
+ 733      696F6E3A 
+ 734 0015 000000   		.align	2
+ 735              	.LC4:
+ 736 0018 49324320 		.ascii	"I2C example of communication with external accelero"
+ 736      6578616D 
+ 736      706C6520 
+ 736      6F662063 
+ 736      6F6D6D75 
+ 737 004b 6D657465 		.ascii	"meter.\000"
+ 737      722E00
+ 738 0052 0000     		.align	2
+ 739              	.LC6:
+ 740 0054 50574D20 		.ascii	"PWM is used for dimming the RGB LED in dependence o"
+ 740      69732075 
+ 740      73656420 
+ 740      666F7220 
+ 740      64696D6D 
+ 741 0087 6E207469 		.ascii	"n tilt of the board.\000"
+ 741      6C74206F 
+ 741      66207468 
+ 741      6520626F 
+ 741      6172642E 
+ 742              		.align	2
+ 743              	.LC8:
+ 744 009c 44656661 		.ascii	"Default Task ID = %ld\012\000"
+ 744      756C7420 
+ 744      5461736B 
+ 744      20494420 
+ 744      3D20256C 
+ 745 00b3 00       		.align	2
+ 746              	.LC12:
+ 747 00b4 496E6974 		.ascii	"Init Inertial sensor (I2C addr = 0x1D) PASSED.\000"
+ 747      20496E65 
+ 747      72746961 
+ 747      6C207365 
+ 747      6E736F72 
+ 748 00e3 00       		.align	2
+ 749              	.LC14:
+ 750 00e4 4641494C 		.ascii	"FAILED.\000"
+ 750      45442E00 
+ 751              		.align	2
+ 752              	.LC16:
+ 753 00ec 54696C74 		.ascii	"Tilt your Freedom Board to change the RGB LED color"
+ 753      20796F75 
+ 753      72204672 
+ 753      6565646F 
+ 753      6D20426F 
+ 754 011f 732E00   		.ascii	"s.\000"
+ 755              		.global	__aeabi_idiv
+ 756 0122 0000     		.align	2
+ 757              	.LC0:
+ 758 0124 00       		.byte	0
+ 759 0125 7F       		.byte	127
+ 760 0126 7F       		.byte	127
+ 761              		.section	.text.Task_Default,"ax",%progbits
+ 762              		.align	2
+ 763              		.global	Task_Default
+ 764              		.code	16
+ 765              		.thumb_func
+ 767              	Task_Default:
+ 768              	.LFB4:
+ 223:../Sources/mqx_tasks.c **** 
+ 224:../Sources/mqx_tasks.c **** 
+ 225:../Sources/mqx_tasks.c **** 
+ 226:../Sources/mqx_tasks.c **** /*
+ 227:../Sources/mqx_tasks.c **** ** ===================================================================
+ 228:../Sources/mqx_tasks.c **** **     Event       :  Task_Default (module mqx_tasks)
+ 229:../Sources/mqx_tasks.c **** **
+ 230:../Sources/mqx_tasks.c **** **     Component   :  Task1 [MQXLite_task]
+ 231:../Sources/mqx_tasks.c **** **     Description :
+ 232:../Sources/mqx_tasks.c **** **         MQX task routine. The routine is generated into mqx_tasks.c
+ 233:../Sources/mqx_tasks.c **** **         file.
+ 234:../Sources/mqx_tasks.c **** **     Parameters  :
+ 235:../Sources/mqx_tasks.c **** **         NAME            - DESCRIPTION
+ 236:../Sources/mqx_tasks.c **** **         task_init_data  - 
+ 237:../Sources/mqx_tasks.c **** **     Returns     : Nothing
+ 238:../Sources/mqx_tasks.c **** ** ===================================================================
+ 239:../Sources/mqx_tasks.c **** */
+ 240:../Sources/mqx_tasks.c **** void Task_Default(uint32_t task_init_data)
+ 241:../Sources/mqx_tasks.c **** {
+ 769              		.loc 1 241 0
+ 770              		.cfi_startproc
+ 771 0000 90B5     		push	{r4, r7, lr}
+ 772              	.LCFI12:
+ 773              		.cfi_def_cfa_offset 12
+ 774              		.cfi_offset 4, -12
+ 775              		.cfi_offset 7, -8
+ 776              		.cfi_offset 14, -4
+ 777 0002 89B0     		sub	sp, sp, #36
+ 778              	.LCFI13:
+ 779              		.cfi_def_cfa_offset 48
+ 780 0004 02AF     		add	r7, sp, #8
+ 781              	.LCFI14:
+ 782              		.cfi_def_cfa 7, 40
+ 783 0006 7860     		str	r0, [r7, #4]
+ 242:../Sources/mqx_tasks.c ****   int counter = 0;
+ 784              		.loc 1 242 0
+ 785 0008 0023     		mov	r3, #0
+ 786 000a 7B61     		str	r3, [r7, #20]
+ 243:../Sources/mqx_tasks.c **** 
+ 244:../Sources/mqx_tasks.c **** 	byte Data;
+ 245:../Sources/mqx_tasks.c **** 	LDD_TError Error = 0;
+ 787              		.loc 1 245 0
+ 788 000c 3B1C     		mov	r3, r7
+ 789 000e 1233     		add	r3, r3, #18
+ 790 0010 0022     		mov	r2, #0
+ 791 0012 1A80     		strh	r2, [r3]
+ 246:../Sources/mqx_tasks.c **** 	signed char Color[3] = {0,127,127}; // initialize to turqoise
+ 792              		.loc 1 246 0
+ 793 0014 3A1C     		mov	r2, r7
+ 794 0016 0832     		add	r2, r2, #8
+ 795 0018 8D4B     		ldr	r3, .L53
+ 796 001a 111C     		mov	r1, r2
+ 797 001c 1A1C     		mov	r2, r3
+ 798 001e 0323     		mov	r3, #3
+ 799 0020 081C     		mov	r0, r1
+ 800 0022 111C     		mov	r1, r2
+ 801 0024 1A1C     		mov	r2, r3
+ 802 0026 FFF7FEFF 		bl	memcpy
+ 247:../Sources/mqx_tasks.c **** 
+ 248:../Sources/mqx_tasks.c **** 	pointer td_ptr;
+ 249:../Sources/mqx_tasks.c **** 	_task_id tid;
+ 250:../Sources/mqx_tasks.c **** 
+ 251:../Sources/mqx_tasks.c **** 	#if 0
+ 252:../Sources/mqx_tasks.c **** 	uint32_t u32_size, u32_usage;
+ 253:../Sources/mqx_tasks.c **** 	_mqx_uint u_ret;
+ 254:../Sources/mqx_tasks.c **** 	#endif
+ 255:../Sources/mqx_tasks.c **** 	
+ 256:../Sources/mqx_tasks.c **** 	printf("Project description:\n");
+ 803              		.loc 1 256 0
+ 804 002a 8A4B     		ldr	r3, .L53+4
+ 805 002c 181C     		mov	r0, r3
+ 806 002e FFF7FEFF 		bl	puts
+ 257:../Sources/mqx_tasks.c **** 	printf("I2C example of communication with external accelerometer.\n");
+ 807              		.loc 1 257 0
+ 808 0032 894B     		ldr	r3, .L53+8
+ 809 0034 181C     		mov	r0, r3
+ 810 0036 FFF7FEFF 		bl	puts
+ 258:../Sources/mqx_tasks.c **** 	printf("PWM is used for dimming the RGB LED in dependence on tilt of the board.\n");
+ 811              		.loc 1 258 0
+ 812 003a 884B     		ldr	r3, .L53+12
+ 813 003c 181C     		mov	r0, r3
+ 814 003e FFF7FEFF 		bl	puts
+ 259:../Sources/mqx_tasks.c **** 	printf("\n");
+ 815              		.loc 1 259 0
+ 816 0042 0A20     		mov	r0, #10
+ 817 0044 FFF7FEFF 		bl	putchar
+ 260:../Sources/mqx_tasks.c **** 
+ 261:../Sources/mqx_tasks.c **** 
+ 262:../Sources/mqx_tasks.c **** 	tid = _task_get_id();
+ 818              		.loc 1 262 0
+ 819 0048 FFF7FEFF 		bl	_task_get_id
+ 820 004c 031C     		mov	r3, r0
+ 821 004e FB60     		str	r3, [r7, #12]
+ 263:../Sources/mqx_tasks.c **** 	printf("Default Task ID = %ld\n", tid);
+ 822              		.loc 1 263 0
+ 823 0050 834A     		ldr	r2, .L53+16
+ 824 0052 FB68     		ldr	r3, [r7, #12]
+ 825 0054 101C     		mov	r0, r2
+ 826 0056 191C     		mov	r1, r3
+ 827 0058 FFF7FEFF 		bl	printf
+ 264:../Sources/mqx_tasks.c **** 	
+ 265:../Sources/mqx_tasks.c **** 	// Initialize Accelerometer
+ 266:../Sources/mqx_tasks.c **** 	I2c0_DeviceData = DrvI2c0_Init(&I2c0_DataState);
+ 828              		.loc 1 266 0
+ 829 005c 814B     		ldr	r3, .L53+20
+ 830 005e 181C     		mov	r0, r3
+ 831 0060 FFF7FEFF 		bl	DrvI2c0_Init
+ 832 0064 021C     		mov	r2, r0
+ 833 0066 804B     		ldr	r3, .L53+24
+ 834 0068 1A60     		str	r2, [r3]
+ 267:../Sources/mqx_tasks.c **** 	
+ 268:../Sources/mqx_tasks.c **** 	Error = !I2c0_ReadAccRegs(I2c0_DeviceData, &I2c0_DataState, CTRL_REG_1, ACC_REG_SIZE, &Data);
+ 835              		.loc 1 268 0
+ 836 006a 7F4B     		ldr	r3, .L53+24
+ 837 006c 1A68     		ldr	r2, [r3]
+ 838 006e 7D4B     		ldr	r3, .L53+20
+ 839 0070 391C     		mov	r1, r7
+ 840 0072 0B31     		add	r1, r1, #11
+ 841 0074 0091     		str	r1, [sp]
+ 842 0076 101C     		mov	r0, r2
+ 843 0078 191C     		mov	r1, r3
+ 844 007a 2A22     		mov	r2, #42
+ 845 007c 0123     		mov	r3, #1
+ 846 007e FFF7FEFF 		bl	I2c0_ReadAccRegs
+ 847 0082 031C     		mov	r3, r0
+ 848 0084 5A42     		neg	r2, r3
+ 849 0086 5341     		adc	r3, r3, r2
+ 850 0088 DAB2     		uxtb	r2, r3
+ 851 008a 3B1C     		mov	r3, r7
+ 852 008c 1233     		add	r3, r3, #18
+ 853 008e 1A80     		strh	r2, [r3]
+ 269:../Sources/mqx_tasks.c **** 	if (!Error)
+ 854              		.loc 1 269 0
+ 855 0090 3B1C     		mov	r3, r7
+ 856 0092 1233     		add	r3, r3, #18
+ 857 0094 1B88     		ldrh	r3, [r3]
+ 858 0096 002B     		cmp	r3, #0
+ 859 0098 16D1     		bne	.L46
+ 270:../Sources/mqx_tasks.c **** 	{
+ 271:../Sources/mqx_tasks.c **** 		Data = (ACTIVE_BIT_MASK | F_READ_BIT_MASK); /* Set active mode bit and fast read mode bit */
+ 860              		.loc 1 271 0
+ 861 009a 3B1C     		mov	r3, r7
+ 862 009c 0B33     		add	r3, r3, #11
+ 863 009e 0322     		mov	r2, #3
+ 864 00a0 1A70     		strb	r2, [r3]
+ 272:../Sources/mqx_tasks.c **** 		Error = !I2c0_WriteAccRegs(I2c0_DeviceData, &I2c0_DataState, CTRL_REG_1, ACC_REG_SIZE, &Data);
+ 865              		.loc 1 272 0
+ 866 00a2 714B     		ldr	r3, .L53+24
+ 867 00a4 1A68     		ldr	r2, [r3]
+ 868 00a6 6F4B     		ldr	r3, .L53+20
+ 869 00a8 391C     		mov	r1, r7
+ 870 00aa 0B31     		add	r1, r1, #11
+ 871 00ac 0091     		str	r1, [sp]
+ 872 00ae 101C     		mov	r0, r2
+ 873 00b0 191C     		mov	r1, r3
+ 874 00b2 2A22     		mov	r2, #42
+ 875 00b4 0123     		mov	r3, #1
+ 876 00b6 FFF7FEFF 		bl	I2c0_WriteAccRegs
+ 877 00ba 031C     		mov	r3, r0
+ 878 00bc 5A42     		neg	r2, r3
+ 879 00be 5341     		adc	r3, r3, r2
+ 880 00c0 DAB2     		uxtb	r2, r3
+ 881 00c2 3B1C     		mov	r3, r7
+ 882 00c4 1233     		add	r3, r3, #18
+ 883 00c6 1A80     		strh	r2, [r3]
+ 884              	.L46:
+ 273:../Sources/mqx_tasks.c **** 	}
+ 274:../Sources/mqx_tasks.c **** 
+ 275:../Sources/mqx_tasks.c **** 	if (!Error)
+ 885              		.loc 1 275 0
+ 886 00c8 3B1C     		mov	r3, r7
+ 887 00ca 1233     		add	r3, r3, #18
+ 888 00cc 1B88     		ldrh	r3, [r3]
+ 889 00ce 002B     		cmp	r3, #0
+ 890 00d0 24D1     		bne	.L47
+ 276:../Sources/mqx_tasks.c **** 	{
+ 277:../Sources/mqx_tasks.c **** 		Data = 0;
+ 891              		.loc 1 277 0
+ 892 00d2 3B1C     		mov	r3, r7
+ 893 00d4 0B33     		add	r3, r3, #11
+ 894 00d6 0022     		mov	r2, #0
+ 895 00d8 1A70     		strb	r2, [r3]
+ 278:../Sources/mqx_tasks.c **** 		Error = !I2c0_ReadAccRegs(I2c0_DeviceData, &I2c0_DataState, CTRL_REG_1, ACC_REG_SIZE, &Data);
+ 896              		.loc 1 278 0
+ 897 00da 634B     		ldr	r3, .L53+24
+ 898 00dc 1A68     		ldr	r2, [r3]
+ 899 00de 614B     		ldr	r3, .L53+20
+ 900 00e0 391C     		mov	r1, r7
+ 901 00e2 0B31     		add	r1, r1, #11
+ 902 00e4 0091     		str	r1, [sp]
+ 903 00e6 101C     		mov	r0, r2
+ 904 00e8 191C     		mov	r1, r3
+ 905 00ea 2A22     		mov	r2, #42
+ 906 00ec 0123     		mov	r3, #1
+ 907 00ee FFF7FEFF 		bl	I2c0_ReadAccRegs
+ 908 00f2 031C     		mov	r3, r0
+ 909 00f4 5A42     		neg	r2, r3
+ 910 00f6 5341     		adc	r3, r3, r2
+ 911 00f8 DAB2     		uxtb	r2, r3
+ 912 00fa 3B1C     		mov	r3, r7
+ 913 00fc 1233     		add	r3, r3, #18
+ 914 00fe 1A80     		strh	r2, [r3]
+ 279:../Sources/mqx_tasks.c **** 
+ 280:../Sources/mqx_tasks.c **** 		if (!Error)
+ 915              		.loc 1 280 0
+ 916 0100 3B1C     		mov	r3, r7
+ 917 0102 1233     		add	r3, r3, #18
+ 918 0104 1B88     		ldrh	r3, [r3]
+ 919 0106 002B     		cmp	r3, #0
+ 920 0108 08D1     		bne	.L47
+ 281:../Sources/mqx_tasks.c **** 		{
+ 282:../Sources/mqx_tasks.c **** 			if (Data != (ACTIVE_BIT_MASK | F_READ_BIT_MASK))
+ 921              		.loc 1 282 0
+ 922 010a 3B1C     		mov	r3, r7
+ 923 010c 0B33     		add	r3, r3, #11
+ 924 010e 1B78     		ldrb	r3, [r3]
+ 925 0110 032B     		cmp	r3, #3
+ 926 0112 03D0     		beq	.L47
+ 283:../Sources/mqx_tasks.c **** 			{
+ 284:../Sources/mqx_tasks.c **** 				Error = TRUE;
+ 927              		.loc 1 284 0
+ 928 0114 3B1C     		mov	r3, r7
+ 929 0116 1233     		add	r3, r3, #18
+ 930 0118 0122     		mov	r2, #1
+ 931 011a 1A80     		strh	r2, [r3]
+ 932              	.L47:
+ 285:../Sources/mqx_tasks.c **** 			}
+ 286:../Sources/mqx_tasks.c **** 		}
+ 287:../Sources/mqx_tasks.c **** 	}
+ 288:../Sources/mqx_tasks.c **** 	
+ 289:../Sources/mqx_tasks.c **** 	/* Initialization passed? */
+ 290:../Sources/mqx_tasks.c **** 	if (!Error)
+ 933              		.loc 1 290 0
+ 934 011c 3B1C     		mov	r3, r7
+ 935 011e 1233     		add	r3, r3, #18
+ 936 0120 1B88     		ldrh	r3, [r3]
+ 937 0122 002B     		cmp	r3, #0
+ 938 0124 04D1     		bne	.L48
+ 291:../Sources/mqx_tasks.c **** 	{
+ 292:../Sources/mqx_tasks.c **** 		printf("Init Inertial sensor (I2C addr = 0x1D) PASSED.\n");
+ 939              		.loc 1 292 0
+ 940 0126 514B     		ldr	r3, .L53+28
+ 941 0128 181C     		mov	r0, r3
+ 942 012a FFF7FEFF 		bl	puts
+ 943 012e 03E0     		b	.L49
+ 944              	.L48:
+ 293:../Sources/mqx_tasks.c **** 	}
+ 294:../Sources/mqx_tasks.c **** 	else
+ 295:../Sources/mqx_tasks.c **** 	{
+ 296:../Sources/mqx_tasks.c **** 		printf("FAILED.\n");
+ 945              		.loc 1 296 0
+ 946 0130 4F4B     		ldr	r3, .L53+32
+ 947 0132 181C     		mov	r0, r3
+ 948 0134 FFF7FEFF 		bl	puts
+ 949              	.L49:
+ 297:../Sources/mqx_tasks.c **** 	}
+ 298:../Sources/mqx_tasks.c **** 
+ 299:../Sources/mqx_tasks.c **** 	if (!Error)
+ 950              		.loc 1 299 0
+ 951 0138 3B1C     		mov	r3, r7
+ 952 013a 1233     		add	r3, r3, #18
+ 953 013c 1B88     		ldrh	r3, [r3]
+ 954 013e 002B     		cmp	r3, #0
+ 955 0140 03D1     		bne	.L50
+ 300:../Sources/mqx_tasks.c **** 	{
+ 301:../Sources/mqx_tasks.c **** 		printf("Tilt your Freedom Board to change the RGB LED colors.\n");
+ 956              		.loc 1 301 0
+ 957 0142 4C4B     		ldr	r3, .L53+36
+ 958 0144 181C     		mov	r0, r3
+ 959 0146 FFF7FEFF 		bl	puts
+ 960              	.L50:
+ 302:../Sources/mqx_tasks.c **** 	}
+ 303:../Sources/mqx_tasks.c **** 
+ 304:../Sources/mqx_tasks.c **** 	
+ 305:../Sources/mqx_tasks.c **** 	PWMTimerRG_DeviceData = DrvPwmTimerRG_Init(NULL);
+ 961              		.loc 1 305 0
+ 962 014a 0020     		mov	r0, #0
+ 963 014c FFF7FEFF 		bl	DrvPwmTimerRG_Init
+ 964 0150 021C     		mov	r2, r0
+ 965 0152 494B     		ldr	r3, .L53+40
+ 966 0154 1A60     		str	r2, [r3]
+ 306:../Sources/mqx_tasks.c **** 	PWMTimerB_DeviceData = DrvPwmTimerB_Init(NULL);
+ 967              		.loc 1 306 0
+ 968 0156 0020     		mov	r0, #0
+ 969 0158 FFF7FEFF 		bl	DrvPwmTimerB_Init
+ 970 015c 021C     		mov	r2, r0
+ 971 015e 474B     		ldr	r3, .L53+44
+ 972 0160 1A60     		str	r2, [r3]
+ 973              	.L52:
+ 307:../Sources/mqx_tasks.c **** 
+ 308:../Sources/mqx_tasks.c **** 
+ 309:../Sources/mqx_tasks.c **** 	#if 1
+ 310:../Sources/mqx_tasks.c **** 	
+ 311:../Sources/mqx_tasks.c **** 	#else
+ 312:../Sources/mqx_tasks.c **** 	printf("Task_Dac ID");
+ 313:../Sources/mqx_tasks.c **** 	_time_delay_ticks(10);
+ 314:../Sources/mqx_tasks.c **** 	
+ 315:../Sources/mqx_tasks.c **** 	tid = _task_get_id_from_name("task_dac");
+ 316:../Sources/mqx_tasks.c **** 	if(tid != MQX_NULL_TASK_ID)
+ 317:../Sources/mqx_tasks.c **** 	{
+ 318:../Sources/mqx_tasks.c **** 		printf(" = %ld.\n", tid);
+ 319:../Sources/mqx_tasks.c **** 
+ 320:../Sources/mqx_tasks.c **** 		_time_delay_ticks(10);
+ 321:../Sources/mqx_tasks.c **** 		
+ 322:../Sources/mqx_tasks.c **** 		td_ptr = _task_get_td(tid);
+ 323:../Sources/mqx_tasks.c **** 		if(td_ptr != NULL)
+ 324:../Sources/mqx_tasks.c **** 		{
+ 325:../Sources/mqx_tasks.c **** 			printf("Start DAC task ID=%ld.\n", tid);
+ 326:../Sources/mqx_tasks.c **** 
+ 327:../Sources/mqx_tasks.c **** 			_time_delay_ticks(10);
+ 328:../Sources/mqx_tasks.c **** 			
+ 329:../Sources/mqx_tasks.c **** 			_task_ready((pointer)td_ptr);
+ 330:../Sources/mqx_tasks.c **** 		}
+ 331:../Sources/mqx_tasks.c **** 		else
+ 332:../Sources/mqx_tasks.c **** 		{
+ 333:../Sources/mqx_tasks.c **** 			printf("!! Get task TD Fail.\n");
+ 334:../Sources/mqx_tasks.c **** 		}
+ 335:../Sources/mqx_tasks.c **** 	}
+ 336:../Sources/mqx_tasks.c **** 	else
+ 337:../Sources/mqx_tasks.c **** 	{
+ 338:../Sources/mqx_tasks.c **** 		printf("!! Get task ID Fail.\n");
+ 339:../Sources/mqx_tasks.c **** 	}
+ 340:../Sources/mqx_tasks.c **** 	#endif
+ 341:../Sources/mqx_tasks.c **** 
+ 342:../Sources/mqx_tasks.c **** 	#if 0
+ 343:../Sources/mqx_tasks.c **** 	u_ret = _klog_get_task_stack_usage(
+ 344:../Sources/mqx_tasks.c **** 				_task_get_id(), 
+ 345:../Sources/mqx_tasks.c **** 				&u32_size, 
+ 346:../Sources/mqx_tasks.c **** 				&u32_usage);
+ 347:../Sources/mqx_tasks.c **** 	if(u_ret == MQX_OK)
+ 348:../Sources/mqx_tasks.c **** 	{
+ 349:../Sources/mqx_tasks.c **** 		printf("Default task stack size=%ld, usage=%ld\n", u32_size, u32_usage);
+ 350:../Sources/mqx_tasks.c **** 	}
+ 351:../Sources/mqx_tasks.c **** 	else
+ 352:../Sources/mqx_tasks.c **** 	{
+ 353:../Sources/mqx_tasks.c **** 		printf("GET Default task stack size FAIL\n");
+ 354:../Sources/mqx_tasks.c **** 	}
+ 355:../Sources/mqx_tasks.c **** 	#endif
+ 356:../Sources/mqx_tasks.c **** 
+ 357:../Sources/mqx_tasks.c **** 	while(1)
+ 358:../Sources/mqx_tasks.c **** 	{
+ 359:../Sources/mqx_tasks.c **** 		counter++;
+ 974              		.loc 1 359 0
+ 975 0162 7B69     		ldr	r3, [r7, #20]
+ 976 0164 0133     		add	r3, r3, #1
+ 977 0166 7B61     		str	r3, [r7, #20]
+ 360:../Sources/mqx_tasks.c **** 
+ 361:../Sources/mqx_tasks.c ****     	/* Write your code here ... */
+ 362:../Sources/mqx_tasks.c **** 		Error = !I2c0_ReadAccRegs(I2c0_DeviceData, &I2c0_DataState, OUT_X_MSB, 3 * ACC_REG_SIZE, (uint8_t
+ 978              		.loc 1 362 0
+ 979 0168 3F4B     		ldr	r3, .L53+24
+ 980 016a 1A68     		ldr	r2, [r3]
+ 981 016c 3D4B     		ldr	r3, .L53+20
+ 982 016e 391C     		mov	r1, r7
+ 983 0170 0831     		add	r1, r1, #8
+ 984 0172 0091     		str	r1, [sp]
+ 985 0174 101C     		mov	r0, r2
+ 986 0176 191C     		mov	r1, r3
+ 987 0178 0122     		mov	r2, #1
+ 988 017a 0323     		mov	r3, #3
+ 989 017c FFF7FEFF 		bl	I2c0_ReadAccRegs
+ 990 0180 031C     		mov	r3, r0
+ 991 0182 5A42     		neg	r2, r3
+ 992 0184 5341     		adc	r3, r3, r2
+ 993 0186 DAB2     		uxtb	r2, r3
+ 994 0188 3B1C     		mov	r3, r7
+ 995 018a 1233     		add	r3, r3, #18
+ 996 018c 1A80     		strh	r2, [r3]
+ 363:../Sources/mqx_tasks.c **** 		if (!Error)
+ 997              		.loc 1 363 0
+ 998 018e 3B1C     		mov	r3, r7
+ 999 0190 1233     		add	r3, r3, #18
+ 1000 0192 1B88     		ldrh	r3, [r3]
+ 1001 0194 002B     		cmp	r3, #0
+ 1002 0196 57D1     		bne	.L51
+ 364:../Sources/mqx_tasks.c **** 		{
+ 365:../Sources/mqx_tasks.c **** 			DrvPwmTimerRG_Enable(PWMTimerRG_DeviceData);
+ 1003              		.loc 1 365 0
+ 1004 0198 374B     		ldr	r3, .L53+40
+ 1005 019a 1B68     		ldr	r3, [r3]
+ 1006 019c 181C     		mov	r0, r3
+ 1007 019e FFF7FEFF 		bl	DrvPwmTimerRG_Enable
+ 366:../Sources/mqx_tasks.c **** 			DrvPwmTimerB_Enable(PWMTimerB_DeviceData);
+ 1008              		.loc 1 366 0
+ 1009 01a2 364B     		ldr	r3, .L53+44
+ 1010 01a4 1B68     		ldr	r3, [r3]
+ 1011 01a6 181C     		mov	r0, r3
+ 1012 01a8 FFF7FEFF 		bl	DrvPwmTimerB_Enable
+ 367:../Sources/mqx_tasks.c **** 			DrvPwmTimerRG_SetOffsetTicks(PWMTimerRG_DeviceData, 0,1000*(1<<(abs(Color[0]/10)))); //x axis - 
+ 1013              		.loc 1 367 0
+ 1014 01ac 324B     		ldr	r3, .L53+40
+ 1015 01ae 1C68     		ldr	r4, [r3]
+ 1016 01b0 3B1C     		mov	r3, r7
+ 1017 01b2 0833     		add	r3, r3, #8
+ 1018 01b4 1B78     		ldrb	r3, [r3]
+ 1019 01b6 5BB2     		sxtb	r3, r3
+ 1020 01b8 181C     		mov	r0, r3
+ 1021 01ba 0A21     		mov	r1, #10
+ 1022 01bc FFF7FEFF 		bl	__aeabi_idiv
+ 1023 01c0 031C     		mov	r3, r0
+ 1024 01c2 DBB2     		uxtb	r3, r3
+ 1025 01c4 5BB2     		sxtb	r3, r3
+ 1026 01c6 D917     		asr	r1, r3, #31
+ 1027 01c8 5B18     		add	r3, r3, r1
+ 1028 01ca 4B40     		eor	r3, r1
+ 1029 01cc FA22     		mov	r2, #250
+ 1030 01ce 9200     		lsl	r2, r2, #2
+ 1031 01d0 111C     		mov	r1, r2
+ 1032 01d2 9940     		lsl	r1, r1, r3
+ 1033 01d4 0B1C     		mov	r3, r1
+ 1034 01d6 201C     		mov	r0, r4
+ 1035 01d8 0021     		mov	r1, #0
+ 1036 01da 1A1C     		mov	r2, r3
+ 1037 01dc FFF7FEFF 		bl	DrvPwmTimerRG_SetOffsetTicks
+ 368:../Sources/mqx_tasks.c **** 			DrvPwmTimerRG_SetOffsetTicks(PWMTimerRG_DeviceData, 1, 1000*(1<<(abs(Color[1]/10)))); // y axis 
+ 1038              		.loc 1 368 0
+ 1039 01e0 254B     		ldr	r3, .L53+40
+ 1040 01e2 1C68     		ldr	r4, [r3]
+ 1041 01e4 3B1C     		mov	r3, r7
+ 1042 01e6 0833     		add	r3, r3, #8
+ 1043 01e8 5B78     		ldrb	r3, [r3, #1]
+ 1044 01ea 5BB2     		sxtb	r3, r3
+ 1045 01ec 181C     		mov	r0, r3
+ 1046 01ee 0A21     		mov	r1, #10
+ 1047 01f0 FFF7FEFF 		bl	__aeabi_idiv
+ 1048 01f4 031C     		mov	r3, r0
+ 1049 01f6 DBB2     		uxtb	r3, r3
+ 1050 01f8 5BB2     		sxtb	r3, r3
+ 1051 01fa DA17     		asr	r2, r3, #31
+ 1052 01fc 9B18     		add	r3, r3, r2
+ 1053 01fe 5340     		eor	r3, r2
+ 1054 0200 FA22     		mov	r2, #250
+ 1055 0202 9200     		lsl	r2, r2, #2
+ 1056 0204 111C     		mov	r1, r2
+ 1057 0206 9940     		lsl	r1, r1, r3
+ 1058 0208 0B1C     		mov	r3, r1
+ 1059 020a 201C     		mov	r0, r4
+ 1060 020c 0121     		mov	r1, #1
+ 1061 020e 1A1C     		mov	r2, r3
+ 1062 0210 FFF7FEFF 		bl	DrvPwmTimerRG_SetOffsetTicks
+ 369:../Sources/mqx_tasks.c **** 			DrvPwmTimerB_SetOffsetTicks(PWMTimerB_DeviceData, 0, 1000*(1<<(abs(Color[2]/10)))); // z axis - 
+ 1063              		.loc 1 369 0
+ 1064 0214 194B     		ldr	r3, .L53+44
+ 1065 0216 1C68     		ldr	r4, [r3]
+ 1066 0218 3B1C     		mov	r3, r7
+ 1067 021a 0833     		add	r3, r3, #8
+ 1068 021c 9B78     		ldrb	r3, [r3, #2]
+ 1069 021e 5BB2     		sxtb	r3, r3
+ 1070 0220 181C     		mov	r0, r3
+ 1071 0222 0A21     		mov	r1, #10
+ 1072 0224 FFF7FEFF 		bl	__aeabi_idiv
+ 1073 0228 031C     		mov	r3, r0
+ 1074 022a DBB2     		uxtb	r3, r3
+ 1075 022c 5BB2     		sxtb	r3, r3
+ 1076 022e DA17     		asr	r2, r3, #31
+ 1077 0230 9B18     		add	r3, r3, r2
+ 1078 0232 5340     		eor	r3, r2
+ 1079 0234 FA22     		mov	r2, #250
+ 1080 0236 9200     		lsl	r2, r2, #2
+ 1081 0238 111C     		mov	r1, r2
+ 1082 023a 9940     		lsl	r1, r1, r3
+ 1083 023c 0B1C     		mov	r3, r1
+ 1084 023e 201C     		mov	r0, r4
+ 1085 0240 0021     		mov	r1, #0
+ 1086 0242 1A1C     		mov	r2, r3
+ 1087 0244 FFF7FEFF 		bl	DrvPwmTimerB_SetOffsetTicks
+ 1088              	.L51:
+ 370:../Sources/mqx_tasks.c **** 		}
+ 371:../Sources/mqx_tasks.c **** 		_time_delay_ticks(100);
+ 1089              		.loc 1 371 0
+ 1090 0248 6420     		mov	r0, #100
+ 1091 024a FFF7FEFF 		bl	_time_delay_ticks
+ 372:../Sources/mqx_tasks.c **** 	}
+ 1092              		.loc 1 372 0
+ 1093 024e 88E7     		b	.L52
+ 1094              	.L54:
+ 1095              		.align	2
+ 1096              	.L53:
+ 1097 0250 24010000 		.word	.LC0
+ 1098 0254 00000000 		.word	.LC2
+ 1099 0258 18000000 		.word	.LC4
+ 1100 025c 54000000 		.word	.LC6
+ 1101 0260 9C000000 		.word	.LC8
+ 1102 0264 00000000 		.word	I2c0_DataState
+ 1103 0268 00000000 		.word	I2c0_DeviceData
+ 1104 026c B4000000 		.word	.LC12
+ 1105 0270 E4000000 		.word	.LC14
+ 1106 0274 EC000000 		.word	.LC16
+ 1107 0278 00000000 		.word	PWMTimerRG_DeviceData
+ 1108 027c 00000000 		.word	PWMTimerB_DeviceData
+ 1109              		.cfi_endproc
+ 1110              	.LFE4:
+ 1112              		.section	.rodata
+ 1113 0127 00       		.align	2
+ 1114              	.LC24:
+ 1115 0128 52454144 		.ascii	"READ TI ADS1015 control register PASS, MSB=0x%02X, "
+ 1115      20544920 
+ 1115      41445331 
+ 1115      30313520 
+ 1115      636F6E74 
+ 1116 015b 4C53423D 		.ascii	"LSB=0x%02X.\012\000"
+ 1116      30782530 
+ 1116      32582E0A 
+ 1116      00
+ 1117              		.align	2
+ 1118              	.LC26:
+ 1119 0168 52454144 		.ascii	"READ TI ADS1015 control register FAILED.\000"
+ 1119      20544920 
+ 1119      41445331 
+ 1119      30313520 
+ 1119      636F6E74 
+ 1120 0191 000000   		.align	2
+ 1121              	.LC28:
+ 1122 0194 57524954 		.ascii	"WRITE TI ADS1015 control register PASS, MSB=0x%02X,"
+ 1122      45205449 
+ 1122      20414453 
+ 1122      31303135 
+ 1122      20636F6E 
+ 1123 01c7 204C5342 		.ascii	" LSB=0x%02X.\012\000"
+ 1123      3D307825 
+ 1123      3032582E 
+ 1123      0A00
+ 1124 01d5 000000   		.align	2
+ 1125              	.LC30:
+ 1126 01d8 57524954 		.ascii	"WRITE TI ADS1015 control register FAILED.\000"
+ 1126      45205449 
+ 1126      20414453 
+ 1126      31303135 
+ 1126      20636F6E 
+ 1127 0202 0000     		.align	2
+ 1128              	.LC32:
+ 1129 0204 52454144 		.ascii	"READ TI ADS1015 convert register PASS, MSB=0x%02X, "
+ 1129      20544920 
+ 1129      41445331 
+ 1129      30313520 
+ 1129      636F6E76 
+ 1130 0237 4C53423D 		.ascii	"LSB=0x%02X, DAC=%d.\012\000"
+ 1130      30782530 
+ 1130      32582C20 
+ 1130      4441433D 
+ 1130      25642E0A 
+ 1131              		.align	2
+ 1132              	.LC34:
+ 1133 024c 52454144 		.ascii	"READ TI ADS1015 convert register FAILED.\000"
+ 1133      20544920 
+ 1133      41445331 
+ 1133      30313520 
+ 1133      636F6E76 
+ 1134 0275 000000   		.section	.text.Task_Dac,"ax",%progbits
+ 1135              		.align	2
+ 1136              		.global	Task_Dac
+ 1137              		.code	16
+ 1138              		.thumb_func
+ 1140              	Task_Dac:
+ 1141              	.LFB5:
+ 373:../Sources/mqx_tasks.c **** }
+ 374:../Sources/mqx_tasks.c **** 
+ 375:../Sources/mqx_tasks.c **** 
+ 376:../Sources/mqx_tasks.c **** /*
+ 377:../Sources/mqx_tasks.c **** ** ===================================================================
+ 378:../Sources/mqx_tasks.c **** **     Event       :  Task_Dac (module mqx_tasks)
+ 379:../Sources/mqx_tasks.c **** **
+ 380:../Sources/mqx_tasks.c **** **     Component   :  Task2 [MQXLite_task]
+ 381:../Sources/mqx_tasks.c **** **     Description :
+ 382:../Sources/mqx_tasks.c **** **         MQX task routine. The routine is generated into mqx_tasks.c
+ 383:../Sources/mqx_tasks.c **** **         file.
+ 384:../Sources/mqx_tasks.c **** **     Parameters  :
+ 385:../Sources/mqx_tasks.c **** **         NAME            - DESCRIPTION
+ 386:../Sources/mqx_tasks.c **** **         task_init_data  - 
+ 387:../Sources/mqx_tasks.c **** **     Returns     : Nothing
+ 388:../Sources/mqx_tasks.c **** ** ===================================================================
+ 389:../Sources/mqx_tasks.c **** */
+ 390:../Sources/mqx_tasks.c **** void Task_Dac(uint32_t task_init_data)
+ 391:../Sources/mqx_tasks.c **** {	
+ 1142              		.loc 1 391 0
+ 1143              		.cfi_startproc
+ 1144 0000 80B5     		push	{r7, lr}
+ 1145              	.LCFI15:
+ 1146              		.cfi_def_cfa_offset 8
+ 1147              		.cfi_offset 7, -8
+ 1148              		.cfi_offset 14, -4
+ 1149 0002 86B0     		sub	sp, sp, #24
+ 1150              	.LCFI16:
+ 1151              		.cfi_def_cfa_offset 32
+ 1152 0004 02AF     		add	r7, sp, #8
+ 1153              	.LCFI17:
+ 1154              		.cfi_def_cfa 7, 24
+ 1155 0006 7860     		str	r0, [r7, #4]
+ 392:../Sources/mqx_tasks.c **** 	uint8_t i2c1_buffer[4] = {0};
+ 1156              		.loc 1 392 0
+ 1157 0008 3B1C     		mov	r3, r7
+ 1158 000a 0833     		add	r3, r3, #8
+ 1159 000c 0022     		mov	r2, #0
+ 1160 000e 1A60     		str	r2, [r3]
+ 393:../Sources/mqx_tasks.c **** 	LDD_TError Error = 0;
+ 1161              		.loc 1 393 0
+ 1162 0010 3B1C     		mov	r3, r7
+ 1163 0012 0E33     		add	r3, r3, #14
+ 1164 0014 0022     		mov	r2, #0
+ 1165 0016 1A80     		strh	r2, [r3]
+ 394:../Sources/mqx_tasks.c **** 
+ 395:../Sources/mqx_tasks.c **** 	#if 0	/* draw sign wave */
+ 396:../Sources/mqx_tasks.c **** 	float f_sin = 0.0, f_val;
+ 397:../Sources/mqx_tasks.c **** 
+ 398:../Sources/mqx_tasks.c **** 	uint32 u32_tmp, u32_delay=86UL;
+ 399:../Sources/mqx_tasks.c **** 	uint32 u32_sin[91];
+ 400:../Sources/mqx_tasks.c **** 	uint32_t u32_val;
+ 401:../Sources/mqx_tasks.c **** 	uint8 u8_i, u8_j;
+ 402:../Sources/mqx_tasks.c **** 	#endif
+ 403:../Sources/mqx_tasks.c **** 	
+ 404:../Sources/mqx_tasks.c **** 
+ 405:../Sources/mqx_tasks.c **** 	int16_t s16_AdcData = 0;
+ 1166              		.loc 1 405 0
+ 1167 0018 3B1C     		mov	r3, r7
+ 1168 001a 0C33     		add	r3, r3, #12
+ 1169 001c 0022     		mov	r2, #0
+ 1170 001e 1A80     		strh	r2, [r3]
+ 406:../Sources/mqx_tasks.c **** 
+ 407:../Sources/mqx_tasks.c **** 
+ 408:../Sources/mqx_tasks.c **** 	// TI ADS1015 ADC chip
+ 409:../Sources/mqx_tasks.c **** 	
+ 410:../Sources/mqx_tasks.c **** 	I2c1_DeviceData = DrvI2c1_Init(&I2c1_DataState);
+ 1171              		.loc 1 410 0
+ 1172 0020 534B     		ldr	r3, .L63
+ 1173 0022 181C     		mov	r0, r3
+ 1174 0024 FFF7FEFF 		bl	DrvI2c1_Init
+ 1175 0028 021C     		mov	r2, r0
+ 1176 002a 524B     		ldr	r3, .L63+4
+ 1177 002c 1A60     		str	r2, [r3]
+ 411:../Sources/mqx_tasks.c **** 
+ 412:../Sources/mqx_tasks.c **** 	Dac0_DeviceData = DrvDac2V_Init(&Dac0_Data);
+ 1178              		.loc 1 412 0
+ 1179 002e 524B     		ldr	r3, .L63+8
+ 1180 0030 181C     		mov	r0, r3
+ 1181 0032 FFF7FEFF 		bl	DrvDac2V_Init
+ 1182 0036 021C     		mov	r2, r0
+ 1183 0038 504B     		ldr	r3, .L63+12
+ 1184 003a 1A60     		str	r2, [r3]
+ 413:../Sources/mqx_tasks.c **** 
+ 414:../Sources/mqx_tasks.c **** 
+ 415:../Sources/mqx_tasks.c **** 	#if 1
+ 416:../Sources/mqx_tasks.c **** 
+ 417:../Sources/mqx_tasks.c **** 	i2c1_buffer[0] = ADS1015_CTRL_REG;
+ 1185              		.loc 1 417 0
+ 1186 003c 3B1C     		mov	r3, r7
+ 1187 003e 0833     		add	r3, r3, #8
+ 1188 0040 0122     		mov	r2, #1
+ 1189 0042 1A70     		strb	r2, [r3]
+ 418:../Sources/mqx_tasks.c **** 	Error = !I2c1_ReadAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LEN
+ 1190              		.loc 1 418 0
+ 1191 0044 4B4B     		ldr	r3, .L63+4
+ 1192 0046 1A68     		ldr	r2, [r3]
+ 1193 0048 494B     		ldr	r3, .L63
+ 1194 004a 391C     		mov	r1, r7
+ 1195 004c 0831     		add	r1, r1, #8
+ 1196 004e 0091     		str	r1, [sp]
+ 1197 0050 101C     		mov	r0, r2
+ 1198 0052 191C     		mov	r1, r3
+ 1199 0054 0122     		mov	r2, #1
+ 1200 0056 0223     		mov	r3, #2
+ 1201 0058 FFF7FEFF 		bl	I2c1_ReadAccRegs
+ 1202 005c 031C     		mov	r3, r0
+ 1203 005e 5A42     		neg	r2, r3
+ 1204 0060 5341     		adc	r3, r3, r2
+ 1205 0062 DAB2     		uxtb	r2, r3
+ 1206 0064 3B1C     		mov	r3, r7
+ 1207 0066 0E33     		add	r3, r3, #14
+ 1208 0068 1A80     		strh	r2, [r3]
+ 419:../Sources/mqx_tasks.c **** 	if (!Error)
+ 1209              		.loc 1 419 0
+ 1210 006a 3B1C     		mov	r3, r7
+ 1211 006c 0E33     		add	r3, r3, #14
+ 1212 006e 1B88     		ldrh	r3, [r3]
+ 1213 0070 002B     		cmp	r3, #0
+ 1214 0072 0DD1     		bne	.L56
+ 420:../Sources/mqx_tasks.c **** 	{
+ 421:../Sources/mqx_tasks.c **** 		printf("READ TI ADS1015 control register PASS, MSB=0x%02X, LSB=0x%02X.\n", i2c1_buffer[0], i2c1_b
+ 1215              		.loc 1 421 0
+ 1216 0074 3B1C     		mov	r3, r7
+ 1217 0076 0833     		add	r3, r3, #8
+ 1218 0078 1B78     		ldrb	r3, [r3]
+ 1219 007a 1A1C     		mov	r2, r3
+ 1220 007c 3B1C     		mov	r3, r7
+ 1221 007e 0833     		add	r3, r3, #8
+ 1222 0080 5B78     		ldrb	r3, [r3, #1]
+ 1223 0082 3F49     		ldr	r1, .L63+16
+ 1224 0084 081C     		mov	r0, r1
+ 1225 0086 111C     		mov	r1, r2
+ 1226 0088 1A1C     		mov	r2, r3
+ 1227 008a FFF7FEFF 		bl	printf
+ 1228 008e 03E0     		b	.L57
+ 1229              	.L56:
+ 422:../Sources/mqx_tasks.c **** 	}
+ 423:../Sources/mqx_tasks.c **** 	else
+ 424:../Sources/mqx_tasks.c **** 	{
+ 425:../Sources/mqx_tasks.c **** 		printf("READ TI ADS1015 control register FAILED.\n");
+ 1230              		.loc 1 425 0
+ 1231 0090 3C4B     		ldr	r3, .L63+20
+ 1232 0092 181C     		mov	r0, r3
+ 1233 0094 FFF7FEFF 		bl	puts
+ 1234              	.L57:
+ 426:../Sources/mqx_tasks.c **** 	}
+ 427:../Sources/mqx_tasks.c **** 
+ 428:../Sources/mqx_tasks.c **** 	i2c1_buffer[0] &= ~0x01;
+ 1235              		.loc 1 428 0
+ 1236 0098 3B1C     		mov	r3, r7
+ 1237 009a 0833     		add	r3, r3, #8
+ 1238 009c 1B78     		ldrb	r3, [r3]
+ 1239 009e 0122     		mov	r2, #1
+ 1240 00a0 9343     		bic	r3, r2
+ 1241 00a2 DAB2     		uxtb	r2, r3
+ 1242 00a4 3B1C     		mov	r3, r7
+ 1243 00a6 0833     		add	r3, r3, #8
+ 1244 00a8 1A70     		strb	r2, [r3]
+ 429:../Sources/mqx_tasks.c **** 
+ 430:../Sources/mqx_tasks.c **** 	Error = !I2c0_WriteAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LE
+ 1245              		.loc 1 430 0
+ 1246 00aa 324B     		ldr	r3, .L63+4
+ 1247 00ac 1A68     		ldr	r2, [r3]
+ 1248 00ae 304B     		ldr	r3, .L63
+ 1249 00b0 391C     		mov	r1, r7
+ 1250 00b2 0831     		add	r1, r1, #8
+ 1251 00b4 0091     		str	r1, [sp]
+ 1252 00b6 101C     		mov	r0, r2
+ 1253 00b8 191C     		mov	r1, r3
+ 1254 00ba 0122     		mov	r2, #1
+ 1255 00bc 0223     		mov	r3, #2
+ 1256 00be FFF7FEFF 		bl	I2c0_WriteAccRegs
+ 1257 00c2 031C     		mov	r3, r0
+ 1258 00c4 5A42     		neg	r2, r3
+ 1259 00c6 5341     		adc	r3, r3, r2
+ 1260 00c8 DAB2     		uxtb	r2, r3
+ 1261 00ca 3B1C     		mov	r3, r7
+ 1262 00cc 0E33     		add	r3, r3, #14
+ 1263 00ce 1A80     		strh	r2, [r3]
+ 431:../Sources/mqx_tasks.c **** 	if (!Error)
+ 1264              		.loc 1 431 0
+ 1265 00d0 3B1C     		mov	r3, r7
+ 1266 00d2 0E33     		add	r3, r3, #14
+ 1267 00d4 1B88     		ldrh	r3, [r3]
+ 1268 00d6 002B     		cmp	r3, #0
+ 1269 00d8 0DD1     		bne	.L58
+ 432:../Sources/mqx_tasks.c **** 	{
+ 433:../Sources/mqx_tasks.c **** 		printf("WRITE TI ADS1015 control register PASS, MSB=0x%02X, LSB=0x%02X.\n", i2c1_buffer[0], i2c1_
+ 1270              		.loc 1 433 0
+ 1271 00da 3B1C     		mov	r3, r7
+ 1272 00dc 0833     		add	r3, r3, #8
+ 1273 00de 1B78     		ldrb	r3, [r3]
+ 1274 00e0 1A1C     		mov	r2, r3
+ 1275 00e2 3B1C     		mov	r3, r7
+ 1276 00e4 0833     		add	r3, r3, #8
+ 1277 00e6 5B78     		ldrb	r3, [r3, #1]
+ 1278 00e8 2749     		ldr	r1, .L63+24
+ 1279 00ea 081C     		mov	r0, r1
+ 1280 00ec 111C     		mov	r1, r2
+ 1281 00ee 1A1C     		mov	r2, r3
+ 1282 00f0 FFF7FEFF 		bl	printf
+ 1283 00f4 03E0     		b	.L59
+ 1284              	.L58:
+ 434:../Sources/mqx_tasks.c **** 	}
+ 435:../Sources/mqx_tasks.c **** 	else
+ 436:../Sources/mqx_tasks.c **** 	{
+ 437:../Sources/mqx_tasks.c **** 		printf("WRITE TI ADS1015 control register FAILED.\n");
+ 1285              		.loc 1 437 0
+ 1286 00f6 254B     		ldr	r3, .L63+28
+ 1287 00f8 181C     		mov	r0, r3
+ 1288 00fa FFF7FEFF 		bl	puts
+ 1289              	.L59:
+ 438:../Sources/mqx_tasks.c **** 	}
+ 439:../Sources/mqx_tasks.c **** 
+ 440:../Sources/mqx_tasks.c **** 	#endif
+ 441:../Sources/mqx_tasks.c **** 
+ 442:../Sources/mqx_tasks.c **** 
+ 443:../Sources/mqx_tasks.c **** 	#if 0		/* draw sign wave */
+ 444:../Sources/mqx_tasks.c **** 	for(u8_i=0U; u8_i<90; u8_i++)
+ 445:../Sources/mqx_tasks.c **** 	{
+ 446:../Sources/mqx_tasks.c **** 		u32_sin[u8_i] = 4096UL*(sin((PI*u8_i)/180));
+ 447:../Sources/mqx_tasks.c **** 	}
+ 448:../Sources/mqx_tasks.c **** 	u32_sin[90] = 4095UL;
+ 449:../Sources/mqx_tasks.c **** 	u8_i = 0U;
+ 450:../Sources/mqx_tasks.c **** 	#endif
+ 451:../Sources/mqx_tasks.c **** 
+ 452:../Sources/mqx_tasks.c **** 	DrvDac2V_SetValue(Dac0_DeviceData, DAC_2V);	// output 2 V
+ 1290              		.loc 1 452 0
+ 1291 00fe 1F4B     		ldr	r3, .L63+12
+ 1292 0100 1A68     		ldr	r2, [r3]
+ 1293 0102 234B     		ldr	r3, .L63+32
+ 1294 0104 101C     		mov	r0, r2
+ 1295 0106 191C     		mov	r1, r3
+ 1296 0108 FFF7FEFF 		bl	DrvDac2V_SetValue
+ 1297              	.L62:
+ 453:../Sources/mqx_tasks.c **** 
+ 454:../Sources/mqx_tasks.c ****   	while(1)
+ 455:../Sources/mqx_tasks.c **** 	{
+ 456:../Sources/mqx_tasks.c **** 
+ 457:../Sources/mqx_tasks.c **** 		/* Write your code here ... */
+ 458:../Sources/mqx_tasks.c **** 
+ 459:../Sources/mqx_tasks.c **** 		Error = !I2c1_ReadAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CONV_REG, ADS1015_CONV_REG_LE
+ 1298              		.loc 1 459 0
+ 1299 010c 194B     		ldr	r3, .L63+4
+ 1300 010e 1A68     		ldr	r2, [r3]
+ 1301 0110 174B     		ldr	r3, .L63
+ 1302 0112 391C     		mov	r1, r7
+ 1303 0114 0831     		add	r1, r1, #8
+ 1304 0116 0091     		str	r1, [sp]
+ 1305 0118 101C     		mov	r0, r2
+ 1306 011a 191C     		mov	r1, r3
+ 1307 011c 0022     		mov	r2, #0
+ 1308 011e 0223     		mov	r3, #2
+ 1309 0120 FFF7FEFF 		bl	I2c1_ReadAccRegs
+ 1310 0124 031C     		mov	r3, r0
+ 1311 0126 5A42     		neg	r2, r3
+ 1312 0128 5341     		adc	r3, r3, r2
+ 1313 012a DAB2     		uxtb	r2, r3
+ 1314 012c 3B1C     		mov	r3, r7
+ 1315 012e 0E33     		add	r3, r3, #14
+ 1316 0130 1A80     		strh	r2, [r3]
+ 460:../Sources/mqx_tasks.c **** 		if (!Error)
+ 1317              		.loc 1 460 0
+ 1318 0132 3B1C     		mov	r3, r7
+ 1319 0134 0E33     		add	r3, r3, #14
+ 1320 0136 1B88     		ldrh	r3, [r3]
+ 1321 0138 002B     		cmp	r3, #0
+ 1322 013a 14D1     		bne	.L60
+ 461:../Sources/mqx_tasks.c **** 		{
+ 462:../Sources/mqx_tasks.c **** 			s16_AdcData = (int16_t*)i2c1_buffer;
+ 1323              		.loc 1 462 0
+ 1324 013c 3A1C     		mov	r2, r7
+ 1325 013e 0832     		add	r2, r2, #8
+ 1326 0140 3B1C     		mov	r3, r7
+ 1327 0142 0C33     		add	r3, r3, #12
+ 1328 0144 1A80     		strh	r2, [r3]
+ 463:../Sources/mqx_tasks.c **** 			printf("READ TI ADS1015 convert register PASS, MSB=0x%02X, LSB=0x%02X, DAC=%d.\n", i2c1_buffer[0
+ 1329              		.loc 1 463 0
+ 1330 0146 3B1C     		mov	r3, r7
+ 1331 0148 0833     		add	r3, r3, #8
+ 1332 014a 1B78     		ldrb	r3, [r3]
+ 1333 014c 191C     		mov	r1, r3
+ 1334 014e 3B1C     		mov	r3, r7
+ 1335 0150 0833     		add	r3, r3, #8
+ 1336 0152 5B78     		ldrb	r3, [r3, #1]
+ 1337 0154 1A1C     		mov	r2, r3
+ 1338 0156 3B1C     		mov	r3, r7
+ 1339 0158 0C33     		add	r3, r3, #12
+ 1340 015a 0020     		mov	r0, #0
+ 1341 015c 1B5E     		ldrsh	r3, [r3, r0]
+ 1342 015e 0D48     		ldr	r0, .L63+36
+ 1343 0160 FFF7FEFF 		bl	printf
+ 464:../Sources/mqx_tasks.c **** 		}
+ 465:../Sources/mqx_tasks.c **** 		else
+ 466:../Sources/mqx_tasks.c **** 		{
+ 467:../Sources/mqx_tasks.c **** 			printf("READ TI ADS1015 convert register FAILED.\n");
+ 468:../Sources/mqx_tasks.c **** 		}
+ 469:../Sources/mqx_tasks.c **** 
+ 470:../Sources/mqx_tasks.c **** 		#if 0		/* draw sign wave */
+ 471:../Sources/mqx_tasks.c **** 		for(u8_j=0; u8_j<180; u8_j++)
+ 472:../Sources/mqx_tasks.c **** 		{
+ 473:../Sources/mqx_tasks.c **** 			u32_tmp = 0UL;
+ 474:../Sources/mqx_tasks.c **** 			u8_i = abs(90U-u8_j);
+ 475:../Sources/mqx_tasks.c **** 			DrvDac2V_SetValue(Dac0_DeviceData, u32_sin[u8_i]);
+ 476:../Sources/mqx_tasks.c **** 
+ 477:../Sources/mqx_tasks.c **** 			while(u32_tmp < u32_delay)
+ 478:../Sources/mqx_tasks.c **** 			{
+ 479:../Sources/mqx_tasks.c **** 				u32_tmp++;
+ 480:../Sources/mqx_tasks.c **** 			}
+ 481:../Sources/mqx_tasks.c **** 			
+ 482:../Sources/mqx_tasks.c **** 		}
+ 483:../Sources/mqx_tasks.c **** 		#endif
+ 484:../Sources/mqx_tasks.c **** 	}
+ 1344              		.loc 1 484 0
+ 1345 0164 D2E7     		b	.L62
+ 1346              	.L60:
+ 467:../Sources/mqx_tasks.c **** 			printf("READ TI ADS1015 convert register FAILED.\n");
+ 1347              		.loc 1 467 0
+ 1348 0166 0C4B     		ldr	r3, .L63+40
+ 1349 0168 181C     		mov	r0, r3
+ 1350 016a FFF7FEFF 		bl	puts
+ 1351              		.loc 1 484 0
+ 1352 016e CDE7     		b	.L62
+ 1353              	.L64:
+ 1354              		.align	2
+ 1355              	.L63:
+ 1356 0170 00000000 		.word	I2c1_DataState
+ 1357 0174 00000000 		.word	I2c1_DeviceData
+ 1358 0178 00000000 		.word	Dac0_Data
+ 1359 017c 00000000 		.word	Dac0_DeviceData
+ 1360 0180 28010000 		.word	.LC24
+ 1361 0184 68010000 		.word	.LC26
+ 1362 0188 94010000 		.word	.LC28
+ 1363 018c D8010000 		.word	.LC30
+ 1364 0190 B2090000 		.word	2482
+ 1365 0194 04020000 		.word	.LC32
+ 1366 0198 4C020000 		.word	.LC34
+ 1367              		.cfi_endproc
+ 1368              	.LFE5:
+ 1370              		.text
+ 1371              	.Letext0:
+ 1372              		.file 2 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 1373              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/PE_Types.h"
+ 1374              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/PE_LDD.h"
+ 1375              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/IO_Map.h"
+ 1376              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 1377              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 1378              		.file 8 "../Sources/mqx_tasks.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 mqx_tasks.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:22     .bss.I2c0_DeviceData:00000000 I2c0_DeviceData
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:19     .bss.I2c0_DeviceData:00000000 $d
+                            *COM*:00000002 I2c0_DataState
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:30     .bss.I2c1_DeviceData:00000000 I2c1_DeviceData
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:27     .bss.I2c1_DeviceData:00000000 $d
+                            *COM*:00000002 I2c1_DataState
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:38     .bss.Dac0_DeviceData:00000000 Dac0_DeviceData
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:35     .bss.Dac0_DeviceData:00000000 $d
+                            *COM*:00000004 Dac0_Data
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:46     .bss.PWMTimerRG_DeviceData:00000000 PWMTimerRG_DeviceData
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:43     .bss.PWMTimerRG_DeviceData:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:53     .bss.PWMTimerB_DeviceData:00000000 PWMTimerB_DeviceData
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:50     .bss.PWMTimerB_DeviceData:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:56     .text.I2c0_ReadAccRegs:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:61     .text.I2c0_ReadAccRegs:00000000 I2c0_ReadAccRegs
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:203    .text.I2c0_ReadAccRegs:000000c4 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:208    .text.I2c0_WriteAccRegs:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:213    .text.I2c0_WriteAccRegs:00000000 I2c0_WriteAccRegs
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:389    .text.I2c0_WriteAccRegs:00000114 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:394    .text.I2c1_ReadAccRegs:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:399    .text.I2c1_ReadAccRegs:00000000 I2c1_ReadAccRegs
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:540    .text.I2c1_ReadAccRegs:000000c4 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:545    .text.I2c1_WriteAccRegs:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:550    .text.I2c1_WriteAccRegs:00000000 I2c1_WriteAccRegs
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:726    .text.I2c1_WriteAccRegs:00000114 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:731    .rodata:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:762    .text.Task_Default:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:767    .text.Task_Default:00000000 Task_Default
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:1097   .text.Task_Default:00000250 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:1135   .text.Task_Dac:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:1140   .text.Task_Dac:00000000 Task_Dac
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc2YAx2o.s:1356   .text.Task_Dac:00000170 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+DrvI2c0_MasterSendBlock
+DrvI2c0_MasterReceiveBlock
+DrvI2c0_CheckBus
+memcpy
+DrvI2c1_MasterSendBlock
+DrvI2c1_MasterReceiveBlock
+DrvI2c1_CheckBus
+__aeabi_idiv
+puts
+putchar
+_task_get_id
+printf
+DrvI2c0_Init
+DrvPwmTimerRG_Init
+DrvPwmTimerB_Init
+DrvPwmTimerRG_Enable
+DrvPwmTimerB_Enable
+DrvPwmTimerRG_SetOffsetTicks
+DrvPwmTimerB_SetOffsetTicks
+_time_delay_ticks
+DrvI2c1_Init
+DrvDac2V_Init
+DrvDac2V_SetValue

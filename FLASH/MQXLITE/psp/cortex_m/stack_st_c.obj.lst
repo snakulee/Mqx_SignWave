@@ -1,0 +1,118 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"stack_st.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._psp_get_stack_start,"ax",%progbits
+  18              		.align	2
+  19              		.global	_psp_get_stack_start
+  20              		.code	16
+  21              		.thumb_func
+  23              	_psp_get_stack_start:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/stack_st.c"
+   1:../MQXLITE/psp/cortex_m/stack_st.c **** /**HEADER********************************************************************
+   2:../MQXLITE/psp/cortex_m/stack_st.c **** *
+   3:../MQXLITE/psp/cortex_m/stack_st.c **** * Copyright (c) 2010 Freescale Semiconductor
+   4:../MQXLITE/psp/cortex_m/stack_st.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/stack_st.c **** *
+   6:../MQXLITE/psp/cortex_m/stack_st.c **** ***************************************************************************
+   7:../MQXLITE/psp/cortex_m/stack_st.c **** *
+   8:../MQXLITE/psp/cortex_m/stack_st.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/stack_st.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/stack_st.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/stack_st.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/stack_st.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/stack_st.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/stack_st.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/stack_st.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/stack_st.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/stack_st.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/stack_st.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  20:../MQXLITE/psp/cortex_m/stack_st.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  22:../MQXLITE/psp/cortex_m/stack_st.c **** * $FileName: stack_st.c$
+  23:../MQXLITE/psp/cortex_m/stack_st.c **** * $Version : 3.7.3.0$
+  24:../MQXLITE/psp/cortex_m/stack_st.c **** * $Date    : Feb-7-2011$
+  25:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  26:../MQXLITE/psp/cortex_m/stack_st.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  28:../MQXLITE/psp/cortex_m/stack_st.c **** *   This file contains the function for obtaining the address of the
+  29:../MQXLITE/psp/cortex_m/stack_st.c **** *   stack start structure for the task.
+  30:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  31:../MQXLITE/psp/cortex_m/stack_st.c **** *END************************************************************************/
+  32:../MQXLITE/psp/cortex_m/stack_st.c **** 
+  33:../MQXLITE/psp/cortex_m/stack_st.c **** #include "mqx_inc.h"
+  34:../MQXLITE/psp/cortex_m/stack_st.c **** 
+  35:../MQXLITE/psp/cortex_m/stack_st.c **** /*FUNCTION*---------------------------------------------------------------------
+  36:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  37:../MQXLITE/psp/cortex_m/stack_st.c **** * Function Name    : _psp_get_stack_start
+  38:../MQXLITE/psp/cortex_m/stack_st.c **** * Returned Value   :
+  39:../MQXLITE/psp/cortex_m/stack_st.c **** * Comments         :
+  40:../MQXLITE/psp/cortex_m/stack_st.c **** *   This function returns the pointer to the stack start structure on
+  41:../MQXLITE/psp/cortex_m/stack_st.c **** * the stack.
+  42:../MQXLITE/psp/cortex_m/stack_st.c **** *
+  43:../MQXLITE/psp/cortex_m/stack_st.c **** *END*-------------------------------------------------------------------------*/
+  44:../MQXLITE/psp/cortex_m/stack_st.c **** 
+  45:../MQXLITE/psp/cortex_m/stack_st.c **** PSP_STACK_START_STRUCT_PTR _psp_get_stack_start
+  46:../MQXLITE/psp/cortex_m/stack_st.c ****    (
+  47:../MQXLITE/psp/cortex_m/stack_st.c ****       /* [IN] the task descriptor whose stack start struct address is wanted */
+  48:../MQXLITE/psp/cortex_m/stack_st.c ****       TD_STRUCT_PTR td_ptr
+  49:../MQXLITE/psp/cortex_m/stack_st.c ****    )
+  50:../MQXLITE/psp/cortex_m/stack_st.c **** { /* Body */
+  26              		.loc 1 50 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 82B0     		sub	sp, sp, #8
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 16
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  51:../MQXLITE/psp/cortex_m/stack_st.c **** 
+  52:../MQXLITE/psp/cortex_m/stack_st.c ****    return (pointer)((uchar _PTR_)td_ptr->STACK_BASE -  sizeof(PSP_STACK_START_STRUCT));
+  40              		.loc 1 52 0
+  41 0008 7B68     		ldr	r3, [r7, #4]
+  42 000a 1B69     		ldr	r3, [r3, #16]
+  43 000c 583B     		sub	r3, r3, #88
+  53:../MQXLITE/psp/cortex_m/stack_st.c **** 
+  54:../MQXLITE/psp/cortex_m/stack_st.c **** } /* Endbody */
+  44              		.loc 1 54 0
+  45 000e 181C     		mov	r0, r3
+  46 0010 BD46     		mov	sp, r7
+  47 0012 02B0     		add	sp, sp, #8
+  48              		@ sp needed for prologue
+  49 0014 80BD     		pop	{r7, pc}
+  50              		.cfi_endproc
+  51              	.LFE0:
+  53 0016 C046     		.text
+  54              	.Letext0:
+  55              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+  56              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+  57              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+  58              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+  59              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 stack_st.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccElqPEh.s:18     .text._psp_get_stack_start:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccElqPEh.s:23     .text._psp_get_stack_start:00000000 _psp_get_stack_start
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

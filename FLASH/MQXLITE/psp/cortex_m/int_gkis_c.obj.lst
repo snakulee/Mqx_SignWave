@@ -1,0 +1,159 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"int_gkis.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._int_get_kernel_isr,"ax",%progbits
+  18              		.align	2
+  19              		.global	_int_get_kernel_isr
+  20              		.code	16
+  21              		.thumb_func
+  23              	_int_get_kernel_isr:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/int_gkis.c"
+   1:../MQXLITE/psp/cortex_m/int_gkis.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/psp/cortex_m/int_gkis.c **** * 
+   3:../MQXLITE/psp/cortex_m/int_gkis.c **** * Copyright (c) 2010 Freescale Semiconductor;
+   4:../MQXLITE/psp/cortex_m/int_gkis.c **** * All Rights Reserved                       
+   5:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+   6:../MQXLITE/psp/cortex_m/int_gkis.c **** *************************************************************************** 
+   7:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+   8:../MQXLITE/psp/cortex_m/int_gkis.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR 
+   9:../MQXLITE/psp/cortex_m/int_gkis.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+  10:../MQXLITE/psp/cortex_m/int_gkis.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  
+  11:../MQXLITE/psp/cortex_m/int_gkis.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+  12:../MQXLITE/psp/cortex_m/int_gkis.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+  13:../MQXLITE/psp/cortex_m/int_gkis.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+  14:../MQXLITE/psp/cortex_m/int_gkis.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+  15:../MQXLITE/psp/cortex_m/int_gkis.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  16:../MQXLITE/psp/cortex_m/int_gkis.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
+  17:../MQXLITE/psp/cortex_m/int_gkis.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+  18:../MQXLITE/psp/cortex_m/int_gkis.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+  20:../MQXLITE/psp/cortex_m/int_gkis.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+  22:../MQXLITE/psp/cortex_m/int_gkis.c **** * $FileName: int_gkis.c$
+  23:../MQXLITE/psp/cortex_m/int_gkis.c **** * $Version : 3.8.4.0$
+  24:../MQXLITE/psp/cortex_m/int_gkis.c **** * $Date    : Aug-30-2011$
+  25:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+  26:../MQXLITE/psp/cortex_m/int_gkis.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+  28:../MQXLITE/psp/cortex_m/int_gkis.c **** *   This file contains the functions for returning the kernel isr for an interrupt.
+  29:../MQXLITE/psp/cortex_m/int_gkis.c **** *
+  30:../MQXLITE/psp/cortex_m/int_gkis.c **** *END************************************************************************/
+  31:../MQXLITE/psp/cortex_m/int_gkis.c **** 
+  32:../MQXLITE/psp/cortex_m/int_gkis.c **** #include "mqx_inc.h"
+  33:../MQXLITE/psp/cortex_m/int_gkis.c **** 
+  34:../MQXLITE/psp/cortex_m/int_gkis.c **** extern uint_32 __ICFEDIT_region_ROM_start__;
+  35:../MQXLITE/psp/cortex_m/int_gkis.c **** extern uint_32 __ICFEDIT_region_RAM_start__;
+  36:../MQXLITE/psp/cortex_m/int_gkis.c **** /*!
+  37:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \brief Gets a pointer to the kernel ISR for the specified vector number. The 
+  38:../MQXLITE/psp/cortex_m/int_gkis.c ****  * kernel ISR depends on the PSP.
+  39:../MQXLITE/psp/cortex_m/int_gkis.c ****  *  
+  40:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \param[in] vector Vector number whose kernel ISR is requested.
+  41:../MQXLITE/psp/cortex_m/int_gkis.c ****  * 
+  42:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \return Pointer to the kernel ISR (Success.)
+  43:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \return NULL   
+  44:../MQXLITE/psp/cortex_m/int_gkis.c ****  * 
+  45:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \warning On failure, calls _task_set_error() to set the task error code.
+  46:../MQXLITE/psp/cortex_m/int_gkis.c ****  * 
+  47:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \see _int_kernel_isr
+  48:../MQXLITE/psp/cortex_m/int_gkis.c ****  * \see _int_install_kernel_isr
+  49:../MQXLITE/psp/cortex_m/int_gkis.c ****  */       
+  50:../MQXLITE/psp/cortex_m/int_gkis.c **** INT_KERNEL_ISR_FPTR _int_get_kernel_isr
+  51:../MQXLITE/psp/cortex_m/int_gkis.c **** (
+  52:../MQXLITE/psp/cortex_m/int_gkis.c ****     /* [IN] the vector number whose kernel ISR is wanted */
+  53:../MQXLITE/psp/cortex_m/int_gkis.c ****     uint_32 vector
+  54:../MQXLITE/psp/cortex_m/int_gkis.c **** 
+  55:../MQXLITE/psp/cortex_m/int_gkis.c **** )
+  56:../MQXLITE/psp/cortex_m/int_gkis.c **** { /* Body */
+  26              		.loc 1 56 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 84B0     		sub	sp, sp, #16
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 24
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  57:../MQXLITE/psp/cortex_m/int_gkis.c ****    uint_32     vtor = _PSP_GET_VTOR(); //value of Vector Table Offset Register
+  40              		.loc 1 57 0
+  41 0008 E023     		mov	r3, #224
+  42 000a 1A06     		lsl	r2, r3, #24
+  43 000c 094B     		ldr	r3, .L4
+  44 000e D358     		ldr	r3, [r2, r3]
+  45 0010 FB60     		str	r3, [r7, #12]
+  58:../MQXLITE/psp/cortex_m/int_gkis.c **** 
+  59:../MQXLITE/psp/cortex_m/int_gkis.c **** #if MQX_CHECK_ERRORS
+  60:../MQXLITE/psp/cortex_m/int_gkis.c ****    if ( vector >= PSP_MAXIMUM_INTERRUPT_VECTORS ) {
+  46              		.loc 1 60 0
+  47 0012 7B68     		ldr	r3, [r7, #4]
+  48 0014 2F2B     		cmp	r3, #47
+  49 0016 04D9     		bls	.L2
+  61:../MQXLITE/psp/cortex_m/int_gkis.c ****       _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+  50              		.loc 1 61 0
+  51 0018 1420     		mov	r0, #20
+  52 001a FFF7FEFF 		bl	_task_set_error
+  62:../MQXLITE/psp/cortex_m/int_gkis.c ****       return NULL;
+  53              		.loc 1 62 0
+  54 001e 0023     		mov	r3, #0
+  55 0020 03E0     		b	.L3
+  56              	.L2:
+  63:../MQXLITE/psp/cortex_m/int_gkis.c ****    } /* Endif */
+  64:../MQXLITE/psp/cortex_m/int_gkis.c **** #endif
+  65:../MQXLITE/psp/cortex_m/int_gkis.c **** 
+  66:../MQXLITE/psp/cortex_m/int_gkis.c ****    /* Note that VTOR bit indicating SRAM / ROM location is just a SRAM / ROM
+  67:../MQXLITE/psp/cortex_m/int_gkis.c ****    ** base address within Cortex memory map
+  68:../MQXLITE/psp/cortex_m/int_gkis.c ****    */
+  69:../MQXLITE/psp/cortex_m/int_gkis.c ****    return (INT_KERNEL_ISR_FPTR) (vtor + 4 * vector);
+  57              		.loc 1 69 0
+  58 0022 7B68     		ldr	r3, [r7, #4]
+  59 0024 9A00     		lsl	r2, r3, #2
+  60 0026 FB68     		ldr	r3, [r7, #12]
+  61 0028 D318     		add	r3, r2, r3
+  62              	.L3:
+  70:../MQXLITE/psp/cortex_m/int_gkis.c **** 
+  71:../MQXLITE/psp/cortex_m/int_gkis.c **** } /* Endbody */
+  63              		.loc 1 71 0
+  64 002a 181C     		mov	r0, r3
+  65 002c BD46     		mov	sp, r7
+  66 002e 04B0     		add	sp, sp, #16
+  67              		@ sp needed for prologue
+  68 0030 80BD     		pop	{r7, pc}
+  69              	.L5:
+  70 0032 C046     		.align	2
+  71              	.L4:
+  72 0034 08ED0000 		.word	60680
+  73              		.cfi_endproc
+  74              	.LFE0:
+  76              		.text
+  77              	.Letext0:
+  78              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/Cpu.h"
+  79              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+  80              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+  81              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 int_gkis.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccKsTKIp.s:18     .text._int_get_kernel_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccKsTKIp.s:23     .text._int_get_kernel_isr:00000000 _int_get_kernel_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccKsTKIp.s:72     .text._int_get_kernel_isr:00000034 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_task_set_error

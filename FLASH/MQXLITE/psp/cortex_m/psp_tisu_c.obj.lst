@@ -1,0 +1,390 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"psp_tisu.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._psp_subtract_ticks,"ax",%progbits
+  18              		.align	2
+  19              		.global	_psp_subtract_ticks
+  20              		.code	16
+  21              		.thumb_func
+  23              	_psp_subtract_ticks:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/psp_tisu.c"
+   1:../MQXLITE/psp/cortex_m/psp_tisu.c **** /**HEADER********************************************************************
+   2:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+   3:../MQXLITE/psp/cortex_m/psp_tisu.c **** * Copyright (c) 2010 Freescale Semiconductor
+   4:../MQXLITE/psp/cortex_m/psp_tisu.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+   6:../MQXLITE/psp/cortex_m/psp_tisu.c **** ***************************************************************************
+   7:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+   8:../MQXLITE/psp/cortex_m/psp_tisu.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/psp_tisu.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/psp_tisu.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/psp_tisu.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/psp_tisu.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/psp_tisu.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/psp_tisu.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/psp_tisu.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/psp_tisu.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/psp_tisu.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/psp_tisu.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+  20:../MQXLITE/psp/cortex_m/psp_tisu.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+  22:../MQXLITE/psp/cortex_m/psp_tisu.c **** * $FileName: psp_tisu.c$
+  23:../MQXLITE/psp/cortex_m/psp_tisu.c **** * $Version : 3.7.3.0$
+  24:../MQXLITE/psp/cortex_m/psp_tisu.c **** * $Date    : Feb-7-2011$
+  25:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+  26:../MQXLITE/psp/cortex_m/psp_tisu.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/psp_tisu.c **** *   This file contains the function for subtracting two tick structs
+  28:../MQXLITE/psp/cortex_m/psp_tisu.c **** *
+  29:../MQXLITE/psp/cortex_m/psp_tisu.c **** *END************************************************************************/
+  30:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  31:../MQXLITE/psp/cortex_m/psp_tisu.c **** #include "mqx_inc.h"
+  32:../MQXLITE/psp/cortex_m/psp_tisu.c **** #if MQX_HAS_TICK
+  33:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  34:../MQXLITE/psp/cortex_m/psp_tisu.c **** /*FUNCTION*-------------------------------------------------------------------
+  35:../MQXLITE/psp/cortex_m/psp_tisu.c ****  *
+  36:../MQXLITE/psp/cortex_m/psp_tisu.c ****  * Function Name    : _psp_subtract_ticks
+  37:../MQXLITE/psp/cortex_m/psp_tisu.c ****  * Returned Value   :
+  38:../MQXLITE/psp/cortex_m/psp_tisu.c ****  * Comments         : r = a - b
+  39:../MQXLITE/psp/cortex_m/psp_tisu.c ****  *
+  40:../MQXLITE/psp/cortex_m/psp_tisu.c ****  *END*----------------------------------------------------------------------*/
+  41:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  42:../MQXLITE/psp/cortex_m/psp_tisu.c **** void _psp_subtract_ticks
+  43:../MQXLITE/psp/cortex_m/psp_tisu.c ****    (
+  44:../MQXLITE/psp/cortex_m/psp_tisu.c ****        /* [IN] The two structures to subtract - both must be normalized */
+  45:../MQXLITE/psp/cortex_m/psp_tisu.c ****        PSP_TICK_STRUCT_PTR a_ptr,
+  46:../MQXLITE/psp/cortex_m/psp_tisu.c ****        PSP_TICK_STRUCT_PTR b_ptr,
+  47:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  48:../MQXLITE/psp/cortex_m/psp_tisu.c ****        /* [OUT] The result of the subtraction */
+  49:../MQXLITE/psp/cortex_m/psp_tisu.c ****        PSP_TICK_STRUCT_PTR r_ptr
+  50:../MQXLITE/psp/cortex_m/psp_tisu.c ****    )
+  51:../MQXLITE/psp/cortex_m/psp_tisu.c **** { /* Body */
+  26              		.loc 1 51 0
+  27              		.cfi_startproc
+  28 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 20
+  31              		.cfi_offset 4, -20
+  32              		.cfi_offset 5, -16
+  33              		.cfi_offset 6, -12
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 85B0     		sub	sp, sp, #20
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 40
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+  42 0006 F860     		str	r0, [r7, #12]
+  43 0008 B960     		str	r1, [r7, #8]
+  44 000a 7A60     		str	r2, [r7, #4]
+  52:../MQXLITE/psp/cortex_m/psp_tisu.c ****    register uint_32       a_hw_ticks;
+  53:../MQXLITE/psp/cortex_m/psp_tisu.c ****    register uint_32       b_hw_ticks;
+  54:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  55:../MQXLITE/psp/cortex_m/psp_tisu.c ****    r_ptr->TICKS[0] = a_ptr->TICKS[0] - b_ptr->TICKS[0];
+  45              		.loc 1 55 0
+  46 000c FB68     		ldr	r3, [r7, #12]
+  47 000e 1968     		ldr	r1, [r3]
+  48 0010 5A68     		ldr	r2, [r3, #4]
+  49 0012 BB68     		ldr	r3, [r7, #8]
+  50 0014 5C68     		ldr	r4, [r3, #4]
+  51 0016 1B68     		ldr	r3, [r3]
+  52 0018 0D1C     		mov	r5, r1
+  53 001a 161C     		mov	r6, r2
+  54 001c ED1A     		sub	r5, r5, r3
+  55 001e A641     		sbc	r6, r6, r4
+  56 0020 2B1C     		mov	r3, r5
+  57 0022 341C     		mov	r4, r6
+  58 0024 7A68     		ldr	r2, [r7, #4]
+  59 0026 1360     		str	r3, [r2]
+  60 0028 5460     		str	r4, [r2, #4]
+  56:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  57:../MQXLITE/psp/cortex_m/psp_tisu.c ****    a_hw_ticks  = a_ptr->HW_TICKS[0];
+  61              		.loc 1 57 0
+  62 002a FB68     		ldr	r3, [r7, #12]
+  63 002c 9D68     		ldr	r5, [r3, #8]
+  58:../MQXLITE/psp/cortex_m/psp_tisu.c ****    b_hw_ticks  = b_ptr->HW_TICKS[0];
+  64              		.loc 1 58 0
+  65 002e BB68     		ldr	r3, [r7, #8]
+  66 0030 9E68     		ldr	r6, [r3, #8]
+  59:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  60:../MQXLITE/psp/cortex_m/psp_tisu.c ****    if ( a_hw_ticks < b_hw_ticks) {
+  67              		.loc 1 60 0
+  68 0032 B542     		cmp	r5, r6
+  69 0034 10D2     		bcs	.L2
+  61:../MQXLITE/psp/cortex_m/psp_tisu.c ****       a_hw_ticks += _mqx_kernel_data->HW_TICKS_PER_TICK;
+  70              		.loc 1 61 0
+  71 0036 0B4B     		ldr	r3, .L3
+  72 0038 1A68     		ldr	r2, [r3]
+  73 003a A223     		mov	r3, #162
+  74 003c 5B00     		lsl	r3, r3, #1
+  75 003e D358     		ldr	r3, [r2, r3]
+  76 0040 ED18     		add	r5, r5, r3
+  62:../MQXLITE/psp/cortex_m/psp_tisu.c ****       r_ptr->TICKS[0]--;
+  77              		.loc 1 62 0
+  78 0042 7B68     		ldr	r3, [r7, #4]
+  79 0044 1968     		ldr	r1, [r3]
+  80 0046 5A68     		ldr	r2, [r3, #4]
+  81 0048 0123     		mov	r3, #1
+  82 004a 5B42     		neg	r3, r3
+  83 004c DC17     		asr	r4, r3, #31
+  84 004e 5B18     		add	r3, r3, r1
+  85 0050 5441     		adc	r4, r4, r2
+  86 0052 7A68     		ldr	r2, [r7, #4]
+  87 0054 1360     		str	r3, [r2]
+  88 0056 5460     		str	r4, [r2, #4]
+  89              	.L2:
+  63:../MQXLITE/psp/cortex_m/psp_tisu.c ****    } /* Endif */
+  64:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  65:../MQXLITE/psp/cortex_m/psp_tisu.c ****    r_ptr->HW_TICKS[0] = a_hw_ticks - b_hw_ticks;
+  90              		.loc 1 65 0
+  91 0058 AA1B     		sub	r2, r5, r6
+  92 005a 7B68     		ldr	r3, [r7, #4]
+  93 005c 9A60     		str	r2, [r3, #8]
+  66:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  67:../MQXLITE/psp/cortex_m/psp_tisu.c **** } /* Endbody */
+  94              		.loc 1 67 0
+  95 005e BD46     		mov	sp, r7
+  96 0060 05B0     		add	sp, sp, #20
+  97              		@ sp needed for prologue
+  98 0062 F0BD     		pop	{r4, r5, r6, r7, pc}
+  99              	.L4:
+ 100              		.align	2
+ 101              	.L3:
+ 102 0064 00000000 		.word	_mqx_kernel_data
+ 103              		.cfi_endproc
+ 104              	.LFE0:
+ 106              		.section	.text._psp_subtract_ticks_int32,"ax",%progbits
+ 107              		.align	2
+ 108              		.global	_psp_subtract_ticks_int32
+ 109              		.code	16
+ 110              		.thumb_func
+ 112              	_psp_subtract_ticks_int32:
+ 113              	.LFB1:
+  68:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  69:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  70:../MQXLITE/psp/cortex_m/psp_tisu.c **** /*FUNCTION*-------------------------------------------------------------------
+  71:../MQXLITE/psp/cortex_m/psp_tisu.c ****  *
+  72:../MQXLITE/psp/cortex_m/psp_tisu.c ****  * Function Name    : _psp_subtract_ticks_int32
+  73:../MQXLITE/psp/cortex_m/psp_tisu.c ****  * Returned Value   :
+  74:../MQXLITE/psp/cortex_m/psp_tisu.c ****  * Comments         : r = a - b, clamp into range <-(MAX_INT_32 + 1), MAX_INT_32>
+  75:../MQXLITE/psp/cortex_m/psp_tisu.c ****  *
+  76:../MQXLITE/psp/cortex_m/psp_tisu.c ****  *END*----------------------------------------------------------------------*/
+  77:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  78:../MQXLITE/psp/cortex_m/psp_tisu.c **** int_32 _psp_subtract_ticks_int32
+  79:../MQXLITE/psp/cortex_m/psp_tisu.c ****    (
+  80:../MQXLITE/psp/cortex_m/psp_tisu.c ****        /* [IN] The two structures to subtract - both must be normalized */
+  81:../MQXLITE/psp/cortex_m/psp_tisu.c ****        PSP_TICK_STRUCT_PTR a_ptr,
+  82:../MQXLITE/psp/cortex_m/psp_tisu.c ****        PSP_TICK_STRUCT_PTR b_ptr,
+  83:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  84:../MQXLITE/psp/cortex_m/psp_tisu.c ****        /* [OUT] The result of the subtraction */
+  85:../MQXLITE/psp/cortex_m/psp_tisu.c ****        boolean _PTR_       o_ptr
+  86:../MQXLITE/psp/cortex_m/psp_tisu.c ****    )
+  87:../MQXLITE/psp/cortex_m/psp_tisu.c **** { /* Body */
+ 114              		.loc 1 87 0
+ 115              		.cfi_startproc
+ 116 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 117              	.LCFI3:
+ 118              		.cfi_def_cfa_offset 20
+ 119              		.cfi_offset 4, -20
+ 120              		.cfi_offset 5, -16
+ 121              		.cfi_offset 6, -12
+ 122              		.cfi_offset 7, -8
+ 123              		.cfi_offset 14, -4
+ 124 0002 89B0     		sub	sp, sp, #36
+ 125              	.LCFI4:
+ 126              		.cfi_def_cfa_offset 56
+ 127 0004 00AF     		add	r7, sp, #0
+ 128              	.LCFI5:
+ 129              		.cfi_def_cfa_register 7
+ 130 0006 F860     		str	r0, [r7, #12]
+ 131 0008 B960     		str	r1, [r7, #8]
+ 132 000a 7A60     		str	r2, [r7, #4]
+  88:../MQXLITE/psp/cortex_m/psp_tisu.c ****    register uint_32       a_hw_ticks;
+  89:../MQXLITE/psp/cortex_m/psp_tisu.c ****    register uint_32       b_hw_ticks;
+  90:../MQXLITE/psp/cortex_m/psp_tisu.c ****    PSP_TICK_STRUCT        r;
+  91:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  92:../MQXLITE/psp/cortex_m/psp_tisu.c ****    r.TICKS[0] = a_ptr->TICKS[0] - b_ptr->TICKS[0];
+ 133              		.loc 1 92 0
+ 134 000c FB68     		ldr	r3, [r7, #12]
+ 135 000e 1968     		ldr	r1, [r3]
+ 136 0010 5A68     		ldr	r2, [r3, #4]
+ 137 0012 BB68     		ldr	r3, [r7, #8]
+ 138 0014 5C68     		ldr	r4, [r3, #4]
+ 139 0016 1B68     		ldr	r3, [r3]
+ 140 0018 0D1C     		mov	r5, r1
+ 141 001a 161C     		mov	r6, r2
+ 142 001c ED1A     		sub	r5, r5, r3
+ 143 001e A641     		sbc	r6, r6, r4
+ 144 0020 2B1C     		mov	r3, r5
+ 145 0022 341C     		mov	r4, r6
+ 146 0024 3A1C     		mov	r2, r7
+ 147 0026 1032     		add	r2, r2, #16
+ 148 0028 1360     		str	r3, [r2]
+ 149 002a 5460     		str	r4, [r2, #4]
+  93:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  94:../MQXLITE/psp/cortex_m/psp_tisu.c ****    a_hw_ticks  = a_ptr->HW_TICKS[0];
+ 150              		.loc 1 94 0
+ 151 002c FB68     		ldr	r3, [r7, #12]
+ 152 002e 9C68     		ldr	r4, [r3, #8]
+  95:../MQXLITE/psp/cortex_m/psp_tisu.c ****    b_hw_ticks  = b_ptr->HW_TICKS[0];
+ 153              		.loc 1 95 0
+ 154 0030 BB68     		ldr	r3, [r7, #8]
+ 155 0032 9D68     		ldr	r5, [r3, #8]
+  96:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+  97:../MQXLITE/psp/cortex_m/psp_tisu.c ****    if ( a_hw_ticks < b_hw_ticks)
+ 156              		.loc 1 97 0
+ 157 0034 AC42     		cmp	r4, r5
+ 158 0036 12D2     		bcs	.L6
+  98:../MQXLITE/psp/cortex_m/psp_tisu.c ****    {
+  99:../MQXLITE/psp/cortex_m/psp_tisu.c ****       a_hw_ticks += _mqx_kernel_data->HW_TICKS_PER_TICK;
+ 159              		.loc 1 99 0
+ 160 0038 214B     		ldr	r3, .L10
+ 161 003a 1A68     		ldr	r2, [r3]
+ 162 003c A223     		mov	r3, #162
+ 163 003e 5B00     		lsl	r3, r3, #1
+ 164 0040 D358     		ldr	r3, [r2, r3]
+ 165 0042 E418     		add	r4, r4, r3
+ 100:../MQXLITE/psp/cortex_m/psp_tisu.c ****       r.TICKS[0]--;
+ 166              		.loc 1 100 0
+ 167 0044 3B1C     		mov	r3, r7
+ 168 0046 1033     		add	r3, r3, #16
+ 169 0048 1968     		ldr	r1, [r3]
+ 170 004a 5A68     		ldr	r2, [r3, #4]
+ 171 004c 0123     		mov	r3, #1
+ 172 004e 5B42     		neg	r3, r3
+ 173 0050 DC17     		asr	r4, r3, #31
+ 174 0052 5B18     		add	r3, r3, r1
+ 175 0054 5441     		adc	r4, r4, r2
+ 176 0056 3A1C     		mov	r2, r7
+ 177 0058 1032     		add	r2, r2, #16
+ 178 005a 1360     		str	r3, [r2]
+ 179 005c 5460     		str	r4, [r2, #4]
+ 180              	.L6:
+ 101:../MQXLITE/psp/cortex_m/psp_tisu.c ****    } /* Endif */
+ 102:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+ 103:../MQXLITE/psp/cortex_m/psp_tisu.c ****    /* exchange sign bits between the 32bit halves of 64bit signed difference */
+ 104:../MQXLITE/psp/cortex_m/psp_tisu.c **** #if PSP_ENDIAN == MQX_LITTLE_ENDIAN
+ 105:../MQXLITE/psp/cortex_m/psp_tisu.c ****    b_hw_ticks = ((uint_32_ptr)r.TICKS)[1];
+ 181              		.loc 1 105 0
+ 182 005e 3B1C     		mov	r3, r7
+ 183 0060 1033     		add	r3, r3, #16
+ 184 0062 0433     		add	r3, r3, #4
+ 185 0064 1D68     		ldr	r5, [r3]
+ 106:../MQXLITE/psp/cortex_m/psp_tisu.c **** #else
+ 107:../MQXLITE/psp/cortex_m/psp_tisu.c ****    b_hw_ticks = ((uint_32_ptr)r.TICKS)[0];
+ 108:../MQXLITE/psp/cortex_m/psp_tisu.c **** #endif
+ 109:../MQXLITE/psp/cortex_m/psp_tisu.c ****    a_hw_ticks = (b_hw_ticks & (MAX_UINT_32 ^ MAX_INT_32)) | (((uint_32)(r.TICKS[0])) & MAX_INT_32);
+ 186              		.loc 1 109 0
+ 187 0066 EB0F     		lsr	r3, r5, #31
+ 188 0068 DA07     		lsl	r2, r3, #31
+ 189 006a 3B1C     		mov	r3, r7
+ 190 006c 1033     		add	r3, r3, #16
+ 191 006e 5C68     		ldr	r4, [r3, #4]
+ 192 0070 1B68     		ldr	r3, [r3]
+ 193 0072 5B00     		lsl	r3, r3, #1
+ 194 0074 5B08     		lsr	r3, r3, #1
+ 195 0076 141C     		mov	r4, r2
+ 196 0078 1C43     		orr	r4, r3
+ 110:../MQXLITE/psp/cortex_m/psp_tisu.c ****    b_hw_ticks = (((uint_32)(r.TICKS[0])) & (MAX_UINT_32 ^ MAX_INT_32)) | (b_hw_ticks & MAX_INT_32);
+ 197              		.loc 1 110 0
+ 198 007a 3B1C     		mov	r3, r7
+ 199 007c 1033     		add	r3, r3, #16
+ 200 007e 1A68     		ldr	r2, [r3]
+ 201 0080 5B68     		ldr	r3, [r3, #4]
+ 202 0082 131C     		mov	r3, r2
+ 203 0084 DB0F     		lsr	r3, r3, #31
+ 204 0086 DA07     		lsl	r2, r3, #31
+ 205 0088 6B00     		lsl	r3, r5, #1
+ 206 008a 5B08     		lsr	r3, r3, #1
+ 207 008c 151C     		mov	r5, r2
+ 208 008e 1D43     		orr	r5, r3
+ 111:../MQXLITE/psp/cortex_m/psp_tisu.c ****    if (o_ptr != NULL) *o_ptr = FALSE;
+ 209              		.loc 1 111 0
+ 210 0090 7B68     		ldr	r3, [r7, #4]
+ 211 0092 002B     		cmp	r3, #0
+ 212 0094 02D0     		beq	.L7
+ 213              		.loc 1 111 0 is_stmt 0
+ 214 0096 7B68     		ldr	r3, [r7, #4]
+ 215 0098 0022     		mov	r2, #0
+ 216 009a 1A60     		str	r2, [r3]
+ 217              	.L7:
+ 112:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+ 113:../MQXLITE/psp/cortex_m/psp_tisu.c ****    /* a_hw_ticks contains 32bit signed result, b_hw_ticks must contain all zeroes or all ones accor
+ 114:../MQXLITE/psp/cortex_m/psp_tisu.c ****    if ((a_hw_ticks >> 31) * MAX_UINT_32 != b_hw_ticks)
+ 218              		.loc 1 114 0 is_stmt 1
+ 219 009c 231C     		mov	r3, r4
+ 220 009e DB17     		asr	r3, r3, #31
+ 221 00a0 AB42     		cmp	r3, r5
+ 222 00a2 08D0     		beq	.L8
+ 115:../MQXLITE/psp/cortex_m/psp_tisu.c ****    {
+ 116:../MQXLITE/psp/cortex_m/psp_tisu.c ****       a_hw_ticks = MAX_INT_32 + (a_hw_ticks >> 31);
+ 223              		.loc 1 116 0
+ 224 00a4 E30F     		lsr	r3, r4, #31
+ 225 00a6 074E     		ldr	r6, .L10+4
+ 226 00a8 9C19     		add	r4, r3, r6
+ 117:../MQXLITE/psp/cortex_m/psp_tisu.c ****       if (o_ptr != NULL) *o_ptr = TRUE;
+ 227              		.loc 1 117 0
+ 228 00aa 7B68     		ldr	r3, [r7, #4]
+ 229 00ac 002B     		cmp	r3, #0
+ 230 00ae 02D0     		beq	.L8
+ 231              		.loc 1 117 0 is_stmt 0
+ 232 00b0 7B68     		ldr	r3, [r7, #4]
+ 233 00b2 0122     		mov	r2, #1
+ 234 00b4 1A60     		str	r2, [r3]
+ 235              	.L8:
+ 118:../MQXLITE/psp/cortex_m/psp_tisu.c ****    }
+ 119:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+ 120:../MQXLITE/psp/cortex_m/psp_tisu.c ****    return (int_32)a_hw_ticks;
+ 236              		.loc 1 120 0 is_stmt 1
+ 237 00b6 231C     		mov	r3, r4
+ 121:../MQXLITE/psp/cortex_m/psp_tisu.c **** 
+ 122:../MQXLITE/psp/cortex_m/psp_tisu.c **** } /* Endbody */
+ 238              		.loc 1 122 0
+ 239 00b8 181C     		mov	r0, r3
+ 240 00ba BD46     		mov	sp, r7
+ 241 00bc 09B0     		add	sp, sp, #36
+ 242              		@ sp needed for prologue
+ 243 00be F0BD     		pop	{r4, r5, r6, r7, pc}
+ 244              	.L11:
+ 245              		.align	2
+ 246              	.L10:
+ 247 00c0 00000000 		.word	_mqx_kernel_data
+ 248 00c4 FFFFFF7F 		.word	2147483647
+ 249              		.cfi_endproc
+ 250              	.LFE1:
+ 252              		.text
+ 253              	.Letext0:
+ 254              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 255              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 256              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 257              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 258              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 259              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+ 260              		.file 8 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psp_ticks.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 psp_tisu.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:18     .text._psp_subtract_ticks:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:23     .text._psp_subtract_ticks:00000000 _psp_subtract_ticks
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:102    .text._psp_subtract_ticks:00000064 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:107    .text._psp_subtract_ticks_int32:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:112    .text._psp_subtract_ticks_int32:00000000 _psp_subtract_ticks_int32
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:247    .text._psp_subtract_ticks_int32:000000c0 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mqx_kernel_data

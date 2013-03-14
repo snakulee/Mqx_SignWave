@@ -1,0 +1,1403 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"sched.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._sched_get_max_priority,"ax",%progbits
+  18              		.align	2
+  19              		.global	_sched_get_max_priority
+  20              		.code	16
+  21              		.thumb_func
+  23              	_sched_get_max_priority:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/kernel/sched.c"
+   1:../MQXLITE/kernel/sched.c **** /*HEADER**********************************************************************
+   2:../MQXLITE/kernel/sched.c ****  *
+   3:../MQXLITE/kernel/sched.c ****  * Copyright (c) 2008 Freescale Semiconductor;
+   4:../MQXLITE/kernel/sched.c ****  * All Rights Reserved
+   5:../MQXLITE/kernel/sched.c ****  *
+   6:../MQXLITE/kernel/sched.c ****  * Copyright (c) 2004-2008 Embedded Access Inc.;
+   7:../MQXLITE/kernel/sched.c ****  * All Rights Reserved
+   8:../MQXLITE/kernel/sched.c ****  *
+   9:../MQXLITE/kernel/sched.c ****  * Copyright (c) 1989-2008 ARC International;
+  10:../MQXLITE/kernel/sched.c ****  * All Rights Reserved
+  11:../MQXLITE/kernel/sched.c ****  *
+  12:../MQXLITE/kernel/sched.c ****  *****************************************************************************
+  13:../MQXLITE/kernel/sched.c ****  *
+  14:../MQXLITE/kernel/sched.c ****  * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15:../MQXLITE/kernel/sched.c ****  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16:../MQXLITE/kernel/sched.c ****  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17:../MQXLITE/kernel/sched.c ****  * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18:../MQXLITE/kernel/sched.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19:../MQXLITE/kernel/sched.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20:../MQXLITE/kernel/sched.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21:../MQXLITE/kernel/sched.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22:../MQXLITE/kernel/sched.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23:../MQXLITE/kernel/sched.c ****  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24:../MQXLITE/kernel/sched.c ****  * THE POSSIBILITY OF SUCH DAMAGE.
+  25:../MQXLITE/kernel/sched.c ****  *
+  26:../MQXLITE/kernel/sched.c ****  *****************************************************************************
+  27:../MQXLITE/kernel/sched.c ****  *
+  28:../MQXLITE/kernel/sched.c ****  * $FileName: sched.c$
+  29:../MQXLITE/kernel/sched.c ****  * $Version : 3.8.0.2$
+  30:../MQXLITE/kernel/sched.c ****  * $Date    : Feb-21-2012$
+  31:../MQXLITE/kernel/sched.c ****  *
+  32:../MQXLITE/kernel/sched.c ****  * Comments:
+  33:../MQXLITE/kernel/sched.c ****  *
+  34:../MQXLITE/kernel/sched.c ****  *   This file contains functions of the Scheduler component.
+  35:../MQXLITE/kernel/sched.c ****  *
+  36:../MQXLITE/kernel/sched.c ****  *END************************************************************************/
+  37:../MQXLITE/kernel/sched.c **** 
+  38:../MQXLITE/kernel/sched.c **** #include "mqx_inc.h"
+  39:../MQXLITE/kernel/sched.c **** 
+  40:../MQXLITE/kernel/sched.c **** /*!
+  41:../MQXLITE/kernel/sched.c ****  * \brief Gets the maximum priority that a task can have.
+  42:../MQXLITE/kernel/sched.c ****  *
+  43:../MQXLITE/kernel/sched.c ****  * This function always returns 0, the highest priority a task may have under MQX.
+  44:../MQXLITE/kernel/sched.c ****  * \n POSIX compatibility requires the function and the parameter.
+  45:../MQXLITE/kernel/sched.c ****  *
+  46:../MQXLITE/kernel/sched.c ****  * \param[in] policy Not used, all task priorities are same for RR or FIFO.
+  47:../MQXLITE/kernel/sched.c ****  *
+  48:../MQXLITE/kernel/sched.c ****  * \return 0 (Always.)
+  49:../MQXLITE/kernel/sched.c ****  *
+  50:../MQXLITE/kernel/sched.c ****  * \see _sched_get_min_priority
+  51:../MQXLITE/kernel/sched.c ****  */
+  52:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_get_max_priority
+  53:../MQXLITE/kernel/sched.c **** (
+  54:../MQXLITE/kernel/sched.c ****     _mqx_uint policy
+  55:../MQXLITE/kernel/sched.c **** )
+  56:../MQXLITE/kernel/sched.c **** { /* Body */
+  26              		.loc 1 56 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 82B0     		sub	sp, sp, #8
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 16
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  57:../MQXLITE/kernel/sched.c **** 
+  58:../MQXLITE/kernel/sched.c ****     return (0);
+  40              		.loc 1 58 0
+  41 0008 0023     		mov	r3, #0
+  59:../MQXLITE/kernel/sched.c **** 
+  60:../MQXLITE/kernel/sched.c **** } /* Endbody */
+  42              		.loc 1 60 0
+  43 000a 181C     		mov	r0, r3
+  44 000c BD46     		mov	sp, r7
+  45 000e 02B0     		add	sp, sp, #8
+  46              		@ sp needed for prologue
+  47 0010 80BD     		pop	{r7, pc}
+  48              		.cfi_endproc
+  49              	.LFE0:
+  51 0012 C046     		.section	.text._sched_get_min_priority,"ax",%progbits
+  52              		.align	2
+  53              		.global	_sched_get_min_priority
+  54              		.code	16
+  55              		.thumb_func
+  57              	_sched_get_min_priority:
+  58              	.LFB1:
+  61:../MQXLITE/kernel/sched.c **** 
+  62:../MQXLITE/kernel/sched.c **** /*!
+  63:../MQXLITE/kernel/sched.c ****  * \brief Gets the minimum priority that an application task can have.
+  64:../MQXLITE/kernel/sched.c ****  *
+  65:../MQXLITE/kernel/sched.c ****  * POSIX compatibility requires the function and the parameter.
+  66:../MQXLITE/kernel/sched.c ****  * \n The minimum priority that a task can be is set when MQX starts; it is the
+  67:../MQXLITE/kernel/sched.c ****  * priority of the lowest-priority task in the task template list.
+  68:../MQXLITE/kernel/sched.c ****  *
+  69:../MQXLITE/kernel/sched.c ****  * \param[in] policy Not used.
+  70:../MQXLITE/kernel/sched.c ****  *
+  71:../MQXLITE/kernel/sched.c ****  * \return Minimum priority that an application task can be (the numerical value
+  72:../MQXLITE/kernel/sched.c ****  * one less than the priority of Idle Task).
+  73:../MQXLITE/kernel/sched.c ****  *
+  74:../MQXLITE/kernel/sched.c ****  * \see _sched_get_max_priority
+  75:../MQXLITE/kernel/sched.c ****  */
+  76:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_get_min_priority
+  77:../MQXLITE/kernel/sched.c **** (
+  78:../MQXLITE/kernel/sched.c ****     _mqx_uint policy
+  79:../MQXLITE/kernel/sched.c **** )
+  80:../MQXLITE/kernel/sched.c **** { /* Body */
+  59              		.loc 1 80 0
+  60              		.cfi_startproc
+  61 0000 80B5     		push	{r7, lr}
+  62              	.LCFI3:
+  63              		.cfi_def_cfa_offset 8
+  64              		.cfi_offset 7, -8
+  65              		.cfi_offset 14, -4
+  66 0002 84B0     		sub	sp, sp, #16
+  67              	.LCFI4:
+  68              		.cfi_def_cfa_offset 24
+  69 0004 00AF     		add	r7, sp, #0
+  70              	.LCFI5:
+  71              		.cfi_def_cfa_register 7
+  72 0006 7860     		str	r0, [r7, #4]
+  81:../MQXLITE/kernel/sched.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+  82:../MQXLITE/kernel/sched.c **** 
+  83:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+  73              		.loc 1 83 0
+  74 0008 044B     		ldr	r3, .L5
+  75 000a 1B68     		ldr	r3, [r3]
+  76 000c FB60     		str	r3, [r7, #12]
+  84:../MQXLITE/kernel/sched.c **** 
+  85:../MQXLITE/kernel/sched.c ****     return (kernel_data->LOWEST_TASK_PRIORITY);
+  77              		.loc 1 85 0
+  78 000e FA68     		ldr	r2, [r7, #12]
+  79 0010 C423     		mov	r3, #196
+  80 0012 D358     		ldr	r3, [r2, r3]
+  86:../MQXLITE/kernel/sched.c **** 
+  87:../MQXLITE/kernel/sched.c **** } /* Endbody */
+  81              		.loc 1 87 0
+  82 0014 181C     		mov	r0, r3
+  83 0016 BD46     		mov	sp, r7
+  84 0018 04B0     		add	sp, sp, #16
+  85              		@ sp needed for prologue
+  86 001a 80BD     		pop	{r7, pc}
+  87              	.L6:
+  88              		.align	2
+  89              	.L5:
+  90 001c 00000000 		.word	_mqx_kernel_data
+  91              		.cfi_endproc
+  92              	.LFE1:
+  94              		.section	.text._sched_yield,"ax",%progbits
+  95              		.align	2
+  96              		.global	_sched_yield
+  97              		.code	16
+  98              		.thumb_func
+ 100              	_sched_yield:
+ 101              	.LFB2:
+  88:../MQXLITE/kernel/sched.c **** 
+  89:../MQXLITE/kernel/sched.c **** #if !MQX_LITE_VERSION_NUMBER
+  90:../MQXLITE/kernel/sched.c **** /*!
+  91:../MQXLITE/kernel/sched.c ****  * \brief Sets the scheduling policy for a task or the system.
+  92:../MQXLITE/kernel/sched.c ****  *
+  93:../MQXLITE/kernel/sched.c ****  * \param[in] task_id One of the following:
+  94:../MQXLITE/kernel/sched.c ****  * \n - Task on this processor for which to get info.
+  95:../MQXLITE/kernel/sched.c ****  * \n - MQX_DEFAULT_TASK_ID (Set the policy for the processor.)
+  96:../MQXLITE/kernel/sched.c ****  * \n - MQX_NULL_TASK_ID (Set the policy for the calling task.)
+  97:../MQXLITE/kernel/sched.c ****  * \param[in] policy  New scheduling policy; one of the following:
+  98:../MQXLITE/kernel/sched.c ****  * \n - MQX_SCHED_FIFO
+  99:../MQXLITE/kernel/sched.c ****  * \n - MQX_SCHED_RR
+ 100:../MQXLITE/kernel/sched.c ****  *
+ 101:../MQXLITE/kernel/sched.c ****  * \return Previous scheduling policy MQX_SCHED_FIFO or MQX_SCHED_RR (Success.)
+ 102:../MQXLITE/kernel/sched.c ****  * \return MAX_MQX_UINT (Failure.)
+ 103:../MQXLITE/kernel/sched.c ****  *
+ 104:../MQXLITE/kernel/sched.c ****  * \warning On failure, _task_set_error() is called to set the following task
+ 105:../MQXLITE/kernel/sched.c ****  * error codes:
+ 106:../MQXLITE/kernel/sched.c ****  * \n - MQX_SCHED_INVALID_POLICY (Policy is not one of the allowed policies.)
+ 107:../MQXLITE/kernel/sched.c ****  * \n - MQX_SCHED_INVALID_TASK_ID (Task_id is not a valid task on this processor.)
+ 108:../MQXLITE/kernel/sched.c ****  *
+ 109:../MQXLITE/kernel/sched.c ****  * \see _sched_get_policy
+ 110:../MQXLITE/kernel/sched.c ****  * \see _task_set_error
+ 111:../MQXLITE/kernel/sched.c ****  */
+ 112:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_set_policy
+ 113:../MQXLITE/kernel/sched.c **** (
+ 114:../MQXLITE/kernel/sched.c ****     _task_id  task_id,
+ 115:../MQXLITE/kernel/sched.c ****     _mqx_uint policy
+ 116:../MQXLITE/kernel/sched.c **** )
+ 117:../MQXLITE/kernel/sched.c **** { /* Body */
+ 118:../MQXLITE/kernel/sched.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 119:../MQXLITE/kernel/sched.c ****     TD_STRUCT_PTR          td_ptr;
+ 120:../MQXLITE/kernel/sched.c ****     _mqx_uint              old_policy = MQX_SCHED_FIFO;
+ 121:../MQXLITE/kernel/sched.c **** 
+ 122:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 123:../MQXLITE/kernel/sched.c **** 
+ 124:../MQXLITE/kernel/sched.c ****     _KLOGE3(KLOG_sched_set_policy, (_mqx_uint)task_id, policy);
+ 125:../MQXLITE/kernel/sched.c **** #if MQX_HAS_TIME_SLICE
+ 126:../MQXLITE/kernel/sched.c **** 
+ 127:../MQXLITE/kernel/sched.c **** #if MQX_CHECK_ERRORS
+ 128:../MQXLITE/kernel/sched.c ****     if (! ((policy == MQX_SCHED_FIFO) || (policy == MQX_SCHED_RR)))
+ 129:../MQXLITE/kernel/sched.c ****     {
+ 130:../MQXLITE/kernel/sched.c ****         _task_set_error(MQX_SCHED_INVALID_POLICY);
+ 131:../MQXLITE/kernel/sched.c ****         _KLOGX3(KLOG_sched_set_policy, MAX_MQX_UINT, MQX_SCHED_INVALID_POLICY);
+ 132:../MQXLITE/kernel/sched.c ****         return(MAX_MQX_UINT);
+ 133:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 134:../MQXLITE/kernel/sched.c **** #endif
+ 135:../MQXLITE/kernel/sched.c **** 
+ 136:../MQXLITE/kernel/sched.c ****     /* Handle default case */
+ 137:../MQXLITE/kernel/sched.c ****     if (task_id == MQX_DEFAULT_TASK_ID)
+ 138:../MQXLITE/kernel/sched.c ****     {
+ 139:../MQXLITE/kernel/sched.c ****         old_policy = kernel_data->SCHED_POLICY;
+ 140:../MQXLITE/kernel/sched.c ****         kernel_data->SCHED_POLICY = policy;
+ 141:../MQXLITE/kernel/sched.c ****     }
+ 142:../MQXLITE/kernel/sched.c ****     else
+ 143:../MQXLITE/kernel/sched.c ****     {
+ 144:../MQXLITE/kernel/sched.c ****         td_ptr = (TD_STRUCT_PTR)_task_get_td(task_id);
+ 145:../MQXLITE/kernel/sched.c ****         if (td_ptr == NULL)
+ 146:../MQXLITE/kernel/sched.c ****         {
+ 147:../MQXLITE/kernel/sched.c ****             _task_set_error(MQX_SCHED_INVALID_TASK_ID);
+ 148:../MQXLITE/kernel/sched.c ****             _KLOGX3(KLOG_sched_set_policy, MAX_MQX_UINT, MQX_SCHED_INVALID_TASK_ID);
+ 149:../MQXLITE/kernel/sched.c ****             return(MAX_MQX_UINT);
+ 150:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 151:../MQXLITE/kernel/sched.c ****         if (td_ptr->FLAGS & MQX_TIME_SLICE_TASK)
+ 152:../MQXLITE/kernel/sched.c ****         {
+ 153:../MQXLITE/kernel/sched.c ****             old_policy = MQX_SCHED_RR;
+ 154:../MQXLITE/kernel/sched.c ****         }
+ 155:../MQXLITE/kernel/sched.c ****         else
+ 156:../MQXLITE/kernel/sched.c ****         {
+ 157:../MQXLITE/kernel/sched.c ****             old_policy = MQX_SCHED_FIFO;
+ 158:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 159:../MQXLITE/kernel/sched.c ****         _int_disable();
+ 160:../MQXLITE/kernel/sched.c ****         if (policy == MQX_SCHED_RR)
+ 161:../MQXLITE/kernel/sched.c ****         {
+ 162:../MQXLITE/kernel/sched.c ****             td_ptr->FLAGS |= MQX_TIME_SLICE_TASK;
+ 163:../MQXLITE/kernel/sched.c ****         }
+ 164:../MQXLITE/kernel/sched.c ****         else
+ 165:../MQXLITE/kernel/sched.c ****         {
+ 166:../MQXLITE/kernel/sched.c ****             td_ptr->FLAGS &= ~MQX_TIME_SLICE_TASK;
+ 167:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 168:../MQXLITE/kernel/sched.c ****         _int_enable();
+ 169:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 170:../MQXLITE/kernel/sched.c **** #else
+ 171:../MQXLITE/kernel/sched.c **** 
+ 172:../MQXLITE/kernel/sched.c **** #if MQX_CHECK_ERRORS
+ 173:../MQXLITE/kernel/sched.c ****     if (policy != MQX_SCHED_FIFO)
+ 174:../MQXLITE/kernel/sched.c ****     {
+ 175:../MQXLITE/kernel/sched.c ****         _task_set_error(MQX_SCHED_INVALID_POLICY);
+ 176:../MQXLITE/kernel/sched.c ****         _KLOGX3(KLOG_sched_set_policy, MAX_MQX_UINT, MQX_SCHED_INVALID_POLICY);
+ 177:../MQXLITE/kernel/sched.c ****         return (MAX_MQX_UINT);
+ 178:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 179:../MQXLITE/kernel/sched.c ****     old_policy = MQX_SCHED_FIFO;
+ 180:../MQXLITE/kernel/sched.c **** #endif
+ 181:../MQXLITE/kernel/sched.c **** 
+ 182:../MQXLITE/kernel/sched.c **** #endif
+ 183:../MQXLITE/kernel/sched.c **** 
+ 184:../MQXLITE/kernel/sched.c ****     _KLOGX3(KLOG_sched_set_policy, old_policy, 0L);
+ 185:../MQXLITE/kernel/sched.c ****     return (old_policy);
+ 186:../MQXLITE/kernel/sched.c **** 
+ 187:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 188:../MQXLITE/kernel/sched.c **** 
+ 189:../MQXLITE/kernel/sched.c **** /*!
+ 190:../MQXLITE/kernel/sched.c ****  * \brief Gets the scheduling policy for a task or the system.
+ 191:../MQXLITE/kernel/sched.c ****  *
+ 192:../MQXLITE/kernel/sched.c ****  * \param[in]  task_id    One of the following:
+ 193:../MQXLITE/kernel/sched.c ****  * \n - Task on this processor for which to get info.
+ 194:../MQXLITE/kernel/sched.c ****  * \n - MQX_DEFAULT_TASK_ID (Get the policy for the processor.)
+ 195:../MQXLITE/kernel/sched.c ****  * \n - MQX_NULL_TASK_ID (Get the policy for the calling task.)
+ 196:../MQXLITE/kernel/sched.c ****  * \param[out] policy_ptr Pointer to the scheduling policy:
+ 197:../MQXLITE/kernel/sched.c ****  * \n - MQX_SCHED_FIFO (FIFO)
+ 198:../MQXLITE/kernel/sched.c ****  * \n - MQX_SCHED_RR (Round robin)
+ 199:../MQXLITE/kernel/sched.c ****  *
+ 200:../MQXLITE/kernel/sched.c ****  * \return MQX_OK
+ 201:../MQXLITE/kernel/sched.c ****  * \return MQX_SCHED_INVALID_TASK_ID (Task_id is not a valid task on this processor.)
+ 202:../MQXLITE/kernel/sched.c ****  *
+ 203:../MQXLITE/kernel/sched.c ****  * \see _sched_set_policy
+ 204:../MQXLITE/kernel/sched.c ****  */
+ 205:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_get_policy
+ 206:../MQXLITE/kernel/sched.c **** (
+ 207:../MQXLITE/kernel/sched.c ****     _task_id      task_id,
+ 208:../MQXLITE/kernel/sched.c ****     _mqx_uint_ptr policy_ptr
+ 209:../MQXLITE/kernel/sched.c **** )
+ 210:../MQXLITE/kernel/sched.c **** { /* Body */
+ 211:../MQXLITE/kernel/sched.c **** #if MQX_HAS_TIME_SLICE
+ 212:../MQXLITE/kernel/sched.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 213:../MQXLITE/kernel/sched.c ****     TD_STRUCT_PTR          td_ptr;
+ 214:../MQXLITE/kernel/sched.c ****     _mqx_uint              old_policy;
+ 215:../MQXLITE/kernel/sched.c **** 
+ 216:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 217:../MQXLITE/kernel/sched.c **** 
+ 218:../MQXLITE/kernel/sched.c ****     /* Handle default case */
+ 219:../MQXLITE/kernel/sched.c ****     if (task_id == MQX_DEFAULT_TASK_ID)
+ 220:../MQXLITE/kernel/sched.c ****     {
+ 221:../MQXLITE/kernel/sched.c ****         old_policy = kernel_data->SCHED_POLICY;
+ 222:../MQXLITE/kernel/sched.c ****     }
+ 223:../MQXLITE/kernel/sched.c ****     else
+ 224:../MQXLITE/kernel/sched.c ****     {
+ 225:../MQXLITE/kernel/sched.c ****         td_ptr = (TD_STRUCT_PTR)_task_get_td(task_id);
+ 226:../MQXLITE/kernel/sched.c ****         if (td_ptr == NULL)
+ 227:../MQXLITE/kernel/sched.c ****         {
+ 228:../MQXLITE/kernel/sched.c ****             return(MQX_SCHED_INVALID_TASK_ID);
+ 229:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 230:../MQXLITE/kernel/sched.c ****         if (td_ptr->FLAGS & MQX_TIME_SLICE_TASK)
+ 231:../MQXLITE/kernel/sched.c ****         {
+ 232:../MQXLITE/kernel/sched.c ****             old_policy = MQX_SCHED_RR;
+ 233:../MQXLITE/kernel/sched.c ****         }
+ 234:../MQXLITE/kernel/sched.c ****         else
+ 235:../MQXLITE/kernel/sched.c ****         {
+ 236:../MQXLITE/kernel/sched.c ****             old_policy = MQX_SCHED_FIFO;
+ 237:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 238:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 239:../MQXLITE/kernel/sched.c **** 
+ 240:../MQXLITE/kernel/sched.c ****     *policy_ptr = old_policy;
+ 241:../MQXLITE/kernel/sched.c **** #else
+ 242:../MQXLITE/kernel/sched.c ****     *policy_ptr = MQX_SCHED_FIFO;
+ 243:../MQXLITE/kernel/sched.c **** #endif
+ 244:../MQXLITE/kernel/sched.c **** 
+ 245:../MQXLITE/kernel/sched.c ****     return (MQX_OK);
+ 246:../MQXLITE/kernel/sched.c **** 
+ 247:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 248:../MQXLITE/kernel/sched.c **** 
+ 249:../MQXLITE/kernel/sched.c **** #if MQX_HAS_TIME_SLICE
+ 250:../MQXLITE/kernel/sched.c **** 
+ 251:../MQXLITE/kernel/sched.c **** /*!
+ 252:../MQXLITE/kernel/sched.c ****  * \brief Get the time slice in milliseconds for the specified task.
+ 253:../MQXLITE/kernel/sched.c ****  *
+ 254:../MQXLITE/kernel/sched.c ****  * \param[in]     task_id One of the following:
+ 255:../MQXLITE/kernel/sched.c ****  * \n - Task on this processor for which to get info.
+ 256:../MQXLITE/kernel/sched.c ****  * \n - MQX_DEFAULT_TASK_ID (Get the time slice for the processor.)
+ 257:../MQXLITE/kernel/sched.c ****  * \n - MQX_NULL_TASK_ID (Get the time slice for the calling task.)
+ 258:../MQXLITE/kernel/sched.c ****  * \param[in,out] ms_ptr  Pointer to the time slice (in milliseconds).
+ 259:../MQXLITE/kernel/sched.c ****  *
+ 260:../MQXLITE/kernel/sched.c ****  * \return MQX_OK
+ 261:../MQXLITE/kernel/sched.c ****  * \return MAX_UINT_32 (Failure.)
+ 262:../MQXLITE/kernel/sched.c ****  *
+ 263:../MQXLITE/kernel/sched.c ****  * \see _sched_get_rr_interval_ticks
+ 264:../MQXLITE/kernel/sched.c ****  * \see _sched_set_rr_interval
+ 265:../MQXLITE/kernel/sched.c ****  * \see _sched_set_rr_interval_ticks
+ 266:../MQXLITE/kernel/sched.c ****  * \see _task_set_error
+ 267:../MQXLITE/kernel/sched.c ****  */
+ 268:../MQXLITE/kernel/sched.c **** uint_32 _sched_get_rr_interval
+ 269:../MQXLITE/kernel/sched.c **** (
+ 270:../MQXLITE/kernel/sched.c ****     _task_id   task_id,
+ 271:../MQXLITE/kernel/sched.c ****     uint_32_ptr ms_ptr
+ 272:../MQXLITE/kernel/sched.c **** )
+ 273:../MQXLITE/kernel/sched.c **** { /* Body */
+ 274:../MQXLITE/kernel/sched.c ****     TIME_STRUCT     time;
+ 275:../MQXLITE/kernel/sched.c ****     MQX_TICK_STRUCT tick;
+ 276:../MQXLITE/kernel/sched.c ****     uint_32         slice;
+ 277:../MQXLITE/kernel/sched.c **** 
+ 278:../MQXLITE/kernel/sched.c ****     if (_sched_get_rr_interval_ticks(task_id, &tick) != MQX_OK)
+ 279:../MQXLITE/kernel/sched.c ****     {
+ 280:../MQXLITE/kernel/sched.c ****         *ms_ptr = MAX_UINT_32;
+ 281:../MQXLITE/kernel/sched.c ****         return MAX_UINT_32;
+ 282:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 283:../MQXLITE/kernel/sched.c **** 
+ 284:../MQXLITE/kernel/sched.c ****     PSP_TICKS_TO_TIME(&tick, &time);
+ 285:../MQXLITE/kernel/sched.c **** 
+ 286:../MQXLITE/kernel/sched.c ****     if (time.SECONDS >= (MAX_UINT_32/1000))
+ 287:../MQXLITE/kernel/sched.c ****     {
+ 288:../MQXLITE/kernel/sched.c ****         *ms_ptr = MAX_UINT_32;
+ 289:../MQXLITE/kernel/sched.c ****         return(MAX_UINT_32);
+ 290:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 291:../MQXLITE/kernel/sched.c **** 
+ 292:../MQXLITE/kernel/sched.c ****     slice = time.SECONDS * 1000;
+ 293:../MQXLITE/kernel/sched.c ****     if (slice >= (MAX_UINT_32 - time.MILLISECONDS))
+ 294:../MQXLITE/kernel/sched.c ****     {
+ 295:../MQXLITE/kernel/sched.c ****         *ms_ptr = MAX_UINT_32;
+ 296:../MQXLITE/kernel/sched.c ****         return(MAX_UINT_32);
+ 297:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 298:../MQXLITE/kernel/sched.c **** 
+ 299:../MQXLITE/kernel/sched.c ****     *ms_ptr = slice + time.MILLISECONDS;
+ 300:../MQXLITE/kernel/sched.c **** 
+ 301:../MQXLITE/kernel/sched.c ****     return(MQX_OK);
+ 302:../MQXLITE/kernel/sched.c **** 
+ 303:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 304:../MQXLITE/kernel/sched.c **** 
+ 305:../MQXLITE/kernel/sched.c **** /*!
+ 306:../MQXLITE/kernel/sched.c ****  * \brief Get the time slice in tick time for the specified task.
+ 307:../MQXLITE/kernel/sched.c ****  *
+ 308:../MQXLITE/kernel/sched.c ****  * \param[in]     task_id  One of the following:
+ 309:../MQXLITE/kernel/sched.c ****  * \n - Task on this processor for which to get info.
+ 310:../MQXLITE/kernel/sched.c ****  * \n - MQX_DEFAULT_TASK_ID (Get the time slice for the processor.)
+ 311:../MQXLITE/kernel/sched.c ****  * \n - MQX_NULL_TASK_ID (Get the time slice for the calling task.)
+ 312:../MQXLITE/kernel/sched.c ****  * \param[in,out] tick_ptr Pointer to the time slice (in tick time).
+ 313:../MQXLITE/kernel/sched.c ****  *
+ 314:../MQXLITE/kernel/sched.c ****  * \return MQX_OK
+ 315:../MQXLITE/kernel/sched.c ****  * \return MQX_SCHED_INVALID_PARAMETER_PTR (Time_ptr is NULL.)
+ 316:../MQXLITE/kernel/sched.c ****  * \return MQX_SCHED_INVALID_TASK_ID (Task_id is not a valid task on this processor.)
+ 317:../MQXLITE/kernel/sched.c ****  *
+ 318:../MQXLITE/kernel/sched.c ****  * \warning On failure, calls _task_set_error() to set the task error codes (see
+ 319:../MQXLITE/kernel/sched.c ****  * return Error Codes).
+ 320:../MQXLITE/kernel/sched.c ****  *
+ 321:../MQXLITE/kernel/sched.c ****  * \see _sched_get_rr_interval
+ 322:../MQXLITE/kernel/sched.c ****  * \see _sched_set_rr_interval
+ 323:../MQXLITE/kernel/sched.c ****  * \see _sched_set_rr_interval_ticks
+ 324:../MQXLITE/kernel/sched.c ****  * \see _task_set_error
+ 325:../MQXLITE/kernel/sched.c ****  * \see MQX_TICK_STRUCT
+ 326:../MQXLITE/kernel/sched.c ****  */
+ 327:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_get_rr_interval_ticks
+ 328:../MQXLITE/kernel/sched.c **** (
+ 329:../MQXLITE/kernel/sched.c ****     _task_id            task_id,
+ 330:../MQXLITE/kernel/sched.c ****     MQX_TICK_STRUCT_PTR tick_ptr
+ 331:../MQXLITE/kernel/sched.c **** )
+ 332:../MQXLITE/kernel/sched.c **** { /* Body */
+ 333:../MQXLITE/kernel/sched.c ****     register KERNEL_DATA_STRUCT_PTR kernel_data;
+ 334:../MQXLITE/kernel/sched.c ****     TD_STRUCT_PTR                   td_ptr;
+ 335:../MQXLITE/kernel/sched.c **** 
+ 336:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 337:../MQXLITE/kernel/sched.c **** 
+ 338:../MQXLITE/kernel/sched.c **** #if MQX_CHECK_ERRORS
+ 339:../MQXLITE/kernel/sched.c ****     /* Validate parameters */
+ 340:../MQXLITE/kernel/sched.c ****     if ( tick_ptr == NULL )
+ 341:../MQXLITE/kernel/sched.c ****     {
+ 342:../MQXLITE/kernel/sched.c ****         _task_set_error( MQX_SCHED_INVALID_PARAMETER_PTR );
+ 343:../MQXLITE/kernel/sched.c ****         return( MQX_SCHED_INVALID_PARAMETER_PTR );
+ 344:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 345:../MQXLITE/kernel/sched.c **** #endif
+ 346:../MQXLITE/kernel/sched.c **** 
+ 347:../MQXLITE/kernel/sched.c ****     /* Handle default case */
+ 348:../MQXLITE/kernel/sched.c ****     if ( task_id == MQX_DEFAULT_TASK_ID )
+ 349:../MQXLITE/kernel/sched.c ****     {
+ 350:../MQXLITE/kernel/sched.c **** 
+ 351:../MQXLITE/kernel/sched.c ****         *tick_ptr = kernel_data->SCHED_TIME_SLICE;
+ 352:../MQXLITE/kernel/sched.c **** 
+ 353:../MQXLITE/kernel/sched.c ****     }
+ 354:../MQXLITE/kernel/sched.c ****     else
+ 355:../MQXLITE/kernel/sched.c ****     {
+ 356:../MQXLITE/kernel/sched.c **** 
+ 357:../MQXLITE/kernel/sched.c ****         td_ptr = (TD_STRUCT_PTR)_task_get_td( task_id );
+ 358:../MQXLITE/kernel/sched.c ****         if ( td_ptr == NULL )
+ 359:../MQXLITE/kernel/sched.c ****         {
+ 360:../MQXLITE/kernel/sched.c ****             _task_set_error( MQX_SCHED_INVALID_TASK_ID );
+ 361:../MQXLITE/kernel/sched.c ****             return( MQX_SCHED_INVALID_TASK_ID );
+ 362:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 363:../MQXLITE/kernel/sched.c **** 
+ 364:../MQXLITE/kernel/sched.c ****         *tick_ptr = td_ptr->TIME_SLICE;
+ 365:../MQXLITE/kernel/sched.c **** 
+ 366:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 367:../MQXLITE/kernel/sched.c **** 
+ 368:../MQXLITE/kernel/sched.c ****     return( MQX_OK );
+ 369:../MQXLITE/kernel/sched.c **** 
+ 370:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 371:../MQXLITE/kernel/sched.c **** 
+ 372:../MQXLITE/kernel/sched.c **** /*!
+ 373:../MQXLITE/kernel/sched.c ****  * \brief Set the time slice in milliseconds.
+ 374:../MQXLITE/kernel/sched.c ****  *
+ 375:../MQXLITE/kernel/sched.c ****  * \param[in] task_id     One of the following:
+ 376:../MQXLITE/kernel/sched.c ****  * \n - Task ID for a task on this processor for which to set info.
+ 377:../MQXLITE/kernel/sched.c ****  * \n - MQX_DEFAULT_TASK_ID (Set the time slice for the processor.)
+ 378:../MQXLITE/kernel/sched.c ****  * \n - MQX_NULL_TASK_ID (Set the time slice for the calling task.)
+ 379:../MQXLITE/kernel/sched.c ****  * \param[in] rr_interval New time slice (in milliseconds).
+ 380:../MQXLITE/kernel/sched.c ****  *
+ 381:../MQXLITE/kernel/sched.c ****  * \return old_rr_interval Previous time slice (Success.)
+ 382:../MQXLITE/kernel/sched.c ****  * \return MAX_UINT_32
+ 383:../MQXLITE/kernel/sched.c ****  *
+ 384:../MQXLITE/kernel/sched.c ****  * \warning On failure, calls _task_set_error() to set the task error code to
+ 385:../MQXLITE/kernel/sched.c ****  * MQX_SCHED_INVALID_TASK_ID.
+ 386:../MQXLITE/kernel/sched.c ****  *
+ 387:../MQXLITE/kernel/sched.c ****  * \see _sched_set_rr_interval_ticks
+ 388:../MQXLITE/kernel/sched.c ****  * \see _sched_get_rr_interval
+ 389:../MQXLITE/kernel/sched.c ****  * \see _sched_get_rr_interval_ticks
+ 390:../MQXLITE/kernel/sched.c ****  * \see _task_set_error
+ 391:../MQXLITE/kernel/sched.c ****  */
+ 392:../MQXLITE/kernel/sched.c **** uint_32 _sched_set_rr_interval
+ 393:../MQXLITE/kernel/sched.c **** (
+ 394:../MQXLITE/kernel/sched.c ****     _task_id task_id,
+ 395:../MQXLITE/kernel/sched.c ****     uint_32  rr_interval
+ 396:../MQXLITE/kernel/sched.c **** )
+ 397:../MQXLITE/kernel/sched.c **** { /* Body */
+ 398:../MQXLITE/kernel/sched.c ****     _KLOGM(KERNEL_DATA_STRUCT_PTR kernel_data;)
+ 399:../MQXLITE/kernel/sched.c ****     uint_32         old_rr_interval;
+ 400:../MQXLITE/kernel/sched.c ****     MQX_TICK_STRUCT ticks;
+ 401:../MQXLITE/kernel/sched.c ****     MQX_TICK_STRUCT old_ticks;
+ 402:../MQXLITE/kernel/sched.c ****     _mqx_uint       result;
+ 403:../MQXLITE/kernel/sched.c **** 
+ 404:../MQXLITE/kernel/sched.c ****     _KLOGM(_GET_KERNEL_DATA(kernel_data);)
+ 405:../MQXLITE/kernel/sched.c **** 
+ 406:../MQXLITE/kernel/sched.c ****     _KLOGE3(KLOG_sched_set_rr_interval, (_mqx_uint)task_id, rr_interval);
+ 407:../MQXLITE/kernel/sched.c **** 
+ 408:../MQXLITE/kernel/sched.c ****     /* time.MILLISECONDS = rr_interval;  */
+ 409:../MQXLITE/kernel/sched.c ****     /* time.SECONDS      = 0;            */
+ 410:../MQXLITE/kernel/sched.c ****     /*                                   */
+ 411:../MQXLITE/kernel/sched.c ****     /* PSP_TIME_TO_TICKS(&time, &ticks); */
+ 412:../MQXLITE/kernel/sched.c ****     PSP_MILLISECONDS_TO_TICKS_QUICK(rr_interval, &ticks);
+ 413:../MQXLITE/kernel/sched.c **** 
+ 414:../MQXLITE/kernel/sched.c ****     result = _sched_set_rr_interval_internal(task_id, &ticks, &old_ticks);
+ 415:../MQXLITE/kernel/sched.c **** 
+ 416:../MQXLITE/kernel/sched.c ****     if (result != MQX_OK)
+ 417:../MQXLITE/kernel/sched.c ****     {
+ 418:../MQXLITE/kernel/sched.c ****         _task_set_error(result);
+ 419:../MQXLITE/kernel/sched.c ****         _KLOGX2(KLOG_sched_set_rr_interval, MAX_UINT_32);
+ 420:../MQXLITE/kernel/sched.c ****         return(MAX_UINT_32);
+ 421:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 422:../MQXLITE/kernel/sched.c **** 
+ 423:../MQXLITE/kernel/sched.c ****     old_rr_interval = PSP_TICKS_TO_MILLISECONDS(&old_ticks, &result);
+ 424:../MQXLITE/kernel/sched.c **** 
+ 425:../MQXLITE/kernel/sched.c ****     _KLOGX2(KLOG_sched_set_rr_interval, old_rr_interval);
+ 426:../MQXLITE/kernel/sched.c **** 
+ 427:../MQXLITE/kernel/sched.c ****     return(old_rr_interval);
+ 428:../MQXLITE/kernel/sched.c **** 
+ 429:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 430:../MQXLITE/kernel/sched.c **** 
+ 431:../MQXLITE/kernel/sched.c **** /*!
+ 432:../MQXLITE/kernel/sched.c ****  * \brief Set the time slice in tick time.
+ 433:../MQXLITE/kernel/sched.c ****  *
+ 434:../MQXLITE/kernel/sched.c ****  * \param[in]  task_id             One of the following:
+ 435:../MQXLITE/kernel/sched.c ****  * \n - Task ID for a task on this processor for which to set info.
+ 436:../MQXLITE/kernel/sched.c ****  * \n - MQX_DEFAULT_TASK_ID (Set the time slice for the processor.)
+ 437:../MQXLITE/kernel/sched.c ****  * \n - MQX_NULL_TASK_ID (Set the time slice for the calling task.)
+ 438:../MQXLITE/kernel/sched.c ****  * \param[in]  new_rr_interval_ptr Pointer to the new time slice (in tick time).
+ 439:../MQXLITE/kernel/sched.c ****  * \param[out] old_rr_interval_ptr Pointer to the previous time slice (in tick time).
+ 440:../MQXLITE/kernel/sched.c ****  *
+ 441:../MQXLITE/kernel/sched.c ****  * \return Previous time slice (Success.)
+ 442:../MQXLITE/kernel/sched.c ****  * \return MAX_UINT_32
+ 443:../MQXLITE/kernel/sched.c ****  *
+ 444:../MQXLITE/kernel/sched.c ****  * \warning On failure, calls _task_set_error() to set the task error code to
+ 445:../MQXLITE/kernel/sched.c ****  * MQX_SCHED_INVALID_TASK_ID.
+ 446:../MQXLITE/kernel/sched.c ****  *
+ 447:../MQXLITE/kernel/sched.c ****  * \see _sched_set_rr_interval
+ 448:../MQXLITE/kernel/sched.c ****  * \see _sched_get_rr_interval
+ 449:../MQXLITE/kernel/sched.c ****  * \see _sched_get_rr_interval_ticks
+ 450:../MQXLITE/kernel/sched.c ****  * \see _task_set_error
+ 451:../MQXLITE/kernel/sched.c ****  * \see MQX_TICK_STRUCT
+ 452:../MQXLITE/kernel/sched.c ****  */
+ 453:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_set_rr_interval_ticks
+ 454:../MQXLITE/kernel/sched.c **** (
+ 455:../MQXLITE/kernel/sched.c ****     _task_id            task_id,
+ 456:../MQXLITE/kernel/sched.c ****     MQX_TICK_STRUCT_PTR new_rr_interval_ptr,
+ 457:../MQXLITE/kernel/sched.c ****     MQX_TICK_STRUCT_PTR old_rr_interval_ptr
+ 458:../MQXLITE/kernel/sched.c **** 
+ 459:../MQXLITE/kernel/sched.c **** )
+ 460:../MQXLITE/kernel/sched.c **** { /* Body */
+ 461:../MQXLITE/kernel/sched.c ****     _KLOGM(KERNEL_DATA_STRUCT_PTR kernel_data;)
+ 462:../MQXLITE/kernel/sched.c ****     _mqx_uint result;
+ 463:../MQXLITE/kernel/sched.c **** 
+ 464:../MQXLITE/kernel/sched.c ****     _KLOGM(_GET_KERNEL_DATA(kernel_data);)
+ 465:../MQXLITE/kernel/sched.c **** 
+ 466:../MQXLITE/kernel/sched.c ****     _KLOGE2(KLOG_sched_set_rr_interval_ticks, task_id);
+ 467:../MQXLITE/kernel/sched.c **** 
+ 468:../MQXLITE/kernel/sched.c ****     result = _sched_set_rr_interval_internal(task_id, new_rr_interval_ptr,
+ 469:../MQXLITE/kernel/sched.c ****                     old_rr_interval_ptr);
+ 470:../MQXLITE/kernel/sched.c **** 
+ 471:../MQXLITE/kernel/sched.c ****     if (result != MQX_OK)
+ 472:../MQXLITE/kernel/sched.c ****     {
+ 473:../MQXLITE/kernel/sched.c ****         _task_set_error(result);
+ 474:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 475:../MQXLITE/kernel/sched.c **** 
+ 476:../MQXLITE/kernel/sched.c ****     _KLOGX2(KLOG_sched_set_rr_interval_ticks, result);
+ 477:../MQXLITE/kernel/sched.c **** 
+ 478:../MQXLITE/kernel/sched.c ****     return result;
+ 479:../MQXLITE/kernel/sched.c **** 
+ 480:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 481:../MQXLITE/kernel/sched.c **** 
+ 482:../MQXLITE/kernel/sched.c **** #endif /* MQX_HAS_TIME_SLICE */
+ 483:../MQXLITE/kernel/sched.c **** #endif /* MQX_LITE_VERSION_NUMBER */
+ 484:../MQXLITE/kernel/sched.c **** 
+ 485:../MQXLITE/kernel/sched.c **** /*!
+ 486:../MQXLITE/kernel/sched.c ****  * \brief Puts the active task at the end of its ready queue.
+ 487:../MQXLITE/kernel/sched.c ****  *
+ 488:../MQXLITE/kernel/sched.c ****  * The function effectively performs a timeslice. If there are no other tasks in
+ 489:../MQXLITE/kernel/sched.c ****  * this ready queue, the task continues to be the active task.
+ 490:../MQXLITE/kernel/sched.c ****  *
+ 491:../MQXLITE/kernel/sched.c ****  * \warning Might dispatch another task.
+ 492:../MQXLITE/kernel/sched.c ****  */
+ 493:../MQXLITE/kernel/sched.c **** void _sched_yield(void)
+ 494:../MQXLITE/kernel/sched.c **** { /* Body */
+ 102              		.loc 1 494 0
+ 103              		.cfi_startproc
+ 104 0000 80B5     		push	{r7, lr}
+ 105              	.LCFI6:
+ 106              		.cfi_def_cfa_offset 8
+ 107              		.cfi_offset 7, -8
+ 108              		.cfi_offset 14, -4
+ 109 0002 84B0     		sub	sp, sp, #16
+ 110              	.LCFI7:
+ 111              		.cfi_def_cfa_offset 24
+ 112 0004 00AF     		add	r7, sp, #0
+ 113              	.LCFI8:
+ 114              		.cfi_def_cfa_register 7
+ 495:../MQXLITE/kernel/sched.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 496:../MQXLITE/kernel/sched.c ****     TD_STRUCT_PTR          td_ptr;
+ 497:../MQXLITE/kernel/sched.c **** 
+ 498:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 115              		.loc 1 498 0
+ 116 0006 2A4B     		ldr	r3, .L12
+ 117 0008 1B68     		ldr	r3, [r3]
+ 118 000a FB60     		str	r3, [r7, #12]
+ 499:../MQXLITE/kernel/sched.c **** 
+ 500:../MQXLITE/kernel/sched.c ****     _KLOG(_klog_yield_internal();)
+ 501:../MQXLITE/kernel/sched.c **** 
+ 502:../MQXLITE/kernel/sched.c ****     td_ptr = kernel_data->ACTIVE_PTR;
+ 119              		.loc 1 502 0
+ 120 000c FB68     		ldr	r3, [r7, #12]
+ 121 000e DB69     		ldr	r3, [r3, #28]
+ 122 0010 BB60     		str	r3, [r7, #8]
+ 503:../MQXLITE/kernel/sched.c **** 
+ 504:../MQXLITE/kernel/sched.c ****     _INT_DISABLE();
+ 123              		.loc 1 504 0
+ 124 0012 FB68     		ldr	r3, [r7, #12]
+ 125 0014 DB69     		ldr	r3, [r3, #28]
+ 126 0016 9B6C     		ldr	r3, [r3, #72]
+ 127 0018 002B     		cmp	r3, #0
+ 128 001a 00D1     		bne	.L8
+ 129              		.loc 1 504 0 is_stmt 0
+ 130              	@ 504 "../MQXLITE/kernel/sched.c" 1
+ 131 001c 72B6     		cpsid i
+ 132              	@ 0 "" 2
+ 133              		.code	16
+ 134              	.L8:
+ 135              		.loc 1 504 0
+ 136 001e FB68     		ldr	r3, [r7, #12]
+ 137 0020 DB69     		ldr	r3, [r3, #28]
+ 138 0022 9A6C     		ldr	r2, [r3, #72]
+ 139 0024 0132     		add	r2, r2, #1
+ 140 0026 9A64     		str	r2, [r3, #72]
+ 141              	.LBB2:
+ 505:../MQXLITE/kernel/sched.c ****     _QUEUE_UNLINK(td_ptr);
+ 142              		.loc 1 505 0 is_stmt 1
+ 143 0028 BB68     		ldr	r3, [r7, #8]
+ 144 002a 5B68     		ldr	r3, [r3, #4]
+ 145 002c 7B60     		str	r3, [r7, #4]
+ 146 002e BB68     		ldr	r3, [r7, #8]
+ 147 0030 1B68     		ldr	r3, [r3]
+ 148 0032 3B60     		str	r3, [r7]
+ 149 0034 7B68     		ldr	r3, [r7, #4]
+ 150 0036 3A68     		ldr	r2, [r7]
+ 151 0038 1A60     		str	r2, [r3]
+ 152 003a 3B68     		ldr	r3, [r7]
+ 153 003c 7A68     		ldr	r2, [r7, #4]
+ 154 003e 5A60     		str	r2, [r3, #4]
+ 155              	.LBE2:
+ 506:../MQXLITE/kernel/sched.c ****     _TASK_READY(td_ptr, kernel_data);
+ 156              		.loc 1 506 0
+ 157 0040 BB68     		ldr	r3, [r7, #8]
+ 158 0042 DA69     		ldr	r2, [r3, #28]
+ 159 0044 FB68     		ldr	r3, [r7, #12]
+ 160 0046 5B6A     		ldr	r3, [r3, #36]
+ 161 0048 9A42     		cmp	r2, r3
+ 162 004a 03D9     		bls	.L9
+ 163              		.loc 1 506 0 is_stmt 0
+ 164 004c BB68     		ldr	r3, [r7, #8]
+ 165 004e DA69     		ldr	r2, [r3, #28]
+ 166 0050 FB68     		ldr	r3, [r7, #12]
+ 167 0052 5A62     		str	r2, [r3, #36]
+ 168              	.L9:
+ 169              		.loc 1 506 0
+ 170 0054 BB68     		ldr	r3, [r7, #8]
+ 171 0056 0222     		mov	r2, #2
+ 172 0058 9A60     		str	r2, [r3, #8]
+ 173 005a BB68     		ldr	r3, [r7, #8]
+ 174 005c DB69     		ldr	r3, [r3, #28]
+ 175 005e 5A68     		ldr	r2, [r3, #4]
+ 176 0060 BB68     		ldr	r3, [r7, #8]
+ 177 0062 5A60     		str	r2, [r3, #4]
+ 178 0064 BB68     		ldr	r3, [r7, #8]
+ 179 0066 5B68     		ldr	r3, [r3, #4]
+ 180 0068 1A68     		ldr	r2, [r3]
+ 181 006a BB68     		ldr	r3, [r7, #8]
+ 182 006c 1A60     		str	r2, [r3]
+ 183 006e BB68     		ldr	r3, [r7, #8]
+ 184 0070 5B68     		ldr	r3, [r3, #4]
+ 185 0072 BA68     		ldr	r2, [r7, #8]
+ 186 0074 1A60     		str	r2, [r3]
+ 187 0076 BB68     		ldr	r3, [r7, #8]
+ 188 0078 DB69     		ldr	r3, [r3, #28]
+ 189 007a BA68     		ldr	r2, [r7, #8]
+ 190 007c 5A60     		str	r2, [r3, #4]
+ 507:../MQXLITE/kernel/sched.c ****     _sched_execute_scheduler_internal();
+ 191              		.loc 1 507 0 is_stmt 1
+ 192 007e FFF7FEFF 		bl	_sched_execute_scheduler_internal
+ 508:../MQXLITE/kernel/sched.c ****     _INT_ENABLE();
+ 193              		.loc 1 508 0
+ 194 0082 FB68     		ldr	r3, [r7, #12]
+ 195 0084 DB69     		ldr	r3, [r3, #28]
+ 196 0086 9B6C     		ldr	r3, [r3, #72]
+ 197 0088 002B     		cmp	r3, #0
+ 198 008a 0ED0     		beq	.L7
+ 199              		.loc 1 508 0 is_stmt 0
+ 200 008c FB68     		ldr	r3, [r7, #12]
+ 201 008e DB69     		ldr	r3, [r3, #28]
+ 202 0090 9A6C     		ldr	r2, [r3, #72]
+ 203 0092 013A     		sub	r2, r2, #1
+ 204 0094 9A64     		str	r2, [r3, #72]
+ 205 0096 9B6C     		ldr	r3, [r3, #72]
+ 206 0098 002B     		cmp	r3, #0
+ 207 009a 06D1     		bne	.L7
+ 208              		.loc 1 508 0
+ 209 009c FB68     		ldr	r3, [r7, #12]
+ 210 009e 1B8B     		ldrh	r3, [r3, #24]
+ 211 00a0 002B     		cmp	r3, #0
+ 212 00a2 01D0     		beq	.L11
+ 213              		.loc 1 508 0
+ 214              	@ 508 "../MQXLITE/kernel/sched.c" 1
+ 215 00a4 62B6     		cpsie i
+ 216              	@ 0 "" 2
+ 217              		.code	16
+ 218 00a6 00E0     		b	.L7
+ 219              	.L11:
+ 220              		.loc 1 508 0
+ 221              	@ 508 "../MQXLITE/kernel/sched.c" 1
+ 222 00a8 62B6     		cpsie i
+ 223              	@ 0 "" 2
+ 224              		.code	16
+ 225              	.L7:
+ 509:../MQXLITE/kernel/sched.c **** 
+ 510:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 226              		.loc 1 510 0 is_stmt 1
+ 227 00aa BD46     		mov	sp, r7
+ 228 00ac 04B0     		add	sp, sp, #16
+ 229              		@ sp needed for prologue
+ 230 00ae 80BD     		pop	{r7, pc}
+ 231              	.L13:
+ 232              		.align	2
+ 233              	.L12:
+ 234 00b0 00000000 		.word	_mqx_kernel_data
+ 235              		.cfi_endproc
+ 236              	.LFE2:
+ 238              		.section	.text._sched_boost_priority_internal,"ax",%progbits
+ 239              		.align	2
+ 240              		.global	_sched_boost_priority_internal
+ 241              		.code	16
+ 242              		.thumb_func
+ 244              	_sched_boost_priority_internal:
+ 245              	.LFB3:
+ 511:../MQXLITE/kernel/sched.c **** 
+ 512:../MQXLITE/kernel/sched.c **** #if MQX_HAS_DYNAMIC_PRIORITIES
+ 513:../MQXLITE/kernel/sched.c **** 
+ 514:../MQXLITE/kernel/sched.c **** /*!
+ 515:../MQXLITE/kernel/sched.c ****  * \private
+ 516:../MQXLITE/kernel/sched.c ****  *
+ 517:../MQXLITE/kernel/sched.c ****  * \brief Boosts a task to a temporarily higher priority.
+ 518:../MQXLITE/kernel/sched.c ****  *
+ 519:../MQXLITE/kernel/sched.c ****  * This function MUST BE CALLED with DISABLED interrupts.
+ 520:../MQXLITE/kernel/sched.c ****  *
+ 521:../MQXLITE/kernel/sched.c ****  * \param[in] td_ptr   Pointer to the task descriptor whose priority is to change.
+ 522:../MQXLITE/kernel/sched.c ****  * \param[in] priority The new task priority, MUST be a valid priority.
+ 523:../MQXLITE/kernel/sched.c ****  *
+ 524:../MQXLITE/kernel/sched.c ****  * \see TD_STRUCT
+ 525:../MQXLITE/kernel/sched.c ****  */
+ 526:../MQXLITE/kernel/sched.c **** void _sched_boost_priority_internal
+ 527:../MQXLITE/kernel/sched.c **** (
+ 528:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR td_ptr,
+ 529:../MQXLITE/kernel/sched.c ****     register _mqx_uint     priority
+ 530:../MQXLITE/kernel/sched.c **** )
+ 531:../MQXLITE/kernel/sched.c **** { /* Body */
+ 246              		.loc 1 531 0
+ 247              		.cfi_startproc
+ 248 0000 80B5     		push	{r7, lr}
+ 249              	.LCFI9:
+ 250              		.cfi_def_cfa_offset 8
+ 251              		.cfi_offset 7, -8
+ 252              		.cfi_offset 14, -4
+ 253 0002 82B0     		sub	sp, sp, #8
+ 254              	.LCFI10:
+ 255              		.cfi_def_cfa_offset 16
+ 256 0004 00AF     		add	r7, sp, #0
+ 257              	.LCFI11:
+ 258              		.cfi_def_cfa_register 7
+ 259 0006 031C     		mov	r3, r0
+ 532:../MQXLITE/kernel/sched.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 533:../MQXLITE/kernel/sched.c **** 
+ 534:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 260              		.loc 1 534 0
+ 261 0008 094A     		ldr	r2, .L15
+ 262 000a 1268     		ldr	r2, [r2]
+ 263 000c 7A60     		str	r2, [r7, #4]
+ 535:../MQXLITE/kernel/sched.c **** 
+ 536:../MQXLITE/kernel/sched.c ****     _KLOGE4(KLOG_sched_boost_priority, td_ptr, priority, td_ptr->MY_QUEUE->PRIORITY);
+ 537:../MQXLITE/kernel/sched.c **** 
+ 538:../MQXLITE/kernel/sched.c ****     td_ptr->FLAGS |= TASK_PRIORITY_BOOSTED;
+ 264              		.loc 1 538 0
+ 265 000e 9A6A     		ldr	r2, [r3, #40]
+ 266 0010 8020     		mov	r0, #128
+ 267 0012 0002     		lsl	r0, r0, #8
+ 268 0014 0243     		orr	r2, r0
+ 269 0016 9A62     		str	r2, [r3, #40]
+ 539:../MQXLITE/kernel/sched.c ****     ++td_ptr->BOOSTED;
+ 270              		.loc 1 539 0
+ 271 0018 5A6C     		ldr	r2, [r3, #68]
+ 272 001a 0132     		add	r2, r2, #1
+ 273 001c 5A64     		str	r2, [r3, #68]
+ 540:../MQXLITE/kernel/sched.c **** 
+ 541:../MQXLITE/kernel/sched.c ****     _sched_set_priority_internal(td_ptr, priority);
+ 274              		.loc 1 541 0
+ 275 001e 181C     		mov	r0, r3
+ 276 0020 FFF7FEFF 		bl	_sched_set_priority_internal
+ 542:../MQXLITE/kernel/sched.c **** 
+ 543:../MQXLITE/kernel/sched.c ****     /* Allow higher priority tasks to run */
+ 544:../MQXLITE/kernel/sched.c ****     _CHECK_RUN_SCHEDULER();
+ 277              		.loc 1 544 0
+ 278 0024 FFF7FEFF 		bl	_sched_check_scheduler_internal
+ 545:../MQXLITE/kernel/sched.c **** 
+ 546:../MQXLITE/kernel/sched.c ****     _KLOGX1(KLOG_sched_boost_priority);
+ 547:../MQXLITE/kernel/sched.c **** 
+ 548:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 279              		.loc 1 548 0
+ 280 0028 BD46     		mov	sp, r7
+ 281 002a 02B0     		add	sp, sp, #8
+ 282              		@ sp needed for prologue
+ 283 002c 80BD     		pop	{r7, pc}
+ 284              	.L16:
+ 285 002e C046     		.align	2
+ 286              	.L15:
+ 287 0030 00000000 		.word	_mqx_kernel_data
+ 288              		.cfi_endproc
+ 289              	.LFE3:
+ 291              		.section	.text._sched_unboost_priority_internal,"ax",%progbits
+ 292              		.align	2
+ 293              		.global	_sched_unboost_priority_internal
+ 294              		.code	16
+ 295              		.thumb_func
+ 297              	_sched_unboost_priority_internal:
+ 298              	.LFB4:
+ 549:../MQXLITE/kernel/sched.c **** 
+ 550:../MQXLITE/kernel/sched.c **** /*!
+ 551:../MQXLITE/kernel/sched.c ****  * \private
+ 552:../MQXLITE/kernel/sched.c ****  *
+ 553:../MQXLITE/kernel/sched.c ****  * \brief Boosts a task to a temporarily higher priority.
+ 554:../MQXLITE/kernel/sched.c ****  *
+ 555:../MQXLITE/kernel/sched.c ****  * This function MUST BE CALLED with DISABLED interrupts.
+ 556:../MQXLITE/kernel/sched.c ****  *
+ 557:../MQXLITE/kernel/sched.c ****  * \param[in] td_ptr           Pointer to the task descriptor whose priority is
+ 558:../MQXLITE/kernel/sched.c ****  * to change.
+ 559:../MQXLITE/kernel/sched.c ****  * \param[in] number_of_boosts The number of times to 'unboost' the task.
+ 560:../MQXLITE/kernel/sched.c ****  *
+ 561:../MQXLITE/kernel/sched.c ****  * \see TD_STRUCT
+ 562:../MQXLITE/kernel/sched.c ****  */
+ 563:../MQXLITE/kernel/sched.c **** void _sched_unboost_priority_internal
+ 564:../MQXLITE/kernel/sched.c **** (
+ 565:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR td_ptr,
+ 566:../MQXLITE/kernel/sched.c ****     register _mqx_uint     number_of_boosts
+ 567:../MQXLITE/kernel/sched.c **** )
+ 568:../MQXLITE/kernel/sched.c **** { /* Body */
+ 299              		.loc 1 568 0
+ 300              		.cfi_startproc
+ 301 0000 80B5     		push	{r7, lr}
+ 302              	.LCFI12:
+ 303              		.cfi_def_cfa_offset 8
+ 304              		.cfi_offset 7, -8
+ 305              		.cfi_offset 14, -4
+ 306 0002 00AF     		add	r7, sp, #0
+ 307              	.LCFI13:
+ 308              		.cfi_def_cfa_register 7
+ 309 0004 031C     		mov	r3, r0
+ 310 0006 0A1C     		mov	r2, r1
+ 569:../MQXLITE/kernel/sched.c ****     register KERNEL_DATA_STRUCT_PTR kernel_data;
+ 570:../MQXLITE/kernel/sched.c **** 
+ 571:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 572:../MQXLITE/kernel/sched.c **** 
+ 573:../MQXLITE/kernel/sched.c ****     _KLOGE5(KLOG_sched_unboost_priority, td_ptr, number_of_boosts, td_ptr->BOOSTED, td_ptr->HOME_QU
+ 574:../MQXLITE/kernel/sched.c **** 
+ 575:../MQXLITE/kernel/sched.c ****     if (td_ptr->FLAGS & TASK_PRIORITY_BOOSTED)
+ 311              		.loc 1 575 0
+ 312 0008 986A     		ldr	r0, [r3, #40]
+ 313 000a 8021     		mov	r1, #128
+ 314 000c 0902     		lsl	r1, r1, #8
+ 315 000e 0140     		and	r1, r0
+ 316 0010 14D0     		beq	.L17
+ 576:../MQXLITE/kernel/sched.c ****     {
+ 577:../MQXLITE/kernel/sched.c ****         if (td_ptr->BOOSTED > number_of_boosts)
+ 317              		.loc 1 577 0
+ 318 0012 596C     		ldr	r1, [r3, #68]
+ 319 0014 9142     		cmp	r1, r2
+ 320 0016 03D9     		bls	.L19
+ 578:../MQXLITE/kernel/sched.c ****         {
+ 579:../MQXLITE/kernel/sched.c ****             td_ptr->BOOSTED = td_ptr->BOOSTED - number_of_boosts;
+ 321              		.loc 1 579 0
+ 322 0018 596C     		ldr	r1, [r3, #68]
+ 323 001a 8A1A     		sub	r2, r1, r2
+ 324 001c 5A64     		str	r2, [r3, #68]
+ 325 001e 0DE0     		b	.L17
+ 326              	.L19:
+ 580:../MQXLITE/kernel/sched.c ****         }
+ 581:../MQXLITE/kernel/sched.c ****         else
+ 582:../MQXLITE/kernel/sched.c ****         {
+ 583:../MQXLITE/kernel/sched.c ****             td_ptr->BOOSTED = 0;
+ 327              		.loc 1 583 0
+ 328 0020 0022     		mov	r2, #0
+ 329 0022 5A64     		str	r2, [r3, #68]
+ 584:../MQXLITE/kernel/sched.c ****             td_ptr->FLAGS &= ~TASK_PRIORITY_BOOSTED;
+ 330              		.loc 1 584 0
+ 331 0024 996A     		ldr	r1, [r3, #40]
+ 332 0026 064A     		ldr	r2, .L20
+ 333 0028 0A40     		and	r2, r1
+ 334 002a 9A62     		str	r2, [r3, #40]
+ 585:../MQXLITE/kernel/sched.c ****             _sched_set_priority_internal(td_ptr, (_mqx_uint) td_ptr->HOME_QUEUE->PRIORITY);
+ 335              		.loc 1 585 0
+ 336 002c 1A6A     		ldr	r2, [r3, #32]
+ 337 002e D289     		ldrh	r2, [r2, #14]
+ 338 0030 181C     		mov	r0, r3
+ 339 0032 111C     		mov	r1, r2
+ 340 0034 FFF7FEFF 		bl	_sched_set_priority_internal
+ 586:../MQXLITE/kernel/sched.c ****             /* Allow higher priority tasks to run */
+ 587:../MQXLITE/kernel/sched.c ****             _CHECK_RUN_SCHEDULER();
+ 341              		.loc 1 587 0
+ 342 0038 FFF7FEFF 		bl	_sched_check_scheduler_internal
+ 343              	.L17:
+ 588:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 589:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 590:../MQXLITE/kernel/sched.c **** 
+ 591:../MQXLITE/kernel/sched.c ****     _KLOGX1(KLOG_sched_unboost_priority);
+ 592:../MQXLITE/kernel/sched.c **** 
+ 593:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 344              		.loc 1 593 0
+ 345 003c BD46     		mov	sp, r7
+ 346              		@ sp needed for prologue
+ 347 003e 80BD     		pop	{r7, pc}
+ 348              	.L21:
+ 349              		.align	2
+ 350              	.L20:
+ 351 0040 FF7FFFFF 		.word	-32769
+ 352              		.cfi_endproc
+ 353              	.LFE4:
+ 355              		.section	.text._sched_insert_priorityq_internal,"ax",%progbits
+ 356              		.align	2
+ 357              		.global	_sched_insert_priorityq_internal
+ 358              		.code	16
+ 359              		.thumb_func
+ 361              	_sched_insert_priorityq_internal:
+ 362              	.LFB5:
+ 594:../MQXLITE/kernel/sched.c **** 
+ 595:../MQXLITE/kernel/sched.c **** #endif /* MQX_HAS_DYNAMIC_PRIORITIES */
+ 596:../MQXLITE/kernel/sched.c **** 
+ 597:../MQXLITE/kernel/sched.c **** /*!
+ 598:../MQXLITE/kernel/sched.c ****  * \private
+ 599:../MQXLITE/kernel/sched.c ****  *
+ 600:../MQXLITE/kernel/sched.c ****  * \brief Inserts a task descriptor into a task descriptor queue by order of task
+ 601:../MQXLITE/kernel/sched.c ****  * priority.
+ 602:../MQXLITE/kernel/sched.c ****  *
+ 603:../MQXLITE/kernel/sched.c ****  * \param[in] queue_ptr Pointer to the queue header.
+ 604:../MQXLITE/kernel/sched.c ****  * \param[in] td_ptr    Pointer to the task descriptor to insert.
+ 605:../MQXLITE/kernel/sched.c ****  *
+ 606:../MQXLITE/kernel/sched.c ****  * \see QUEUE_STRUCT
+ 607:../MQXLITE/kernel/sched.c ****  * \see TD_STRUCT
+ 608:../MQXLITE/kernel/sched.c ****  */
+ 609:../MQXLITE/kernel/sched.c **** void _sched_insert_priorityq_internal
+ 610:../MQXLITE/kernel/sched.c **** (
+ 611:../MQXLITE/kernel/sched.c ****     register QUEUE_STRUCT_PTR queue_ptr,
+ 612:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR    td_ptr
+ 613:../MQXLITE/kernel/sched.c **** )
+ 614:../MQXLITE/kernel/sched.c **** { /* Body */
+ 363              		.loc 1 614 0
+ 364              		.cfi_startproc
+ 365 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 366              	.LCFI14:
+ 367              		.cfi_def_cfa_offset 20
+ 368              		.cfi_offset 4, -20
+ 369              		.cfi_offset 5, -16
+ 370              		.cfi_offset 6, -12
+ 371              		.cfi_offset 7, -8
+ 372              		.cfi_offset 14, -4
+ 373 0002 4746     		mov	r7, r8
+ 374 0004 80B4     		push	{r7}
+ 375              	.LCFI15:
+ 376              		.cfi_def_cfa_offset 24
+ 377              		.cfi_offset 8, -24
+ 378 0006 82B0     		sub	sp, sp, #8
+ 379              	.LCFI16:
+ 380              		.cfi_def_cfa_offset 32
+ 381 0008 00AF     		add	r7, sp, #0
+ 382              	.LCFI17:
+ 383              		.cfi_def_cfa_register 7
+ 384 000a 021C     		mov	r2, r0
+ 385 000c 0B1C     		mov	r3, r1
+ 615:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR td2_ptr;
+ 616:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR td_prev_ptr;
+ 617:../MQXLITE/kernel/sched.c ****     register _mqx_uint     priority;
+ 618:../MQXLITE/kernel/sched.c ****     register _mqx_uint     count;
+ 619:../MQXLITE/kernel/sched.c **** 
+ 620:../MQXLITE/kernel/sched.c ****     td_prev_ptr = (TD_STRUCT_PTR) ((pointer) queue_ptr);
+ 386              		.loc 1 620 0
+ 387 000e 141C     		mov	r4, r2
+ 621:../MQXLITE/kernel/sched.c ****     td2_ptr = (TD_STRUCT_PTR) ((pointer) queue_ptr->NEXT);
+ 388              		.loc 1 621 0
+ 389 0010 1568     		ldr	r5, [r2]
+ 622:../MQXLITE/kernel/sched.c ****     count = _QUEUE_GET_SIZE(queue_ptr) + 1;
+ 390              		.loc 1 622 0
+ 391 0012 1189     		ldrh	r1, [r2, #8]
+ 392 0014 0131     		add	r1, r1, #1
+ 393 0016 0E1C     		mov	r6, r1
+ 623:../MQXLITE/kernel/sched.c ****     priority = td_ptr->MY_QUEUE->PRIORITY;
+ 394              		.loc 1 623 0
+ 395 0018 D969     		ldr	r1, [r3, #28]
+ 396 001a C989     		ldrh	r1, [r1, #14]
+ 397 001c 8846     		mov	r8, r1
+ 624:../MQXLITE/kernel/sched.c ****     while (--count)
+ 398              		.loc 1 624 0
+ 399 001e 05E0     		b	.L23
+ 400              	.L26:
+ 625:../MQXLITE/kernel/sched.c ****     {
+ 626:../MQXLITE/kernel/sched.c ****         if (td2_ptr->MY_QUEUE->PRIORITY > priority)
+ 401              		.loc 1 626 0
+ 402 0020 E969     		ldr	r1, [r5, #28]
+ 403 0022 C989     		ldrh	r1, [r1, #14]
+ 404 0024 4145     		cmp	r1, r8
+ 405 0026 05D8     		bhi	.L27
+ 406              	.L24:
+ 627:../MQXLITE/kernel/sched.c ****         {
+ 628:../MQXLITE/kernel/sched.c ****             break;
+ 629:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 630:../MQXLITE/kernel/sched.c ****         td_prev_ptr = td2_ptr;
+ 407              		.loc 1 630 0
+ 408 0028 2C1C     		mov	r4, r5
+ 631:../MQXLITE/kernel/sched.c ****         td2_ptr = td2_ptr->TD_NEXT;
+ 409              		.loc 1 631 0
+ 410 002a 2D68     		ldr	r5, [r5]
+ 411              	.L23:
+ 624:../MQXLITE/kernel/sched.c ****     while (--count)
+ 412              		.loc 1 624 0
+ 413 002c 013E     		sub	r6, r6, #1
+ 414 002e 002E     		cmp	r6, #0
+ 415 0030 F6D1     		bne	.L26
+ 416 0032 00E0     		b	.L25
+ 417              	.L27:
+ 628:../MQXLITE/kernel/sched.c ****             break;
+ 418              		.loc 1 628 0
+ 419 0034 C046     		mov	r8, r8
+ 420              	.L25:
+ 421              	.LBB3:
+ 632:../MQXLITE/kernel/sched.c ****     } /* Endwhile */
+ 633:../MQXLITE/kernel/sched.c ****     _QUEUE_INSERT(queue_ptr,
+ 422              		.loc 1 633 0
+ 423 0036 2168     		ldr	r1, [r4]
+ 424 0038 7960     		str	r1, [r7, #4]
+ 425 003a 7968     		ldr	r1, [r7, #4]
+ 426 003c 1960     		str	r1, [r3]
+ 427 003e 2360     		str	r3, [r4]
+ 428 0040 5C60     		str	r4, [r3, #4]
+ 429 0042 7968     		ldr	r1, [r7, #4]
+ 430 0044 4B60     		str	r3, [r1, #4]
+ 431              	.LBE3:
+ 432 0046 1389     		ldrh	r3, [r2, #8]
+ 433 0048 0133     		add	r3, r3, #1
+ 434 004a 9BB2     		uxth	r3, r3
+ 435 004c 1381     		strh	r3, [r2, #8]
+ 634:../MQXLITE/kernel/sched.c ****                     (QUEUE_ELEMENT_STRUCT_PTR)((pointer)td_prev_ptr),
+ 635:../MQXLITE/kernel/sched.c ****                     (QUEUE_ELEMENT_STRUCT_PTR)((pointer)td_ptr));
+ 636:../MQXLITE/kernel/sched.c **** 
+ 637:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 436              		.loc 1 637 0
+ 437 004e BD46     		mov	sp, r7
+ 438 0050 02B0     		add	sp, sp, #8
+ 439              		@ sp needed for prologue
+ 440 0052 04BC     		pop	{r2}
+ 441 0054 9046     		mov	r8, r2
+ 442 0056 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 443              		.cfi_endproc
+ 444              	.LFE5:
+ 446              		.section	.text._sched_get_max_priority_on_q_internal,"ax",%progbits
+ 447              		.align	2
+ 448              		.global	_sched_get_max_priority_on_q_internal
+ 449              		.code	16
+ 450              		.thumb_func
+ 452              	_sched_get_max_priority_on_q_internal:
+ 453              	.LFB6:
+ 638:../MQXLITE/kernel/sched.c **** 
+ 639:../MQXLITE/kernel/sched.c **** /*!
+ 640:../MQXLITE/kernel/sched.c ****  * \private
+ 641:../MQXLITE/kernel/sched.c ****  *
+ 642:../MQXLITE/kernel/sched.c ****  * \brief Gets the maximum of the priorities of the tasks on the waiting queue.
+ 643:../MQXLITE/kernel/sched.c ****  *
+ 644:../MQXLITE/kernel/sched.c ****  * \param[in] queue_ptr Pointer to the queue header.
+ 645:../MQXLITE/kernel/sched.c ****  *
+ 646:../MQXLITE/kernel/sched.c ****  * \return The highest task priority from specified queue.
+ 647:../MQXLITE/kernel/sched.c ****  *
+ 648:../MQXLITE/kernel/sched.c ****  * \see QUEUE_STRUCT
+ 649:../MQXLITE/kernel/sched.c ****  */
+ 650:../MQXLITE/kernel/sched.c **** _mqx_uint _sched_get_max_priority_on_q_internal
+ 651:../MQXLITE/kernel/sched.c **** (
+ 652:../MQXLITE/kernel/sched.c ****     register QUEUE_STRUCT_PTR queue_ptr
+ 653:../MQXLITE/kernel/sched.c **** )
+ 654:../MQXLITE/kernel/sched.c **** { /* Body */
+ 454              		.loc 1 654 0
+ 455              		.cfi_startproc
+ 456 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 457              	.LCFI18:
+ 458              		.cfi_def_cfa_offset 20
+ 459              		.cfi_offset 4, -20
+ 460              		.cfi_offset 5, -16
+ 461              		.cfi_offset 6, -12
+ 462              		.cfi_offset 7, -8
+ 463              		.cfi_offset 14, -4
+ 464 0002 00AF     		add	r7, sp, #0
+ 465              	.LCFI19:
+ 466              		.cfi_def_cfa_register 7
+ 467 0004 031C     		mov	r3, r0
+ 655:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR td_ptr;
+ 656:../MQXLITE/kernel/sched.c ****     register _mqx_uint     priority;
+ 657:../MQXLITE/kernel/sched.c ****     register _mqx_uint     count;
+ 658:../MQXLITE/kernel/sched.c **** 
+ 659:../MQXLITE/kernel/sched.c ****     td_ptr = (TD_STRUCT_PTR) ((pointer) queue_ptr->NEXT);
+ 468              		.loc 1 659 0
+ 469 0006 1C68     		ldr	r4, [r3]
+ 660:../MQXLITE/kernel/sched.c ****     count = _QUEUE_GET_SIZE(queue_ptr) + 1;
+ 470              		.loc 1 660 0
+ 471 0008 1B89     		ldrh	r3, [r3, #8]
+ 472 000a 0133     		add	r3, r3, #1
+ 473 000c 1E1C     		mov	r6, r3
+ 661:../MQXLITE/kernel/sched.c ****     priority = MAX_MQX_UINT;
+ 474              		.loc 1 661 0
+ 475 000e 0123     		mov	r3, #1
+ 476 0010 5D42     		neg	r5, r3
+ 662:../MQXLITE/kernel/sched.c ****     while (--count)
+ 477              		.loc 1 662 0
+ 478 0012 07E0     		b	.L29
+ 479              	.L31:
+ 663:../MQXLITE/kernel/sched.c ****     {
+ 664:../MQXLITE/kernel/sched.c ****         if (td_ptr->MY_QUEUE->PRIORITY < priority)
+ 480              		.loc 1 664 0
+ 481 0014 E369     		ldr	r3, [r4, #28]
+ 482 0016 DB89     		ldrh	r3, [r3, #14]
+ 483 0018 AB42     		cmp	r3, r5
+ 484 001a 02D2     		bcs	.L30
+ 665:../MQXLITE/kernel/sched.c ****         {
+ 666:../MQXLITE/kernel/sched.c ****             priority = td_ptr->MY_QUEUE->PRIORITY;
+ 485              		.loc 1 666 0
+ 486 001c E369     		ldr	r3, [r4, #28]
+ 487 001e DB89     		ldrh	r3, [r3, #14]
+ 488 0020 1D1C     		mov	r5, r3
+ 489              	.L30:
+ 667:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 668:../MQXLITE/kernel/sched.c ****         td_ptr = td_ptr->TD_NEXT;
+ 490              		.loc 1 668 0
+ 491 0022 2468     		ldr	r4, [r4]
+ 492              	.L29:
+ 662:../MQXLITE/kernel/sched.c ****     while (--count)
+ 493              		.loc 1 662 0
+ 494 0024 013E     		sub	r6, r6, #1
+ 495 0026 002E     		cmp	r6, #0
+ 496 0028 F4D1     		bne	.L31
+ 669:../MQXLITE/kernel/sched.c ****     } /* Endwhile */
+ 670:../MQXLITE/kernel/sched.c ****     return priority;
+ 497              		.loc 1 670 0
+ 498 002a 2B1C     		mov	r3, r5
+ 671:../MQXLITE/kernel/sched.c **** 
+ 672:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 499              		.loc 1 672 0
+ 500 002c 181C     		mov	r0, r3
+ 501 002e BD46     		mov	sp, r7
+ 502              		@ sp needed for prologue
+ 503 0030 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 504              		.cfi_endproc
+ 505              	.LFE6:
+ 507 0032 C046     		.section	.text._sched_set_priority_internal,"ax",%progbits
+ 508              		.align	2
+ 509              		.global	_sched_set_priority_internal
+ 510              		.code	16
+ 511              		.thumb_func
+ 513              	_sched_set_priority_internal:
+ 514              	.LFB7:
+ 673:../MQXLITE/kernel/sched.c **** 
+ 674:../MQXLITE/kernel/sched.c **** /*!
+ 675:../MQXLITE/kernel/sched.c ****  * \private
+ 676:../MQXLITE/kernel/sched.c ****  *
+ 677:../MQXLITE/kernel/sched.c ****  * \brief Puts the specified td onto the specified priority queue.
+ 678:../MQXLITE/kernel/sched.c ****  *
+ 679:../MQXLITE/kernel/sched.c ****  * This function MUST BE CALLED with DISABLED interrupts.
+ 680:../MQXLITE/kernel/sched.c ****  *
+ 681:../MQXLITE/kernel/sched.c ****  * \param[in] td_ptr Pointer to the task descriptor whose priority is to change.
+ 682:../MQXLITE/kernel/sched.c ****  * \param[in] new_priority The new task priority, MUST be a valid priority.
+ 683:../MQXLITE/kernel/sched.c ****  *
+ 684:../MQXLITE/kernel/sched.c ****  * \see TD_STRUCT
+ 685:../MQXLITE/kernel/sched.c ****  */
+ 686:../MQXLITE/kernel/sched.c **** void _sched_set_priority_internal
+ 687:../MQXLITE/kernel/sched.c **** (
+ 688:../MQXLITE/kernel/sched.c ****     register TD_STRUCT_PTR td_ptr,
+ 689:../MQXLITE/kernel/sched.c ****     register _mqx_uint     new_priority
+ 690:../MQXLITE/kernel/sched.c **** )
+ 691:../MQXLITE/kernel/sched.c **** { /* Body */
+ 515              		.loc 1 691 0
+ 516              		.cfi_startproc
+ 517 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 518              	.LCFI20:
+ 519              		.cfi_def_cfa_offset 20
+ 520              		.cfi_offset 4, -20
+ 521              		.cfi_offset 5, -16
+ 522              		.cfi_offset 6, -12
+ 523              		.cfi_offset 7, -8
+ 524              		.cfi_offset 14, -4
+ 525 0002 83B0     		sub	sp, sp, #12
+ 526              	.LCFI21:
+ 527              		.cfi_def_cfa_offset 32
+ 528 0004 00AF     		add	r7, sp, #0
+ 529              	.LCFI22:
+ 530              		.cfi_def_cfa_register 7
+ 531 0006 031C     		mov	r3, r0
+ 532 0008 0A1C     		mov	r2, r1
+ 692:../MQXLITE/kernel/sched.c ****     register KERNEL_DATA_STRUCT_PTR kernel_data;
+ 693:../MQXLITE/kernel/sched.c ****     register READY_Q_STRUCT_PTR     ready_q_ptr;
+ 694:../MQXLITE/kernel/sched.c ****     register _mqx_uint              old_priority;
+ 695:../MQXLITE/kernel/sched.c **** 
+ 696:../MQXLITE/kernel/sched.c ****     _GET_KERNEL_DATA(kernel_data);
+ 533              		.loc 1 696 0
+ 534 000a 2249     		ldr	r1, .L38
+ 535 000c 0C68     		ldr	r4, [r1]
+ 697:../MQXLITE/kernel/sched.c **** 
+ 698:../MQXLITE/kernel/sched.c ****     /* Find the new queue */
+ 699:../MQXLITE/kernel/sched.c ****     ready_q_ptr = kernel_data->READY_Q_LIST;
+ 536              		.loc 1 699 0
+ 537 000e 256A     		ldr	r5, [r4, #32]
+ 700:../MQXLITE/kernel/sched.c ****     old_priority = td_ptr->MY_QUEUE->PRIORITY;
+ 538              		.loc 1 700 0
+ 539 0010 D969     		ldr	r1, [r3, #28]
+ 540 0012 C989     		ldrh	r1, [r1, #14]
+ 541 0014 0E1C     		mov	r6, r1
+ 701:../MQXLITE/kernel/sched.c **** 
+ 702:../MQXLITE/kernel/sched.c ****     ready_q_ptr = ready_q_ptr - new_priority;
+ 542              		.loc 1 702 0
+ 543 0016 1101     		lsl	r1, r2, #4
+ 544 0018 4942     		neg	r1, r1
+ 545 001a 6D18     		add	r5, r5, r1
+ 703:../MQXLITE/kernel/sched.c **** 
+ 704:../MQXLITE/kernel/sched.c ****     /*
+ 705:../MQXLITE/kernel/sched.c ****       * Remove the current task from the head of the queue, and
+ 706:../MQXLITE/kernel/sched.c ****       * place the task at the back of the specified queue.
+ 707:../MQXLITE/kernel/sched.c ****       */
+ 708:../MQXLITE/kernel/sched.c ****     td_ptr->TASK_SR = ready_q_ptr->ENABLE_SR;
+ 546              		.loc 1 708 0
+ 547 001c A989     		ldrh	r1, [r5, #12]
+ 548 001e 9984     		strh	r1, [r3, #36]
+ 709:../MQXLITE/kernel/sched.c ****     td_ptr->MY_QUEUE = ready_q_ptr;
+ 549              		.loc 1 709 0
+ 550 0020 DD61     		str	r5, [r3, #28]
+ 710:../MQXLITE/kernel/sched.c ****     if (td_ptr->STATE == READY)
+ 551              		.loc 1 710 0
+ 552 0022 9968     		ldr	r1, [r3, #8]
+ 553 0024 0229     		cmp	r1, #2
+ 554 0026 2CD1     		bne	.L34
+ 555              	.LBB4:
+ 711:../MQXLITE/kernel/sched.c ****     {
+ 712:../MQXLITE/kernel/sched.c ****         _QUEUE_UNLINK(td_ptr);
+ 556              		.loc 1 712 0
+ 557 0028 5968     		ldr	r1, [r3, #4]
+ 558 002a 7960     		str	r1, [r7, #4]
+ 559 002c 1968     		ldr	r1, [r3]
+ 560 002e 3960     		str	r1, [r7]
+ 561 0030 7968     		ldr	r1, [r7, #4]
+ 562 0032 3868     		ldr	r0, [r7]
+ 563 0034 0860     		str	r0, [r1]
+ 564 0036 3968     		ldr	r1, [r7]
+ 565 0038 7868     		ldr	r0, [r7, #4]
+ 566 003a 4860     		str	r0, [r1, #4]
+ 567              	.LBE4:
+ 713:../MQXLITE/kernel/sched.c ****         _TASK_READY(td_ptr,kernel_data);
+ 568              		.loc 1 713 0
+ 569 003c D869     		ldr	r0, [r3, #28]
+ 570 003e 616A     		ldr	r1, [r4, #36]
+ 571 0040 8842     		cmp	r0, r1
+ 572 0042 01D9     		bls	.L35
+ 573              		.loc 1 713 0 is_stmt 0
+ 574 0044 D969     		ldr	r1, [r3, #28]
+ 575 0046 6162     		str	r1, [r4, #36]
+ 576              	.L35:
+ 577              		.loc 1 713 0
+ 578 0048 0221     		mov	r1, #2
+ 579 004a 9960     		str	r1, [r3, #8]
+ 580 004c D969     		ldr	r1, [r3, #28]
+ 581 004e 4968     		ldr	r1, [r1, #4]
+ 582 0050 5960     		str	r1, [r3, #4]
+ 583 0052 5968     		ldr	r1, [r3, #4]
+ 584 0054 0968     		ldr	r1, [r1]
+ 585 0056 1960     		str	r1, [r3]
+ 586 0058 5968     		ldr	r1, [r3, #4]
+ 587 005a 0B60     		str	r3, [r1]
+ 588 005c D969     		ldr	r1, [r3, #28]
+ 589 005e 4B60     		str	r3, [r1, #4]
+ 714:../MQXLITE/kernel/sched.c ****         if (kernel_data->ACTIVE_PTR == td_ptr)
+ 590              		.loc 1 714 0 is_stmt 1
+ 591 0060 E169     		ldr	r1, [r4, #28]
+ 592 0062 9942     		cmp	r1, r3
+ 593 0064 06D1     		bne	.L36
+ 715:../MQXLITE/kernel/sched.c ****         {
+ 716:../MQXLITE/kernel/sched.c ****             /* Changing the current task's priority */
+ 717:../MQXLITE/kernel/sched.c ****             kernel_data->ACTIVE_SR = td_ptr->TASK_SR;
+ 594              		.loc 1 717 0
+ 595 0066 9B8C     		ldrh	r3, [r3, #36]
+ 596 0068 6383     		strh	r3, [r4, #26]
+ 718:../MQXLITE/kernel/sched.c ****             if (new_priority > old_priority)
+ 597              		.loc 1 718 0
+ 598 006a B242     		cmp	r2, r6
+ 599 006c 0FD9     		bls	.L33
+ 719:../MQXLITE/kernel/sched.c ****             {
+ 720:../MQXLITE/kernel/sched.c ****                 /*
+ 721:../MQXLITE/kernel/sched.c ****                   * Save state, and re-run the scheduler
+ 722:../MQXLITE/kernel/sched.c ****                   * since the actice task's priority has been lowered,
+ 723:../MQXLITE/kernel/sched.c ****                   * and now a higher priority task may be ready to run
+ 724:../MQXLITE/kernel/sched.c ****                   */
+ 725:../MQXLITE/kernel/sched.c ****                 _sched_execute_scheduler_internal();
+ 600              		.loc 1 725 0
+ 601 006e FFF7FEFF 		bl	_sched_execute_scheduler_internal
+ 602 0072 0CE0     		b	.L33
+ 603              	.L36:
+ 726:../MQXLITE/kernel/sched.c ****             } /* Endif */
+ 727:../MQXLITE/kernel/sched.c ****         }
+ 728:../MQXLITE/kernel/sched.c ****         else
+ 729:../MQXLITE/kernel/sched.c ****         {
+ 730:../MQXLITE/kernel/sched.c ****             /* May need to mod sr value of task on stack */
+ 731:../MQXLITE/kernel/sched.c ****             if (td_ptr->DISABLED_LEVEL == 0)
+ 604              		.loc 1 731 0
+ 605 0074 9A6C     		ldr	r2, [r3, #72]
+ 606 0076 002A     		cmp	r2, #0
+ 607 0078 09D1     		bne	.L33
+ 732:../MQXLITE/kernel/sched.c ****             {
+ 733:../MQXLITE/kernel/sched.c ****                 _task_sync_priority_internal(td_ptr);
+ 608              		.loc 1 733 0
+ 609 007a 181C     		mov	r0, r3
+ 610 007c FFF7FEFF 		bl	_task_sync_priority_internal
+ 611 0080 05E0     		b	.L33
+ 612              	.L34:
+ 734:../MQXLITE/kernel/sched.c ****             } /* Endif */
+ 735:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 736:../MQXLITE/kernel/sched.c ****     }
+ 737:../MQXLITE/kernel/sched.c ****     else
+ 738:../MQXLITE/kernel/sched.c ****     {
+ 739:../MQXLITE/kernel/sched.c ****         /* May need to mod sr value of task on stack */
+ 740:../MQXLITE/kernel/sched.c ****         if (td_ptr->DISABLED_LEVEL == 0)
+ 613              		.loc 1 740 0
+ 614 0082 9A6C     		ldr	r2, [r3, #72]
+ 615 0084 002A     		cmp	r2, #0
+ 616 0086 02D1     		bne	.L33
+ 741:../MQXLITE/kernel/sched.c ****         {
+ 742:../MQXLITE/kernel/sched.c ****             _task_sync_priority_internal(td_ptr);
+ 617              		.loc 1 742 0
+ 618 0088 181C     		mov	r0, r3
+ 619 008a FFF7FEFF 		bl	_task_sync_priority_internal
+ 620              	.L33:
+ 743:../MQXLITE/kernel/sched.c ****         } /* Endif */
+ 744:../MQXLITE/kernel/sched.c ****     } /* Endif */
+ 745:../MQXLITE/kernel/sched.c **** 
+ 746:../MQXLITE/kernel/sched.c **** } /* Endbody */
+ 621              		.loc 1 746 0
+ 622 008e BD46     		mov	sp, r7
+ 623 0090 03B0     		add	sp, sp, #12
+ 624              		@ sp needed for prologue
+ 625 0092 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 626              	.L39:
+ 627              		.align	2
+ 628              	.L38:
+ 629 0094 00000000 		.word	_mqx_kernel_data
+ 630              		.cfi_endproc
+ 631              	.LFE7:
+ 633              		.text
+ 634              	.Letext0:
+ 635              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 636              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 637              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 638              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 639              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 640              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 sched.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:18     .text._sched_get_max_priority:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:23     .text._sched_get_max_priority:00000000 _sched_get_max_priority
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:52     .text._sched_get_min_priority:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:57     .text._sched_get_min_priority:00000000 _sched_get_min_priority
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:90     .text._sched_get_min_priority:0000001c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:95     .text._sched_yield:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:100    .text._sched_yield:00000000 _sched_yield
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:234    .text._sched_yield:000000b0 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:239    .text._sched_boost_priority_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:244    .text._sched_boost_priority_internal:00000000 _sched_boost_priority_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:513    .text._sched_set_priority_internal:00000000 _sched_set_priority_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:287    .text._sched_boost_priority_internal:00000030 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:292    .text._sched_unboost_priority_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:297    .text._sched_unboost_priority_internal:00000000 _sched_unboost_priority_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:351    .text._sched_unboost_priority_internal:00000040 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:356    .text._sched_insert_priorityq_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:361    .text._sched_insert_priorityq_internal:00000000 _sched_insert_priorityq_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:447    .text._sched_get_max_priority_on_q_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:452    .text._sched_get_max_priority_on_q_internal:00000000 _sched_get_max_priority_on_q_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:508    .text._sched_set_priority_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:629    .text._sched_set_priority_internal:00000094 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mqx_kernel_data
+_sched_execute_scheduler_internal
+_sched_check_scheduler_internal
+_task_sync_priority_internal

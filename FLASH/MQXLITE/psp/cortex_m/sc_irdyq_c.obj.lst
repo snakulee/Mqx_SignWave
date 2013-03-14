@@ -1,0 +1,465 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"sc_irdyq.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._psp_set_kernel_disable_level,"ax",%progbits
+  18              		.align	2
+  19              		.global	_psp_set_kernel_disable_level
+  20              		.code	16
+  21              		.thumb_func
+  23              	_psp_set_kernel_disable_level:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/sc_irdyq.c"
+   1:../MQXLITE/psp/cortex_m/sc_irdyq.c **** /**HEADER*********************************************************************
+   2:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+   3:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Copyright (c) 2010 Freescale Semiconductor
+   4:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+   6:../MQXLITE/psp/cortex_m/sc_irdyq.c **** ******************************************************************************
+   7:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+   8:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  20:../MQXLITE/psp/cortex_m/sc_irdyq.c **** ******************************************************************************
+  21:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  22:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * $FileName: sc_irdyq.c$
+  23:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * $Version : 3.8.4.0$
+  24:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * $Date    : Aug-30-2011$
+  25:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  26:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *   This file contains psp functions for initializing the scheduler.n
+  28:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  29:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *END*************************************************************************/
+  30:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  31:../MQXLITE/psp/cortex_m/sc_irdyq.c **** #include "mqx_inc.h"
+  32:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  33:../MQXLITE/psp/cortex_m/sc_irdyq.c **** /*FUNCTION*-------------------------------------------------------------------
+  34:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  35:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Function Name    : _psp_set_kernel_disable_level
+  36:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Returned Value   :
+  37:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Comments         :
+  38:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *    This function sets up the kernel disable priority.
+  39:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  40:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *END*-----------------------------------------------------------------------*/
+  41:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  42:../MQXLITE/psp/cortex_m/sc_irdyq.c **** void _psp_set_kernel_disable_level
+  43:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     (
+  44:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         void
+  45:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     )
+  46:../MQXLITE/psp/cortex_m/sc_irdyq.c **** {
+  26              		.loc 1 46 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 86B0     		sub	sp, sp, #24
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 32
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  47:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     KERNEL_DATA_STRUCT_PTR          kernel_data;
+  48:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     MQX_INITIALIZATION_STRUCT_PTR   init_ptr;
+  49:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     uint_32 temp;
+  50:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     _mqx_int i;
+  51:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  52:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     _GET_KERNEL_DATA(kernel_data);
+  39              		.loc 1 52 0
+  40 0006 244B     		ldr	r3, .L8
+  41 0008 1B68     		ldr	r3, [r3]
+  42 000a FB60     		str	r3, [r7, #12]
+  53:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  54:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     init_ptr = &kernel_data->INIT;
+  43              		.loc 1 54 0
+  44 000c FB68     		ldr	r3, [r7, #12]
+  45 000e 5133     		add	r3, r3, #81
+  46 0010 FF33     		add	r3, r3, #255
+  47 0012 BB60     		str	r3, [r7, #8]
+  55:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  56:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     /* Calculate the enable and disable interrupt values for the kernel. */
+  57:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     temp = init_ptr->MQX_HARDWARE_INTERRUPT_LEVEL_MAX;
+  48              		.loc 1 57 0
+  49 0014 BB68     		ldr	r3, [r7, #8]
+  50 0016 DB68     		ldr	r3, [r3, #12]
+  51 0018 7B61     		str	r3, [r7, #20]
+  58:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     if (temp > 7) {
+  52              		.loc 1 58 0
+  53 001a 7B69     		ldr	r3, [r7, #20]
+  54 001c 072B     		cmp	r3, #7
+  55 001e 05D9     		bls	.L2
+  59:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         temp = 7;
+  56              		.loc 1 59 0
+  57 0020 0723     		mov	r3, #7
+  58 0022 7B61     		str	r3, [r7, #20]
+  60:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         init_ptr->MQX_HARDWARE_INTERRUPT_LEVEL_MAX = 7;
+  59              		.loc 1 60 0
+  60 0024 BB68     		ldr	r3, [r7, #8]
+  61 0026 0722     		mov	r2, #7
+  62 0028 DA60     		str	r2, [r3, #12]
+  63 002a 07E0     		b	.L3
+  64              	.L2:
+  61:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     } else if (temp == 0) {
+  65              		.loc 1 61 0
+  66 002c 7B69     		ldr	r3, [r7, #20]
+  67 002e 002B     		cmp	r3, #0
+  68 0030 04D1     		bne	.L3
+  62:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         temp = 1;
+  69              		.loc 1 62 0
+  70 0032 0123     		mov	r3, #1
+  71 0034 7B61     		str	r3, [r7, #20]
+  63:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         init_ptr->MQX_HARDWARE_INTERRUPT_LEVEL_MAX = 1;
+  72              		.loc 1 63 0
+  73 0036 BB68     		ldr	r3, [r7, #8]
+  74 0038 0122     		mov	r2, #1
+  75 003a DA60     		str	r2, [r3, #12]
+  76              	.L3:
+  64:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     }
+  65:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  66:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     kernel_data->DISABLE_SR = CORTEX_PRIOR(temp);
+  77              		.loc 1 66 0
+  78 003c 7B69     		ldr	r3, [r7, #20]
+  79 003e 9BB2     		uxth	r3, r3
+  80 0040 DB01     		lsl	r3, r3, #7
+  81 0042 9AB2     		uxth	r2, r3
+  82 0044 FF23     		mov	r3, #255
+  83 0046 1340     		and	r3, r2
+  84 0048 9AB2     		uxth	r2, r3
+  85 004a FB68     		ldr	r3, [r7, #12]
+  86 004c DA82     		strh	r2, [r3, #22]
+  67:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  68:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     /* Set all (till now unused) interrupts level to the disable level */
+  69:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     for (i = 0; i < sizeof(NVIC_BASE_PTR->IP) / sizeof(NVIC_BASE_PTR->IP[0]); i++)
+  87              		.loc 1 69 0
+  88 004e 0023     		mov	r3, #0
+  89 0050 3B61     		str	r3, [r7, #16]
+  90 0052 08E0     		b	.L4
+  91              	.L5:
+  70:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         NVIC_BASE_PTR->IP[i] = CORTEX_PRIOR((1 << CORTEX_PRIOR_IMPL) - 2);
+  92              		.loc 1 70 0
+  93 0054 114B     		ldr	r3, .L8+4
+  94 0056 3A69     		ldr	r2, [r7, #16]
+  95 0058 C032     		add	r2, r2, #192
+  96 005a 9200     		lsl	r2, r2, #2
+  97 005c 0021     		mov	r1, #0
+  98 005e D150     		str	r1, [r2, r3]
+  69:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     for (i = 0; i < sizeof(NVIC_BASE_PTR->IP) / sizeof(NVIC_BASE_PTR->IP[0]); i++)
+  99              		.loc 1 69 0
+ 100 0060 3B69     		ldr	r3, [r7, #16]
+ 101 0062 0133     		add	r3, r3, #1
+ 102 0064 3B61     		str	r3, [r7, #16]
+ 103              	.L4:
+  69:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     for (i = 0; i < sizeof(NVIC_BASE_PTR->IP) / sizeof(NVIC_BASE_PTR->IP[0]); i++)
+ 104              		.loc 1 69 0 is_stmt 0
+ 105 0066 3B69     		ldr	r3, [r7, #16]
+ 106 0068 072B     		cmp	r3, #7
+ 107 006a F3D9     		bls	.L5
+ 108              	.LBB2:
+  71:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  72:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  73:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     /* Disable interrupts by default */
+  74:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     {
+  75:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         uint32_t * icer_ptr = (uint32_t *)&NVIC_BASE_PTR->ICER;
+ 109              		.loc 1 75 0 is_stmt 1
+ 110 006c 0C4B     		ldr	r3, .L8+8
+ 111 006e 7B60     		str	r3, [r7, #4]
+  76:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  77:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         for (i = 0; i < sizeof(NVIC_BASE_PTR->ICER) / sizeof(uint32_t); i++)    {
+ 112              		.loc 1 77 0
+ 113 0070 0023     		mov	r3, #0
+ 114 0072 3B61     		str	r3, [r7, #16]
+ 115 0074 09E0     		b	.L6
+ 116              	.L7:
+  78:../MQXLITE/psp/cortex_m/sc_irdyq.c ****             /* Disable 32 interrupts in a row */
+  79:../MQXLITE/psp/cortex_m/sc_irdyq.c ****             *(icer_ptr + i) = 0xFFFFFFFF;
+ 117              		.loc 1 79 0
+ 118 0076 3B69     		ldr	r3, [r7, #16]
+ 119 0078 9B00     		lsl	r3, r3, #2
+ 120 007a 7A68     		ldr	r2, [r7, #4]
+ 121 007c D318     		add	r3, r2, r3
+ 122 007e 0122     		mov	r2, #1
+ 123 0080 5242     		neg	r2, r2
+ 124 0082 1A60     		str	r2, [r3]
+  77:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         for (i = 0; i < sizeof(NVIC_BASE_PTR->ICER) / sizeof(uint32_t); i++)    {
+ 125              		.loc 1 77 0
+ 126 0084 3B69     		ldr	r3, [r7, #16]
+ 127 0086 0133     		add	r3, r3, #1
+ 128 0088 3B61     		str	r3, [r7, #16]
+ 129              	.L6:
+  77:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         for (i = 0; i < sizeof(NVIC_BASE_PTR->ICER) / sizeof(uint32_t); i++)    {
+ 130              		.loc 1 77 0 is_stmt 0
+ 131 008a 3B69     		ldr	r3, [r7, #16]
+ 132 008c 002B     		cmp	r3, #0
+ 133 008e F2D0     		beq	.L7
+ 134              	.LBE2:
+  80:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         }
+  81:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     }
+  82:../MQXLITE/psp/cortex_m/sc_irdyq.c **** }
+ 135              		.loc 1 82 0 is_stmt 1
+ 136 0090 BD46     		mov	sp, r7
+ 137 0092 06B0     		add	sp, sp, #24
+ 138              		@ sp needed for prologue
+ 139 0094 80BD     		pop	{r7, pc}
+ 140              	.L9:
+ 141 0096 C046     		.align	2
+ 142              	.L8:
+ 143 0098 00000000 		.word	_mqx_kernel_data
+ 144 009c 00E100E0 		.word	-536813312
+ 145 00a0 80E100E0 		.word	-536813184
+ 146              		.cfi_endproc
+ 147              	.LFE0:
+ 149              		.section	.text._psp_init_readyqs,"ax",%progbits
+ 150              		.align	2
+ 151              		.global	_psp_init_readyqs
+ 152              		.code	16
+ 153              		.thumb_func
+ 155              	_psp_init_readyqs:
+ 156              	.LFB1:
+  83:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  84:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  85:../MQXLITE/psp/cortex_m/sc_irdyq.c **** /*FUNCTION*-------------------------------------------------------------------
+  86:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  87:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Function Name    : _psp_init_readyqs
+  88:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Returned Value   : uint_32 result_code
+  89:../MQXLITE/psp/cortex_m/sc_irdyq.c **** * Comments         :
+  90:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *    This function sets up the kernel priority ready queues
+  91:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *
+  92:../MQXLITE/psp/cortex_m/sc_irdyq.c **** *END*-----------------------------------------------------------------------*/
+  93:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+  94:../MQXLITE/psp/cortex_m/sc_irdyq.c **** uint_32 _psp_init_readyqs
+  95:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     (
+  96:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         void
+  97:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     )
+  98:../MQXLITE/psp/cortex_m/sc_irdyq.c **** { /* Body */
+ 157              		.loc 1 98 0
+ 158              		.cfi_startproc
+ 159 0000 80B5     		push	{r7, lr}
+ 160              	.LCFI3:
+ 161              		.cfi_def_cfa_offset 8
+ 162              		.cfi_offset 7, -8
+ 163              		.cfi_offset 14, -4
+ 164 0002 84B0     		sub	sp, sp, #16
+ 165              	.LCFI4:
+ 166              		.cfi_def_cfa_offset 24
+ 167 0004 00AF     		add	r7, sp, #0
+ 168              	.LCFI5:
+ 169              		.cfi_def_cfa_register 7
+  99:../MQXLITE/psp/cortex_m/sc_irdyq.c ****    KERNEL_DATA_STRUCT_PTR kernel_data;
+ 100:../MQXLITE/psp/cortex_m/sc_irdyq.c ****    READY_Q_STRUCT_PTR     q_ptr;
+ 101:../MQXLITE/psp/cortex_m/sc_irdyq.c ****    uint_32                priority_levels;
+ 102:../MQXLITE/psp/cortex_m/sc_irdyq.c ****    uint_32                n;
+ 103:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 104:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     _GET_KERNEL_DATA(kernel_data);
+ 170              		.loc 1 104 0
+ 171 0006 294B     		ldr	r3, .L16
+ 172 0008 1B68     		ldr	r3, [r3]
+ 173 000a 7B60     		str	r3, [r7, #4]
+ 105:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     kernel_data->READY_Q_LIST = (READY_Q_STRUCT_PTR) NULL;
+ 174              		.loc 1 105 0
+ 175 000c 7B68     		ldr	r3, [r7, #4]
+ 176 000e 0022     		mov	r2, #0
+ 177 0010 1A62     		str	r2, [r3, #32]
+ 106:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     priority_levels = kernel_data->LOWEST_TASK_PRIORITY + 2;
+ 178              		.loc 1 106 0
+ 179 0012 7A68     		ldr	r2, [r7, #4]
+ 180 0014 C423     		mov	r3, #196
+ 181 0016 D358     		ldr	r3, [r2, r3]
+ 182 0018 0233     		add	r3, r3, #2
+ 183 001a 3B60     		str	r3, [r7]
+ 107:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 108:../MQXLITE/psp/cortex_m/sc_irdyq.c **** #ifdef MQX_LITE_VERSION_NUMBER
+ 109:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     q_ptr = &mqx_static_ready_queue[0];
+ 184              		.loc 1 109 0
+ 185 001c 244B     		ldr	r3, .L16+4
+ 186 001e FB60     		str	r3, [r7, #12]
+ 110:../MQXLITE/psp/cortex_m/sc_irdyq.c **** #else
+ 111:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     q_ptr = (READY_Q_STRUCT_PTR)_mem_alloc_zero(sizeof(READY_Q_STRUCT) * priority_levels);
+ 112:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     #if MQX_CHECK_MEMORY_ALLOCATION_ERRORS
+ 113:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         if ( q_ptr == NULL ) {
+ 114:../MQXLITE/psp/cortex_m/sc_irdyq.c ****             return (MQX_OUT_OF_MEMORY);
+ 115:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         } /* Endif */
+ 116:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     #endif /* MQX_CHECK_MEMORY_ALLOCATION_ERRORS */
+ 117:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     _mem_set_type(q_ptr, MEM_TYPE_READYQ);
+ 118:../MQXLITE/psp/cortex_m/sc_irdyq.c **** #endif /* MQX_LITE_VERSION_NUMBER */
+ 119:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 120:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     n = priority_levels;
+ 187              		.loc 1 120 0
+ 188 0020 3B68     		ldr	r3, [r7]
+ 189 0022 BB60     		str	r3, [r7, #8]
+ 121:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     while (n--) {
+ 190              		.loc 1 121 0
+ 191 0024 2FE0     		b	.L11
+ 192              	.L14:
+ 122:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         q_ptr->HEAD_READY_Q  = (TD_STRUCT_PTR)q_ptr;
+ 193              		.loc 1 122 0
+ 194 0026 FB68     		ldr	r3, [r7, #12]
+ 195 0028 FA68     		ldr	r2, [r7, #12]
+ 196 002a 1A60     		str	r2, [r3]
+ 123:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         q_ptr->TAIL_READY_Q  = (TD_STRUCT_PTR)q_ptr;
+ 197              		.loc 1 123 0
+ 198 002c FB68     		ldr	r3, [r7, #12]
+ 199 002e FA68     		ldr	r2, [r7, #12]
+ 200 0030 5A60     		str	r2, [r3, #4]
+ 124:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         q_ptr->PRIORITY      = (uint_16)n;
+ 201              		.loc 1 124 0
+ 202 0032 BB68     		ldr	r3, [r7, #8]
+ 203 0034 9AB2     		uxth	r2, r3
+ 204 0036 FB68     		ldr	r3, [r7, #12]
+ 205 0038 DA81     		strh	r2, [r3, #14]
+ 125:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 126:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         if (n + kernel_data->INIT.MQX_HARDWARE_INTERRUPT_LEVEL_MAX < ((1 << CORTEX_PRIOR_IMPL) - 1)
+ 206              		.loc 1 126 0
+ 207 003a 7A68     		ldr	r2, [r7, #4]
+ 208 003c AE23     		mov	r3, #174
+ 209 003e 5B00     		lsl	r3, r3, #1
+ 210 0040 D258     		ldr	r2, [r2, r3]
+ 211 0042 BB68     		ldr	r3, [r7, #8]
+ 212 0044 D318     		add	r3, r2, r3
+ 213 0046 002B     		cmp	r3, #0
+ 214 0048 10D1     		bne	.L12
+ 127:../MQXLITE/psp/cortex_m/sc_irdyq.c ****             q_ptr->ENABLE_SR   = CORTEX_PRIOR(n + kernel_data->INIT.MQX_HARDWARE_INTERRUPT_LEVEL_MA
+ 215              		.loc 1 127 0
+ 216 004a 7A68     		ldr	r2, [r7, #4]
+ 217 004c AE23     		mov	r3, #174
+ 218 004e 5B00     		lsl	r3, r3, #1
+ 219 0050 D358     		ldr	r3, [r2, r3]
+ 220 0052 9AB2     		uxth	r2, r3
+ 221 0054 BB68     		ldr	r3, [r7, #8]
+ 222 0056 9BB2     		uxth	r3, r3
+ 223 0058 D318     		add	r3, r2, r3
+ 224 005a 9BB2     		uxth	r3, r3
+ 225 005c DB01     		lsl	r3, r3, #7
+ 226 005e 9AB2     		uxth	r2, r3
+ 227 0060 FF23     		mov	r3, #255
+ 228 0062 1340     		and	r3, r2
+ 229 0064 9AB2     		uxth	r2, r3
+ 230 0066 FB68     		ldr	r3, [r7, #12]
+ 231 0068 9A81     		strh	r2, [r3, #12]
+ 232 006a 02E0     		b	.L13
+ 233              	.L12:
+ 128:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         else
+ 129:../MQXLITE/psp/cortex_m/sc_irdyq.c ****             q_ptr->ENABLE_SR   = CORTEX_PRIOR((1 << CORTEX_PRIOR_IMPL) - 2);
+ 234              		.loc 1 129 0
+ 235 006c FB68     		ldr	r3, [r7, #12]
+ 236 006e 0022     		mov	r2, #0
+ 237 0070 9A81     		strh	r2, [r3, #12]
+ 238              	.L13:
+ 130:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 131:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         q_ptr->NEXT_Q        = kernel_data->READY_Q_LIST;
+ 239              		.loc 1 131 0
+ 240 0072 7B68     		ldr	r3, [r7, #4]
+ 241 0074 1A6A     		ldr	r2, [r3, #32]
+ 242 0076 FB68     		ldr	r3, [r7, #12]
+ 243 0078 9A60     		str	r2, [r3, #8]
+ 132:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         kernel_data->READY_Q_LIST = q_ptr++;
+ 244              		.loc 1 132 0
+ 245 007a 7B68     		ldr	r3, [r7, #4]
+ 246 007c FA68     		ldr	r2, [r7, #12]
+ 247 007e 1A62     		str	r2, [r3, #32]
+ 248 0080 FB68     		ldr	r3, [r7, #12]
+ 249 0082 1033     		add	r3, r3, #16
+ 250 0084 FB60     		str	r3, [r7, #12]
+ 251              	.L11:
+ 121:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     while (n--) {
+ 252              		.loc 1 121 0
+ 253 0086 BB68     		ldr	r3, [r7, #8]
+ 254 0088 5A1E     		sub	r2, r3, #1
+ 255 008a 9341     		sbc	r3, r3, r2
+ 256 008c DBB2     		uxtb	r3, r3
+ 257 008e BA68     		ldr	r2, [r7, #8]
+ 258 0090 013A     		sub	r2, r2, #1
+ 259 0092 BA60     		str	r2, [r7, #8]
+ 260 0094 002B     		cmp	r3, #0
+ 261 0096 C6D1     		bne	.L14
+ 133:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     }
+ 134:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 135:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 136:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     /*
+ 137:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     ** Set the current ready q (where the ready queue searches start) to
+ 138:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     ** the head of the list of ready queues.
+ 139:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     */
+ 140:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     kernel_data->CURRENT_READY_Q = kernel_data->READY_Q_LIST;
+ 262              		.loc 1 140 0
+ 263 0098 7B68     		ldr	r3, [r7, #4]
+ 264 009a 1A6A     		ldr	r2, [r3, #32]
+ 265 009c 7B68     		ldr	r3, [r7, #4]
+ 266 009e 5A62     		str	r2, [r3, #36]
+ 141:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 142:../MQXLITE/psp/cortex_m/sc_irdyq.c **** #if 0
+ 143:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     /* Initialize the ENABLE_SR fields in the ready queues */
+ 144:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     sr = 0;
+ 145:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     n  = priority_levels;
+ 146:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     q_ptr =  kernel_data->READY_Q_LIST;
+ 147:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     while (n--) {
+ 148:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         q_ptr->ENABLE_SR = CORTEX_PRIOR(sr);
+ 149:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         if (sr < kernel_data->INIT.MQX_HARDWARE_INTERRUPT_LEVEL_MAX) {
+ 150:../MQXLITE/psp/cortex_m/sc_irdyq.c ****             sr++;
+ 151:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         }
+ 152:../MQXLITE/psp/cortex_m/sc_irdyq.c ****         q_ptr = q_ptr->NEXT_Q;
+ 153:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     }
+ 154:../MQXLITE/psp/cortex_m/sc_irdyq.c **** #endif
+ 155:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 156:../MQXLITE/psp/cortex_m/sc_irdyq.c ****     return MQX_OK;
+ 267              		.loc 1 156 0
+ 268 00a0 0023     		mov	r3, #0
+ 157:../MQXLITE/psp/cortex_m/sc_irdyq.c **** 
+ 158:../MQXLITE/psp/cortex_m/sc_irdyq.c **** } /* Endbody */
+ 269              		.loc 1 158 0
+ 270 00a2 181C     		mov	r0, r3
+ 271 00a4 BD46     		mov	sp, r7
+ 272 00a6 04B0     		add	sp, sp, #16
+ 273              		@ sp needed for prologue
+ 274 00a8 80BD     		pop	{r7, pc}
+ 275              	.L17:
+ 276 00aa C046     		.align	2
+ 277              	.L16:
+ 278 00ac 00000000 		.word	_mqx_kernel_data
+ 279 00b0 00000000 		.word	mqx_static_ready_queue
+ 280              		.cfi_endproc
+ 281              	.LFE1:
+ 283              		.text
+ 284              	.Letext0:
+ 285              		.file 2 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 286              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/IO_Map.h"
+ 287              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 288              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 289              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 290              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 291              		.file 8 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 292              		.file 9 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+ 293              		.file 10 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/MQX1.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 sc_irdyq.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:18     .text._psp_set_kernel_disable_level:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:23     .text._psp_set_kernel_disable_level:00000000 _psp_set_kernel_disable_level
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:143    .text._psp_set_kernel_disable_level:00000098 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:150    .text._psp_init_readyqs:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:155    .text._psp_init_readyqs:00000000 _psp_init_readyqs
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:278    .text._psp_init_readyqs:000000ac $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mqx_kernel_data
+mqx_static_ready_queue

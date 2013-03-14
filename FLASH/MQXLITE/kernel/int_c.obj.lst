@@ -1,0 +1,2257 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"int.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._int_default_isr,"ax",%progbits
+  18              		.align	2
+  19              		.global	_int_default_isr
+  20              		.code	16
+  21              		.thumb_func
+  23              	_int_default_isr:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/kernel/int.c"
+   1:../MQXLITE/kernel/int.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/kernel/int.c ****  *
+   3:../MQXLITE/kernel/int.c ****  * Copyright (c) 2008 Freescale Semiconductor;
+   4:../MQXLITE/kernel/int.c ****  * All Rights Reserved
+   5:../MQXLITE/kernel/int.c ****  *
+   6:../MQXLITE/kernel/int.c ****  * Copyright (c) 2004-2008 Embedded Access Inc.;
+   7:../MQXLITE/kernel/int.c ****  * All Rights Reserved
+   8:../MQXLITE/kernel/int.c ****  *
+   9:../MQXLITE/kernel/int.c ****  * Copyright (c) 1989-2008 ARC International;
+  10:../MQXLITE/kernel/int.c ****  * All Rights Reserved
+  11:../MQXLITE/kernel/int.c ****  *
+  12:../MQXLITE/kernel/int.c ****  ***************************************************************************
+  13:../MQXLITE/kernel/int.c ****  *
+  14:../MQXLITE/kernel/int.c ****  * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15:../MQXLITE/kernel/int.c ****  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16:../MQXLITE/kernel/int.c ****  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17:../MQXLITE/kernel/int.c ****  * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18:../MQXLITE/kernel/int.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19:../MQXLITE/kernel/int.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20:../MQXLITE/kernel/int.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21:../MQXLITE/kernel/int.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22:../MQXLITE/kernel/int.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23:../MQXLITE/kernel/int.c ****  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24:../MQXLITE/kernel/int.c ****  * THE POSSIBILITY OF SUCH DAMAGE.
+  25:../MQXLITE/kernel/int.c ****  *
+  26:../MQXLITE/kernel/int.c ****  **************************************************************************
+  27:../MQXLITE/kernel/int.c ****  *
+  28:../MQXLITE/kernel/int.c ****  * $FileName: int.c$
+  29:../MQXLITE/kernel/int.c ****  * $Version : 3.8.0.1$
+  30:../MQXLITE/kernel/int.c ****  * $Date    : Feb-22-2012$
+  31:../MQXLITE/kernel/int.c ****  *
+  32:../MQXLITE/kernel/int.c ****  * Comments:
+  33:../MQXLITE/kernel/int.c ****  *
+  34:../MQXLITE/kernel/int.c ****  *   This file contains functions of the Interrupt component.
+  35:../MQXLITE/kernel/int.c ****  *
+  36:../MQXLITE/kernel/int.c ****  *END************************************************************************/
+  37:../MQXLITE/kernel/int.c **** 
+  38:../MQXLITE/kernel/int.c **** #include "mqx_inc.h"
+  39:../MQXLITE/kernel/int.c **** 
+  40:../MQXLITE/kernel/int.c **** #if MQX_USE_INTERRUPTS
+  41:../MQXLITE/kernel/int.c **** 
+  42:../MQXLITE/kernel/int.c **** /*!
+  43:../MQXLITE/kernel/int.c ****  * \brief Default ISR that MQX calls if an unhandled interrupt or exception occurs.
+  44:../MQXLITE/kernel/int.c ****  *
+  45:../MQXLITE/kernel/int.c ****  * An application can replace the function with _int_install_unexpected_isr() or
+  46:../MQXLITE/kernel/int.c ****  * _int_install_exception_isr(), in both cases MQX-provided default ISR is installed.
+  47:../MQXLITE/kernel/int.c ****  * \n An application can install an application-provided default ISR with
+  48:../MQXLITE/kernel/int.c ****  * _int_install_default_isr().
+  49:../MQXLITE/kernel/int.c ****  * \n MQX changes the state of the active task to UNHANDLED_INT_BLOCKED and blocks it.
+  50:../MQXLITE/kernel/int.c ****  *
+  51:../MQXLITE/kernel/int.c ****  * \param[in] vector_number Parameter that MQX passes to the ISR.
+  52:../MQXLITE/kernel/int.c ****  *
+  53:../MQXLITE/kernel/int.c ****  * \warning Blocks the active task.
+  54:../MQXLITE/kernel/int.c ****  *
+  55:../MQXLITE/kernel/int.c ****  * \see _int_install_default_isr
+  56:../MQXLITE/kernel/int.c ****  * \see _int_install_unexpected_isr
+  57:../MQXLITE/kernel/int.c ****  * \see _int_install_exception_isr
+  58:../MQXLITE/kernel/int.c ****  */
+  59:../MQXLITE/kernel/int.c **** void _int_default_isr
+  60:../MQXLITE/kernel/int.c **** (
+  61:../MQXLITE/kernel/int.c ****     pointer vector_number
+  62:../MQXLITE/kernel/int.c **** )
+  63:../MQXLITE/kernel/int.c **** { /* Body */
+  26              		.loc 1 63 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 86B0     		sub	sp, sp, #24
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 32
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  64:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+  65:../MQXLITE/kernel/int.c ****     TD_STRUCT_PTR          td_ptr;
+  66:../MQXLITE/kernel/int.c **** 
+  67:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+  40              		.loc 1 67 0
+  41 0008 134B     		ldr	r3, .L3
+  42 000a 1B68     		ldr	r3, [r3]
+  43 000c 7B61     		str	r3, [r7, #20]
+  68:../MQXLITE/kernel/int.c **** 
+  69:../MQXLITE/kernel/int.c ****     td_ptr = kernel_data->ACTIVE_PTR;
+  44              		.loc 1 69 0
+  45 000e 7B69     		ldr	r3, [r7, #20]
+  46 0010 DB69     		ldr	r3, [r3, #28]
+  47 0012 3B61     		str	r3, [r7, #16]
+  70:../MQXLITE/kernel/int.c ****     _KLOGE5(KLOG_int_default_isr, td_ptr, vector_number,
+  71:../MQXLITE/kernel/int.c ****                     &vector_number, vector_number);
+  72:../MQXLITE/kernel/int.c **** 
+  73:../MQXLITE/kernel/int.c ****     _int_disable();
+  48              		.loc 1 73 0
+  49 0014 FFF7FEFF 		bl	_int_disable
+  74:../MQXLITE/kernel/int.c ****     if (td_ptr->STATE != UNHANDLED_INT_BLOCKED)
+  50              		.loc 1 74 0
+  51 0018 3B69     		ldr	r3, [r7, #16]
+  52 001a 9B68     		ldr	r3, [r3, #8]
+  53 001c 0B2B     		cmp	r3, #11
+  54 001e 16D0     		beq	.L2
+  75:../MQXLITE/kernel/int.c ****     {
+  76:../MQXLITE/kernel/int.c ****         td_ptr->STATE = UNHANDLED_INT_BLOCKED;
+  55              		.loc 1 76 0
+  56 0020 3B69     		ldr	r3, [r7, #16]
+  57 0022 0B22     		mov	r2, #11
+  58 0024 9A60     		str	r2, [r3, #8]
+  77:../MQXLITE/kernel/int.c ****         td_ptr->INFO = (_mqx_uint) vector_number;
+  59              		.loc 1 77 0
+  60 0026 7A68     		ldr	r2, [r7, #4]
+  61 0028 3B69     		ldr	r3, [r7, #16]
+  62 002a DA62     		str	r2, [r3, #44]
+  78:../MQXLITE/kernel/int.c ****         _task_set_error_td_internal(td_ptr, MQX_UNHANDLED_INTERRUPT);
+  63              		.loc 1 78 0
+  64 002c 3B69     		ldr	r3, [r7, #16]
+  65 002e 181C     		mov	r0, r3
+  66 0030 4121     		mov	r1, #65
+  67 0032 FFF7FEFF 		bl	_task_set_error_td_internal
+  68              	.LBB2:
+  79:../MQXLITE/kernel/int.c ****         _QUEUE_UNLINK(td_ptr);
+  69              		.loc 1 79 0
+  70 0036 3B69     		ldr	r3, [r7, #16]
+  71 0038 5B68     		ldr	r3, [r3, #4]
+  72 003a FB60     		str	r3, [r7, #12]
+  73 003c 3B69     		ldr	r3, [r7, #16]
+  74 003e 1B68     		ldr	r3, [r3]
+  75 0040 BB60     		str	r3, [r7, #8]
+  76 0042 FB68     		ldr	r3, [r7, #12]
+  77 0044 BA68     		ldr	r2, [r7, #8]
+  78 0046 1A60     		str	r2, [r3]
+  79 0048 BB68     		ldr	r3, [r7, #8]
+  80 004a FA68     		ldr	r2, [r7, #12]
+  81 004c 5A60     		str	r2, [r3, #4]
+  82              	.L2:
+  83              	.LBE2:
+  80:../MQXLITE/kernel/int.c ****     } /* Endif */
+  81:../MQXLITE/kernel/int.c ****     _int_enable();
+  84              		.loc 1 81 0
+  85 004e FFF7FEFF 		bl	_int_enable
+  82:../MQXLITE/kernel/int.c **** 
+  83:../MQXLITE/kernel/int.c **** } /* Endbody */
+  86              		.loc 1 83 0
+  87 0052 BD46     		mov	sp, r7
+  88 0054 06B0     		add	sp, sp, #24
+  89              		@ sp needed for prologue
+  90 0056 80BD     		pop	{r7, pc}
+  91              	.L4:
+  92              		.align	2
+  93              	.L3:
+  94 0058 00000000 		.word	_mqx_kernel_data
+  95              		.cfi_endproc
+  96              	.LFE0:
+  98              		.section	.text._int_disable,"ax",%progbits
+  99              		.align	2
+ 100              		.global	_int_disable
+ 101              		.code	16
+ 102              		.thumb_func
+ 104              	_int_disable:
+ 105              	.LFB1:
+  84:../MQXLITE/kernel/int.c **** 
+  85:../MQXLITE/kernel/int.c **** /*!
+  86:../MQXLITE/kernel/int.c ****  * \brief This function disables all interrupts for this task.
+  87:../MQXLITE/kernel/int.c ****  *
+  88:../MQXLITE/kernel/int.c ****  * The function _int_disable() disables all hardware interrupts at priorities up
+  89:../MQXLITE/kernel/int.c ****  * to and including the MQX disable-interrupt level. As a result, no task can
+  90:../MQXLITE/kernel/int.c ****  * interrupt the active task while the active task is running until interrupts
+  91:../MQXLITE/kernel/int.c ****  * are re-enabled with _int_enable(). If the active task blocks while interrupts
+  92:../MQXLITE/kernel/int.c ****  * are disabled, the state of the interrupts (disabled or enabled) depends on
+  93:../MQXLITE/kernel/int.c ****  * the interrupt-disabled state of the next task that MQX makes ready.
+  94:../MQXLITE/kernel/int.c ****  * \n Keep minimum code between calls to _int_disable() and its matching _int_enable().
+  95:../MQXLITE/kernel/int.c ****  * If _int_disable() or _int_enable() are nested, MQX re-enables interrupts only
+  96:../MQXLITE/kernel/int.c ****  * after the number of calls to _int_enable() are equal to the number of calls to
+  97:../MQXLITE/kernel/int.c ****  * _int_disable().
+  98:../MQXLITE/kernel/int.c ****  *
+  99:../MQXLITE/kernel/int.c ****  * \see _int_enable
+ 100:../MQXLITE/kernel/int.c ****  */
+ 101:../MQXLITE/kernel/int.c **** void _int_disable(void)
+ 102:../MQXLITE/kernel/int.c **** { /* Body */
+ 106              		.loc 1 102 0
+ 107              		.cfi_startproc
+ 108 0000 80B5     		push	{r7, lr}
+ 109              	.LCFI3:
+ 110              		.cfi_def_cfa_offset 8
+ 111              		.cfi_offset 7, -8
+ 112              		.cfi_offset 14, -4
+ 113 0002 82B0     		sub	sp, sp, #8
+ 114              	.LCFI4:
+ 115              		.cfi_def_cfa_offset 16
+ 116 0004 00AF     		add	r7, sp, #0
+ 117              	.LCFI5:
+ 118              		.cfi_def_cfa_register 7
+ 103:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 104:../MQXLITE/kernel/int.c **** 
+ 105:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 119              		.loc 1 105 0
+ 120 0006 084B     		ldr	r3, .L7
+ 121 0008 1B68     		ldr	r3, [r3]
+ 122 000a 7B60     		str	r3, [r7, #4]
+ 106:../MQXLITE/kernel/int.c **** 
+ 107:../MQXLITE/kernel/int.c ****     _INT_DISABLE_CODE();
+ 123              		.loc 1 107 0
+ 124 000c 7B68     		ldr	r3, [r7, #4]
+ 125 000e DB69     		ldr	r3, [r3, #28]
+ 126 0010 9B6C     		ldr	r3, [r3, #72]
+ 127 0012 002B     		cmp	r3, #0
+ 128 0014 00D1     		bne	.L6
+ 129              		.loc 1 107 0 is_stmt 0
+ 130              	@ 107 "../MQXLITE/kernel/int.c" 1
+ 131 0016 72B6     		cpsid i
+ 132              	@ 0 "" 2
+ 133              		.code	16
+ 134              	.L6:
+ 135              		.loc 1 107 0
+ 136 0018 7B68     		ldr	r3, [r7, #4]
+ 137 001a DB69     		ldr	r3, [r3, #28]
+ 138 001c 9A6C     		ldr	r2, [r3, #72]
+ 139 001e 0132     		add	r2, r2, #1
+ 140 0020 9A64     		str	r2, [r3, #72]
+ 108:../MQXLITE/kernel/int.c **** 
+ 109:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 141              		.loc 1 109 0 is_stmt 1
+ 142 0022 BD46     		mov	sp, r7
+ 143 0024 02B0     		add	sp, sp, #8
+ 144              		@ sp needed for prologue
+ 145 0026 80BD     		pop	{r7, pc}
+ 146              	.L8:
+ 147              		.align	2
+ 148              	.L7:
+ 149 0028 00000000 		.word	_mqx_kernel_data
+ 150              		.cfi_endproc
+ 151              	.LFE1:
+ 153              		.section	.text._int_enable,"ax",%progbits
+ 154              		.align	2
+ 155              		.global	_int_enable
+ 156              		.code	16
+ 157              		.thumb_func
+ 159              	_int_enable:
+ 160              	.LFB2:
+ 110:../MQXLITE/kernel/int.c **** 
+ 111:../MQXLITE/kernel/int.c **** /*!
+ 112:../MQXLITE/kernel/int.c ****  * \brief This function enables all interrupts for this task.
+ 113:../MQXLITE/kernel/int.c ****  *
+ 114:../MQXLITE/kernel/int.c ****  * The function _int_enable() resets the processor priority to the hardware
+ 115:../MQXLITE/kernel/int.c ****  * priority that corresponds to the active task's software priority.
+ 116:../MQXLITE/kernel/int.c ****  * Keep minimum code between calls to _int_disable() and its matching
+ 117:../MQXLITE/kernel/int.c ****  * _int_enable().
+ 118:../MQXLITE/kernel/int.c ****  * \n If _int_disable() or _int_enable() are nested, MQX re-enables interrupts only
+ 119:../MQXLITE/kernel/int.c ****  * after the number of calls to _int_enable() are equal to the number of calls to
+ 120:../MQXLITE/kernel/int.c ****  * _int_disable().
+ 121:../MQXLITE/kernel/int.c ****  *
+ 122:../MQXLITE/kernel/int.c ****  * \see _int_disable
+ 123:../MQXLITE/kernel/int.c ****  */
+ 124:../MQXLITE/kernel/int.c **** void _int_enable(void)
+ 125:../MQXLITE/kernel/int.c **** { /* Body */
+ 161              		.loc 1 125 0
+ 162              		.cfi_startproc
+ 163 0000 80B5     		push	{r7, lr}
+ 164              	.LCFI6:
+ 165              		.cfi_def_cfa_offset 8
+ 166              		.cfi_offset 7, -8
+ 167              		.cfi_offset 14, -4
+ 168 0002 82B0     		sub	sp, sp, #8
+ 169              	.LCFI7:
+ 170              		.cfi_def_cfa_offset 16
+ 171 0004 00AF     		add	r7, sp, #0
+ 172              	.LCFI8:
+ 173              		.cfi_def_cfa_register 7
+ 126:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 127:../MQXLITE/kernel/int.c **** 
+ 128:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 174              		.loc 1 128 0
+ 175 0006 0D4B     		ldr	r3, .L12
+ 176 0008 1B68     		ldr	r3, [r3]
+ 177 000a 7B60     		str	r3, [r7, #4]
+ 129:../MQXLITE/kernel/int.c **** 
+ 130:../MQXLITE/kernel/int.c ****     _INT_ENABLE_CODE();
+ 178              		.loc 1 130 0
+ 179 000c 7B68     		ldr	r3, [r7, #4]
+ 180 000e DB69     		ldr	r3, [r3, #28]
+ 181 0010 9B6C     		ldr	r3, [r3, #72]
+ 182 0012 002B     		cmp	r3, #0
+ 183 0014 0ED0     		beq	.L9
+ 184              		.loc 1 130 0 is_stmt 0
+ 185 0016 7B68     		ldr	r3, [r7, #4]
+ 186 0018 DB69     		ldr	r3, [r3, #28]
+ 187 001a 9A6C     		ldr	r2, [r3, #72]
+ 188 001c 013A     		sub	r2, r2, #1
+ 189 001e 9A64     		str	r2, [r3, #72]
+ 190 0020 9B6C     		ldr	r3, [r3, #72]
+ 191 0022 002B     		cmp	r3, #0
+ 192 0024 06D1     		bne	.L9
+ 193              		.loc 1 130 0
+ 194 0026 7B68     		ldr	r3, [r7, #4]
+ 195 0028 1B8B     		ldrh	r3, [r3, #24]
+ 196 002a 002B     		cmp	r3, #0
+ 197 002c 01D0     		beq	.L11
+ 198              		.loc 1 130 0
+ 199              	@ 130 "../MQXLITE/kernel/int.c" 1
+ 200 002e 62B6     		cpsie i
+ 201              	@ 0 "" 2
+ 202              		.code	16
+ 203 0030 00E0     		b	.L9
+ 204              	.L11:
+ 205              		.loc 1 130 0
+ 206              	@ 130 "../MQXLITE/kernel/int.c" 1
+ 207 0032 62B6     		cpsie i
+ 208              	@ 0 "" 2
+ 209              		.code	16
+ 210              	.L9:
+ 131:../MQXLITE/kernel/int.c **** 
+ 132:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 211              		.loc 1 132 0 is_stmt 1
+ 212 0034 BD46     		mov	sp, r7
+ 213 0036 02B0     		add	sp, sp, #8
+ 214              		@ sp needed for prologue
+ 215 0038 80BD     		pop	{r7, pc}
+ 216              	.L13:
+ 217 003a C046     		.align	2
+ 218              	.L12:
+ 219 003c 00000000 		.word	_mqx_kernel_data
+ 220              		.cfi_endproc
+ 221              	.LFE2:
+ 223              		.section	.text._int_get_default_isr,"ax",%progbits
+ 224              		.align	2
+ 225              		.global	_int_get_default_isr
+ 226              		.code	16
+ 227              		.thumb_func
+ 229              	_int_get_default_isr:
+ 230              	.LFB3:
+ 133:../MQXLITE/kernel/int.c **** 
+ 134:../MQXLITE/kernel/int.c **** /*!
+ 135:../MQXLITE/kernel/int.c ****  * \brief Gets a pointer to the default ISR that MQX calls when an unexpected interrupt occurs.
+ 136:../MQXLITE/kernel/int.c ****  *
+ 137:../MQXLITE/kernel/int.c ****  * \return Pointer to the default ISR for unhandled interrupts.
+ 138:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 139:../MQXLITE/kernel/int.c ****  *
+ 140:../MQXLITE/kernel/int.c ****  * \see _int_install_default_isr
+ 141:../MQXLITE/kernel/int.c ****  */
+ 142:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_get_default_isr
+ 143:../MQXLITE/kernel/int.c **** (
+ 144:../MQXLITE/kernel/int.c ****     void
+ 145:../MQXLITE/kernel/int.c **** )
+ 146:../MQXLITE/kernel/int.c **** { /* Body */
+ 231              		.loc 1 146 0
+ 232              		.cfi_startproc
+ 233 0000 80B5     		push	{r7, lr}
+ 234              	.LCFI9:
+ 235              		.cfi_def_cfa_offset 8
+ 236              		.cfi_offset 7, -8
+ 237              		.cfi_offset 14, -4
+ 238 0002 82B0     		sub	sp, sp, #8
+ 239              	.LCFI10:
+ 240              		.cfi_def_cfa_offset 16
+ 241 0004 00AF     		add	r7, sp, #0
+ 242              	.LCFI11:
+ 243              		.cfi_def_cfa_register 7
+ 147:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 148:../MQXLITE/kernel/int.c **** 
+ 149:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 244              		.loc 1 149 0
+ 245 0006 044B     		ldr	r3, .L16
+ 246 0008 1B68     		ldr	r3, [r3]
+ 247 000a 7B60     		str	r3, [r7, #4]
+ 150:../MQXLITE/kernel/int.c ****     return(kernel_data->DEFAULT_ISR);
+ 248              		.loc 1 150 0
+ 249 000c 7B68     		ldr	r3, [r7, #4]
+ 250 000e 9B6A     		ldr	r3, [r3, #40]
+ 151:../MQXLITE/kernel/int.c **** 
+ 152:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 251              		.loc 1 152 0
+ 252 0010 181C     		mov	r0, r3
+ 253 0012 BD46     		mov	sp, r7
+ 254 0014 02B0     		add	sp, sp, #8
+ 255              		@ sp needed for prologue
+ 256 0016 80BD     		pop	{r7, pc}
+ 257              	.L17:
+ 258              		.align	2
+ 259              	.L16:
+ 260 0018 00000000 		.word	_mqx_kernel_data
+ 261              		.cfi_endproc
+ 262              	.LFE3:
+ 264              		.section	.text._int_get_exception_handler,"ax",%progbits
+ 265              		.align	2
+ 266              		.global	_int_get_exception_handler
+ 267              		.code	16
+ 268              		.thumb_func
+ 270              	_int_get_exception_handler:
+ 271              	.LFB4:
+ 153:../MQXLITE/kernel/int.c **** 
+ 154:../MQXLITE/kernel/int.c **** /*!
+ 155:../MQXLITE/kernel/int.c ****  * \brief Gets a pointer to the current ISR exception handler for the vector number.
+ 156:../MQXLITE/kernel/int.c ****  *
+ 157:../MQXLITE/kernel/int.c ****  * The returned exception handler is either a default ISR or an ISR that the
+ 158:../MQXLITE/kernel/int.c ****  * application installed with _int_set_exception_handler().
+ 159:../MQXLITE/kernel/int.c ****  *
+ 160:../MQXLITE/kernel/int.c ****  * \param[in] vector Number of a vector whose exception handler is to be returned.
+ 161:../MQXLITE/kernel/int.c ****  *
+ 162:../MQXLITE/kernel/int.c ****  * \return Pointer to the current exception handler.
+ 163:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 164:../MQXLITE/kernel/int.c ****  *
+ 165:../MQXLITE/kernel/int.c ****  * \warning On failure, calls _task_set_error() to set the task error code.
+ 166:../MQXLITE/kernel/int.c ****  *
+ 167:../MQXLITE/kernel/int.c ****  * \see _int_set_exception_handler
+ 168:../MQXLITE/kernel/int.c ****  * \see _int_exception_isr
+ 169:../MQXLITE/kernel/int.c ****  * \see _task_set_error
+ 170:../MQXLITE/kernel/int.c ****  */
+ 171:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 172:../MQXLITE/kernel/int.c **** 
+ 173:../MQXLITE/kernel/int.c **** INT_EXCEPTION_FPTR _int_get_exception_handler
+ 174:../MQXLITE/kernel/int.c **** (
+ 175:../MQXLITE/kernel/int.c ****     _mqx_uint vector
+ 176:../MQXLITE/kernel/int.c **** )
+ 177:../MQXLITE/kernel/int.c **** { /* Body */
+ 272              		.loc 1 177 0
+ 273              		.cfi_startproc
+ 274 0000 80B5     		push	{r7, lr}
+ 275              	.LCFI12:
+ 276              		.cfi_def_cfa_offset 8
+ 277              		.cfi_offset 7, -8
+ 278              		.cfi_offset 14, -4
+ 279 0002 84B0     		sub	sp, sp, #16
+ 280              	.LCFI13:
+ 281              		.cfi_def_cfa_offset 24
+ 282 0004 00AF     		add	r7, sp, #0
+ 283              	.LCFI14:
+ 284              		.cfi_def_cfa_register 7
+ 285 0006 7860     		str	r0, [r7, #4]
+ 178:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 179:../MQXLITE/kernel/int.c **** 
+ 180:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 286              		.loc 1 180 0
+ 287 0008 164B     		ldr	r3, .L23
+ 288 000a 1B68     		ldr	r3, [r3]
+ 289 000c FB60     		str	r3, [r7, #12]
+ 181:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 182:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 290              		.loc 1 182 0
+ 291 000e FB68     		ldr	r3, [r7, #12]
+ 292 0010 9B6B     		ldr	r3, [r3, #56]
+ 293 0012 002B     		cmp	r3, #0
+ 294 0014 04D1     		bne	.L19
+ 183:../MQXLITE/kernel/int.c ****     {
+ 184:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 295              		.loc 1 184 0
+ 296 0016 1820     		mov	r0, #24
+ 297 0018 FFF7FEFF 		bl	_task_set_error
+ 185:../MQXLITE/kernel/int.c ****         return(NULL);
+ 298              		.loc 1 185 0
+ 299 001c 0023     		mov	r3, #0
+ 300 001e 1CE0     		b	.L20
+ 301              	.L19:
+ 186:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 187:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 302              		.loc 1 187 0
+ 303 0020 FB68     		ldr	r3, [r7, #12]
+ 304 0022 DA6A     		ldr	r2, [r3, #44]
+ 305 0024 7B68     		ldr	r3, [r7, #4]
+ 306 0026 9A42     		cmp	r2, r3
+ 307 0028 04D8     		bhi	.L21
+ 188:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 308              		.loc 1 188 0
+ 309 002a FB68     		ldr	r3, [r7, #12]
+ 310 002c 1A6B     		ldr	r2, [r3, #48]
+ 187:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 311              		.loc 1 187 0
+ 312 002e 7B68     		ldr	r3, [r7, #4]
+ 313 0030 9A42     		cmp	r2, r3
+ 314 0032 04D2     		bcs	.L22
+ 315              	.L21:
+ 189:../MQXLITE/kernel/int.c ****     {
+ 190:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 316              		.loc 1 190 0
+ 317 0034 1420     		mov	r0, #20
+ 318 0036 FFF7FEFF 		bl	_task_set_error
+ 191:../MQXLITE/kernel/int.c ****         return(NULL);
+ 319              		.loc 1 191 0
+ 320 003a 0023     		mov	r3, #0
+ 321 003c 0DE0     		b	.L20
+ 322              	.L22:
+ 192:../MQXLITE/kernel/int.c ****     }/* Endif */
+ 193:../MQXLITE/kernel/int.c **** #endif
+ 194:../MQXLITE/kernel/int.c **** 
+ 195:../MQXLITE/kernel/int.c ****     vector -= kernel_data->FIRST_USER_ISR_VECTOR;
+ 323              		.loc 1 195 0
+ 324 003e FB68     		ldr	r3, [r7, #12]
+ 325 0040 DB6A     		ldr	r3, [r3, #44]
+ 326 0042 7A68     		ldr	r2, [r7, #4]
+ 327 0044 D31A     		sub	r3, r2, r3
+ 328 0046 7B60     		str	r3, [r7, #4]
+ 196:../MQXLITE/kernel/int.c ****     return(kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR_EXCEPTION_HANDLER);
+ 329              		.loc 1 196 0
+ 330 0048 FB68     		ldr	r3, [r7, #12]
+ 331 004a 996B     		ldr	r1, [r3, #56]
+ 332 004c 7A68     		ldr	r2, [r7, #4]
+ 333 004e 131C     		mov	r3, r2
+ 334 0050 5B00     		lsl	r3, r3, #1
+ 335 0052 9B18     		add	r3, r3, r2
+ 336 0054 9B00     		lsl	r3, r3, #2
+ 337 0056 CB18     		add	r3, r1, r3
+ 338 0058 5B68     		ldr	r3, [r3, #4]
+ 339              	.L20:
+ 197:../MQXLITE/kernel/int.c **** 
+ 198:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 340              		.loc 1 198 0
+ 341 005a 181C     		mov	r0, r3
+ 342 005c BD46     		mov	sp, r7
+ 343 005e 04B0     		add	sp, sp, #16
+ 344              		@ sp needed for prologue
+ 345 0060 80BD     		pop	{r7, pc}
+ 346              	.L24:
+ 347 0062 C046     		.align	2
+ 348              	.L23:
+ 349 0064 00000000 		.word	_mqx_kernel_data
+ 350              		.cfi_endproc
+ 351              	.LFE4:
+ 353              		.section	.text._int_get_isr,"ax",%progbits
+ 354              		.align	2
+ 355              		.global	_int_get_isr
+ 356              		.code	16
+ 357              		.thumb_func
+ 359              	_int_get_isr:
+ 360              	.LFB5:
+ 199:../MQXLITE/kernel/int.c **** 
+ 200:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 201:../MQXLITE/kernel/int.c **** 
+ 202:../MQXLITE/kernel/int.c **** INT_EXCEPTION_FPTR _int_get_exception_handler
+ 203:../MQXLITE/kernel/int.c **** (
+ 204:../MQXLITE/kernel/int.c ****     _mqx_uint vector
+ 205:../MQXLITE/kernel/int.c **** )
+ 206:../MQXLITE/kernel/int.c **** {
+ 207:../MQXLITE/kernel/int.c ****     return NULL;
+ 208:../MQXLITE/kernel/int.c **** }
+ 209:../MQXLITE/kernel/int.c **** 
+ 210:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 211:../MQXLITE/kernel/int.c **** 
+ 212:../MQXLITE/kernel/int.c **** /*!
+ 213:../MQXLITE/kernel/int.c ****  * \brief Gets the current ISR for the specified vector.
+ 214:../MQXLITE/kernel/int.c ****  *
+ 215:../MQXLITE/kernel/int.c ****  * The returned ISR is either a default ISR or an ISR that the application
+ 216:../MQXLITE/kernel/int.c ****  * installed with _int_install_isr().
+ 217:../MQXLITE/kernel/int.c ****  *
+ 218:../MQXLITE/kernel/int.c ****  * \param[in] vector Number of the vector whose ISR is to be returned.
+ 219:../MQXLITE/kernel/int.c ****  *
+ 220:../MQXLITE/kernel/int.c ****  * \return Pointer to the ISR. (Success.)
+ 221:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 222:../MQXLITE/kernel/int.c ****  *
+ 223:../MQXLITE/kernel/int.c ****  * \warning On failure, calls _task_set_error() to set the task error code.
+ 224:../MQXLITE/kernel/int.c ****  *
+ 225:../MQXLITE/kernel/int.c ****  * \see _int_get_isr_data
+ 226:../MQXLITE/kernel/int.c ****  * \see _int_set_isr_data
+ 227:../MQXLITE/kernel/int.c ****  * \see _task_set_error
+ 228:../MQXLITE/kernel/int.c ****  */
+ 229:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 230:../MQXLITE/kernel/int.c **** 
+ 231:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_get_isr
+ 232:../MQXLITE/kernel/int.c **** (
+ 233:../MQXLITE/kernel/int.c ****     _mqx_uint vector
+ 234:../MQXLITE/kernel/int.c **** )
+ 235:../MQXLITE/kernel/int.c **** { /* Body */
+ 361              		.loc 1 235 0
+ 362              		.cfi_startproc
+ 363 0000 80B5     		push	{r7, lr}
+ 364              	.LCFI15:
+ 365              		.cfi_def_cfa_offset 8
+ 366              		.cfi_offset 7, -8
+ 367              		.cfi_offset 14, -4
+ 368 0002 84B0     		sub	sp, sp, #16
+ 369              	.LCFI16:
+ 370              		.cfi_def_cfa_offset 24
+ 371 0004 00AF     		add	r7, sp, #0
+ 372              	.LCFI17:
+ 373              		.cfi_def_cfa_register 7
+ 374 0006 7860     		str	r0, [r7, #4]
+ 236:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 237:../MQXLITE/kernel/int.c **** 
+ 238:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 375              		.loc 1 238 0
+ 376 0008 164B     		ldr	r3, .L30
+ 377 000a 1B68     		ldr	r3, [r3]
+ 378 000c FB60     		str	r3, [r7, #12]
+ 239:../MQXLITE/kernel/int.c **** 
+ 240:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 241:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 379              		.loc 1 241 0
+ 380 000e FB68     		ldr	r3, [r7, #12]
+ 381 0010 9B6B     		ldr	r3, [r3, #56]
+ 382 0012 002B     		cmp	r3, #0
+ 383 0014 04D1     		bne	.L26
+ 242:../MQXLITE/kernel/int.c ****     {
+ 243:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 384              		.loc 1 243 0
+ 385 0016 1820     		mov	r0, #24
+ 386 0018 FFF7FEFF 		bl	_task_set_error
+ 244:../MQXLITE/kernel/int.c ****         return(NULL);
+ 387              		.loc 1 244 0
+ 388 001c 0023     		mov	r3, #0
+ 389 001e 1CE0     		b	.L27
+ 390              	.L26:
+ 245:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 246:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 391              		.loc 1 246 0
+ 392 0020 FB68     		ldr	r3, [r7, #12]
+ 393 0022 DA6A     		ldr	r2, [r3, #44]
+ 394 0024 7B68     		ldr	r3, [r7, #4]
+ 395 0026 9A42     		cmp	r2, r3
+ 396 0028 04D8     		bhi	.L28
+ 247:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 397              		.loc 1 247 0
+ 398 002a FB68     		ldr	r3, [r7, #12]
+ 399 002c 1A6B     		ldr	r2, [r3, #48]
+ 246:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 400              		.loc 1 246 0
+ 401 002e 7B68     		ldr	r3, [r7, #4]
+ 402 0030 9A42     		cmp	r2, r3
+ 403 0032 04D2     		bcs	.L29
+ 404              	.L28:
+ 248:../MQXLITE/kernel/int.c ****     {
+ 249:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 405              		.loc 1 249 0
+ 406 0034 1420     		mov	r0, #20
+ 407 0036 FFF7FEFF 		bl	_task_set_error
+ 250:../MQXLITE/kernel/int.c ****         return NULL;
+ 408              		.loc 1 250 0
+ 409 003a 0023     		mov	r3, #0
+ 410 003c 0DE0     		b	.L27
+ 411              	.L29:
+ 251:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 252:../MQXLITE/kernel/int.c **** #endif
+ 253:../MQXLITE/kernel/int.c **** 
+ 254:../MQXLITE/kernel/int.c ****     vector -= kernel_data->FIRST_USER_ISR_VECTOR;
+ 412              		.loc 1 254 0
+ 413 003e FB68     		ldr	r3, [r7, #12]
+ 414 0040 DB6A     		ldr	r3, [r3, #44]
+ 415 0042 7A68     		ldr	r2, [r7, #4]
+ 416 0044 D31A     		sub	r3, r2, r3
+ 417 0046 7B60     		str	r3, [r7, #4]
+ 255:../MQXLITE/kernel/int.c **** 
+ 256:../MQXLITE/kernel/int.c ****     return(kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR);
+ 418              		.loc 1 256 0
+ 419 0048 FB68     		ldr	r3, [r7, #12]
+ 420 004a 996B     		ldr	r1, [r3, #56]
+ 421 004c 7A68     		ldr	r2, [r7, #4]
+ 422 004e 131C     		mov	r3, r2
+ 423 0050 5B00     		lsl	r3, r3, #1
+ 424 0052 9B18     		add	r3, r3, r2
+ 425 0054 9B00     		lsl	r3, r3, #2
+ 426 0056 CB18     		add	r3, r1, r3
+ 427 0058 1B68     		ldr	r3, [r3]
+ 428              	.L27:
+ 257:../MQXLITE/kernel/int.c **** 
+ 258:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 429              		.loc 1 258 0
+ 430 005a 181C     		mov	r0, r3
+ 431 005c BD46     		mov	sp, r7
+ 432 005e 04B0     		add	sp, sp, #16
+ 433              		@ sp needed for prologue
+ 434 0060 80BD     		pop	{r7, pc}
+ 435              	.L31:
+ 436 0062 C046     		.align	2
+ 437              	.L30:
+ 438 0064 00000000 		.word	_mqx_kernel_data
+ 439              		.cfi_endproc
+ 440              	.LFE5:
+ 442              		.section	.text._int_get_isr_data,"ax",%progbits
+ 443              		.align	2
+ 444              		.global	_int_get_isr_data
+ 445              		.code	16
+ 446              		.thumb_func
+ 448              	_int_get_isr_data:
+ 449              	.LFB6:
+ 259:../MQXLITE/kernel/int.c **** 
+ 260:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 261:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_get_isr
+ 262:../MQXLITE/kernel/int.c **** (
+ 263:../MQXLITE/kernel/int.c ****     _mqx_uint vector
+ 264:../MQXLITE/kernel/int.c **** )
+ 265:../MQXLITE/kernel/int.c **** { /* Body */
+ 266:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR          kernel_data;
+ 267:../MQXLITE/kernel/int.c ****     INTERRUPT_SPARSE_REC_STRUCT_PTR int_ptr;
+ 268:../MQXLITE/kernel/int.c **** 
+ 269:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 270:../MQXLITE/kernel/int.c **** 
+ 271:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 272:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 273:../MQXLITE/kernel/int.c ****     {
+ 274:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 275:../MQXLITE/kernel/int.c ****         return(NULL);
+ 276:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 277:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 278:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 279:../MQXLITE/kernel/int.c ****     {
+ 280:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 281:../MQXLITE/kernel/int.c ****         return NULL;
+ 282:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 283:../MQXLITE/kernel/int.c **** #endif
+ 284:../MQXLITE/kernel/int.c **** 
+ 285:../MQXLITE/kernel/int.c ****     _int_disable();
+ 286:../MQXLITE/kernel/int.c **** 
+ 287:../MQXLITE/kernel/int.c ****     int_ptr = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX
+ 288:../MQXLITE/kernel/int.c **** 
+ 289:../MQXLITE/kernel/int.c ****     while (int_ptr && int_ptr->VEC_NUM != vector)
+ 290:../MQXLITE/kernel/int.c ****     {
+ 291:../MQXLITE/kernel/int.c ****         int_ptr = int_ptr->NEXT;
+ 292:../MQXLITE/kernel/int.c ****     }
+ 293:../MQXLITE/kernel/int.c **** 
+ 294:../MQXLITE/kernel/int.c ****     _int_enable();
+ 295:../MQXLITE/kernel/int.c **** 
+ 296:../MQXLITE/kernel/int.c ****     return (int_ptr) ? int_ptr->APP_ISR : _int_default_isr;
+ 297:../MQXLITE/kernel/int.c **** 
+ 298:../MQXLITE/kernel/int.c **** }
+ 299:../MQXLITE/kernel/int.c **** 
+ 300:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 301:../MQXLITE/kernel/int.c **** 
+ 302:../MQXLITE/kernel/int.c **** /*!
+ 303:../MQXLITE/kernel/int.c ****  * \brief Retrieves a pointer of the interrupt handler data for the specified
+ 304:../MQXLITE/kernel/int.c ****  * vector.
+ 305:../MQXLITE/kernel/int.c ****  *
+ 306:../MQXLITE/kernel/int.c ****  * ISR data can be installed with _int_set_isr_data().
+ 307:../MQXLITE/kernel/int.c ****  * \n When MQX calls _int_kernel_isr() or an application ISR, it passes the data
+ 308:../MQXLITE/kernel/int.c ****  * as the first parameter to the ISR.
+ 309:../MQXLITE/kernel/int.c ****  *
+ 310:../MQXLITE/kernel/int.c ****  * \param[in] vector Number of the vector whose ISR data are to be returned.
+ 311:../MQXLITE/kernel/int.c ****  *
+ 312:../MQXLITE/kernel/int.c ****  * \return Pointer to the ISR data.
+ 313:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 314:../MQXLITE/kernel/int.c ****  *
+ 315:../MQXLITE/kernel/int.c ****  * \warning On failure, calls _task_set_error() to set the task error code.
+ 316:../MQXLITE/kernel/int.c ****  *
+ 317:../MQXLITE/kernel/int.c ****  * \see _int_get_isr
+ 318:../MQXLITE/kernel/int.c ****  * \see _int_install_isr
+ 319:../MQXLITE/kernel/int.c ****  * \see _int_set_isr_data
+ 320:../MQXLITE/kernel/int.c ****  */
+ 321:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 322:../MQXLITE/kernel/int.c **** 
+ 323:../MQXLITE/kernel/int.c **** pointer _int_get_isr_data
+ 324:../MQXLITE/kernel/int.c **** (
+ 325:../MQXLITE/kernel/int.c ****     _mqx_uint vector
+ 326:../MQXLITE/kernel/int.c **** )
+ 327:../MQXLITE/kernel/int.c **** { /* Body */
+ 450              		.loc 1 327 0
+ 451              		.cfi_startproc
+ 452 0000 80B5     		push	{r7, lr}
+ 453              	.LCFI18:
+ 454              		.cfi_def_cfa_offset 8
+ 455              		.cfi_offset 7, -8
+ 456              		.cfi_offset 14, -4
+ 457 0002 84B0     		sub	sp, sp, #16
+ 458              	.LCFI19:
+ 459              		.cfi_def_cfa_offset 24
+ 460 0004 00AF     		add	r7, sp, #0
+ 461              	.LCFI20:
+ 462              		.cfi_def_cfa_register 7
+ 463 0006 7860     		str	r0, [r7, #4]
+ 328:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 329:../MQXLITE/kernel/int.c **** 
+ 330:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 464              		.loc 1 330 0
+ 465 0008 164B     		ldr	r3, .L37
+ 466 000a 1B68     		ldr	r3, [r3]
+ 467 000c FB60     		str	r3, [r7, #12]
+ 331:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 332:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 468              		.loc 1 332 0
+ 469 000e FB68     		ldr	r3, [r7, #12]
+ 470 0010 9B6B     		ldr	r3, [r3, #56]
+ 471 0012 002B     		cmp	r3, #0
+ 472 0014 04D1     		bne	.L33
+ 333:../MQXLITE/kernel/int.c ****     {
+ 334:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 473              		.loc 1 334 0
+ 474 0016 1820     		mov	r0, #24
+ 475 0018 FFF7FEFF 		bl	_task_set_error
+ 335:../MQXLITE/kernel/int.c ****         return(NULL);
+ 476              		.loc 1 335 0
+ 477 001c 0023     		mov	r3, #0
+ 478 001e 1CE0     		b	.L34
+ 479              	.L33:
+ 336:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 337:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 480              		.loc 1 337 0
+ 481 0020 FB68     		ldr	r3, [r7, #12]
+ 482 0022 DA6A     		ldr	r2, [r3, #44]
+ 483 0024 7B68     		ldr	r3, [r7, #4]
+ 484 0026 9A42     		cmp	r2, r3
+ 485 0028 04D8     		bhi	.L35
+ 338:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 486              		.loc 1 338 0
+ 487 002a FB68     		ldr	r3, [r7, #12]
+ 488 002c 1A6B     		ldr	r2, [r3, #48]
+ 337:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 489              		.loc 1 337 0
+ 490 002e 7B68     		ldr	r3, [r7, #4]
+ 491 0030 9A42     		cmp	r2, r3
+ 492 0032 04D2     		bcs	.L36
+ 493              	.L35:
+ 339:../MQXLITE/kernel/int.c ****     {
+ 340:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 494              		.loc 1 340 0
+ 495 0034 1420     		mov	r0, #20
+ 496 0036 FFF7FEFF 		bl	_task_set_error
+ 341:../MQXLITE/kernel/int.c ****         return(NULL);
+ 497              		.loc 1 341 0
+ 498 003a 0023     		mov	r3, #0
+ 499 003c 0DE0     		b	.L34
+ 500              	.L36:
+ 342:../MQXLITE/kernel/int.c ****     }/* Endif */
+ 343:../MQXLITE/kernel/int.c **** #endif
+ 344:../MQXLITE/kernel/int.c **** 
+ 345:../MQXLITE/kernel/int.c ****     vector -= kernel_data->FIRST_USER_ISR_VECTOR;
+ 501              		.loc 1 345 0
+ 502 003e FB68     		ldr	r3, [r7, #12]
+ 503 0040 DB6A     		ldr	r3, [r3, #44]
+ 504 0042 7A68     		ldr	r2, [r7, #4]
+ 505 0044 D31A     		sub	r3, r2, r3
+ 506 0046 7B60     		str	r3, [r7, #4]
+ 346:../MQXLITE/kernel/int.c ****     return(kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR_DATA);
+ 507              		.loc 1 346 0
+ 508 0048 FB68     		ldr	r3, [r7, #12]
+ 509 004a 996B     		ldr	r1, [r3, #56]
+ 510 004c 7A68     		ldr	r2, [r7, #4]
+ 511 004e 131C     		mov	r3, r2
+ 512 0050 5B00     		lsl	r3, r3, #1
+ 513 0052 9B18     		add	r3, r3, r2
+ 514 0054 9B00     		lsl	r3, r3, #2
+ 515 0056 CB18     		add	r3, r1, r3
+ 516 0058 9B68     		ldr	r3, [r3, #8]
+ 517              	.L34:
+ 347:../MQXLITE/kernel/int.c **** 
+ 348:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 518              		.loc 1 348 0
+ 519 005a 181C     		mov	r0, r3
+ 520 005c BD46     		mov	sp, r7
+ 521 005e 04B0     		add	sp, sp, #16
+ 522              		@ sp needed for prologue
+ 523 0060 80BD     		pop	{r7, pc}
+ 524              	.L38:
+ 525 0062 C046     		.align	2
+ 526              	.L37:
+ 527 0064 00000000 		.word	_mqx_kernel_data
+ 528              		.cfi_endproc
+ 529              	.LFE6:
+ 531              		.section	.text._int_get_isr_depth,"ax",%progbits
+ 532              		.align	2
+ 533              		.global	_int_get_isr_depth
+ 534              		.code	16
+ 535              		.thumb_func
+ 537              	_int_get_isr_depth:
+ 538              	.LFB7:
+ 349:../MQXLITE/kernel/int.c **** 
+ 350:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 351:../MQXLITE/kernel/int.c **** 
+ 352:../MQXLITE/kernel/int.c **** pointer _int_get_isr_data
+ 353:../MQXLITE/kernel/int.c **** (
+ 354:../MQXLITE/kernel/int.c ****     _mqx_uint vector
+ 355:../MQXLITE/kernel/int.c **** )
+ 356:../MQXLITE/kernel/int.c **** {
+ 357:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR          kernel_data;
+ 358:../MQXLITE/kernel/int.c ****     INTERRUPT_SPARSE_REC_STRUCT_PTR int_ptr;
+ 359:../MQXLITE/kernel/int.c **** 
+ 360:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 361:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 362:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 363:../MQXLITE/kernel/int.c ****     {
+ 364:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 365:../MQXLITE/kernel/int.c ****         return(NULL);
+ 366:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 367:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 368:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 369:../MQXLITE/kernel/int.c ****     {
+ 370:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 371:../MQXLITE/kernel/int.c ****         return(NULL);
+ 372:../MQXLITE/kernel/int.c ****     }/* Endif */
+ 373:../MQXLITE/kernel/int.c **** #endif
+ 374:../MQXLITE/kernel/int.c **** 
+ 375:../MQXLITE/kernel/int.c ****     _int_disable();
+ 376:../MQXLITE/kernel/int.c **** 
+ 377:../MQXLITE/kernel/int.c ****     int_ptr = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX
+ 378:../MQXLITE/kernel/int.c **** 
+ 379:../MQXLITE/kernel/int.c ****     while (int_ptr && int_ptr->VEC_NUM != vector)
+ 380:../MQXLITE/kernel/int.c ****     {
+ 381:../MQXLITE/kernel/int.c ****         int_ptr = int_ptr->NEXT;
+ 382:../MQXLITE/kernel/int.c ****     }
+ 383:../MQXLITE/kernel/int.c **** 
+ 384:../MQXLITE/kernel/int.c ****     _int_enable();
+ 385:../MQXLITE/kernel/int.c **** 
+ 386:../MQXLITE/kernel/int.c ****     return (int_ptr) ? int_ptr->APP_ISR_DATA : NULL;
+ 387:../MQXLITE/kernel/int.c **** }
+ 388:../MQXLITE/kernel/int.c **** 
+ 389:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 390:../MQXLITE/kernel/int.c **** 
+ 391:../MQXLITE/kernel/int.c **** /*!
+ 392:../MQXLITE/kernel/int.c ****  * \brief Gets the depth of nesting of the current interrupt stack.
+ 393:../MQXLITE/kernel/int.c ****  *
+ 394:../MQXLITE/kernel/int.c ****  * \return 0 (An interrupt is not being serviced.)
+ 395:../MQXLITE/kernel/int.c ****  * \return 1 (A non-nested interrupt is being serviced.)
+ 396:../MQXLITE/kernel/int.c ****  * \return >=2 (A nested interrupt is being serviced.)
+ 397:../MQXLITE/kernel/int.c ****  *
+ 398:../MQXLITE/kernel/int.c ****  * \see _int_install_isr
+ 399:../MQXLITE/kernel/int.c ****  */
+ 400:../MQXLITE/kernel/int.c **** _mqx_uint _int_get_isr_depth(void)
+ 401:../MQXLITE/kernel/int.c **** { /* Body */
+ 539              		.loc 1 401 0
+ 540              		.cfi_startproc
+ 541 0000 80B5     		push	{r7, lr}
+ 542              	.LCFI21:
+ 543              		.cfi_def_cfa_offset 8
+ 544              		.cfi_offset 7, -8
+ 545              		.cfi_offset 14, -4
+ 546 0002 82B0     		sub	sp, sp, #8
+ 547              	.LCFI22:
+ 548              		.cfi_def_cfa_offset 16
+ 549 0004 00AF     		add	r7, sp, #0
+ 550              	.LCFI23:
+ 551              		.cfi_def_cfa_register 7
+ 402:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 403:../MQXLITE/kernel/int.c **** 
+ 404:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 552              		.loc 1 404 0
+ 553 0006 044B     		ldr	r3, .L41
+ 554 0008 1B68     		ldr	r3, [r3]
+ 555 000a 7B60     		str	r3, [r7, #4]
+ 405:../MQXLITE/kernel/int.c ****     return( kernel_data->IN_ISR );
+ 556              		.loc 1 405 0
+ 557 000c 7B68     		ldr	r3, [r7, #4]
+ 558 000e 1B8B     		ldrh	r3, [r3, #24]
+ 406:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 559              		.loc 1 406 0
+ 560 0010 181C     		mov	r0, r3
+ 561 0012 BD46     		mov	sp, r7
+ 562 0014 02B0     		add	sp, sp, #8
+ 563              		@ sp needed for prologue
+ 564 0016 80BD     		pop	{r7, pc}
+ 565              	.L42:
+ 566              		.align	2
+ 567              	.L41:
+ 568 0018 00000000 		.word	_mqx_kernel_data
+ 569              		.cfi_endproc
+ 570              	.LFE7:
+ 572              		.section	.text._int_install_default_isr,"ax",%progbits
+ 573              		.align	2
+ 574              		.global	_int_install_default_isr
+ 575              		.code	16
+ 576              		.thumb_func
+ 578              	_int_install_default_isr:
+ 579              	.LFB8:
+ 407:../MQXLITE/kernel/int.c **** 
+ 408:../MQXLITE/kernel/int.c **** /*!
+ 409:../MQXLITE/kernel/int.c ****  * \brief Installs the provided function as the default ISR, called whenever an
+ 410:../MQXLITE/kernel/int.c ****  * unhandled interrupt occurs.
+ 411:../MQXLITE/kernel/int.c ****  *
+ 412:../MQXLITE/kernel/int.c ****  * MQX uses the application-provided default ISR for all interrupts for which
+ 413:../MQXLITE/kernel/int.c ****  * the application has not installed an application ISR. The ISR handles all
+ 414:../MQXLITE/kernel/int.c ****  * unhandled and unexpected interrupts.
+ 415:../MQXLITE/kernel/int.c ****  *
+ 416:../MQXLITE/kernel/int.c ****  * \param[in] default_isr The new default ISR function.
+ 417:../MQXLITE/kernel/int.c ****  *
+ 418:../MQXLITE/kernel/int.c ****  * \return Pointer to the default ISR before the function was called.
+ 419:../MQXLITE/kernel/int.c ****  *
+ 420:../MQXLITE/kernel/int.c ****  * \see _int_get_default_isr
+ 421:../MQXLITE/kernel/int.c ****  * \see _int_install_isr
+ 422:../MQXLITE/kernel/int.c ****  */
+ 423:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 424:../MQXLITE/kernel/int.c **** 
+ 425:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_install_default_isr
+ 426:../MQXLITE/kernel/int.c **** (
+ 427:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR default_isr
+ 428:../MQXLITE/kernel/int.c **** )
+ 429:../MQXLITE/kernel/int.c **** { /* Body */
+ 580              		.loc 1 429 0
+ 581              		.cfi_startproc
+ 582 0000 80B5     		push	{r7, lr}
+ 583              	.LCFI24:
+ 584              		.cfi_def_cfa_offset 8
+ 585              		.cfi_offset 7, -8
+ 586              		.cfi_offset 14, -4
+ 587 0002 86B0     		sub	sp, sp, #24
+ 588              	.LCFI25:
+ 589              		.cfi_def_cfa_offset 32
+ 590 0004 00AF     		add	r7, sp, #0
+ 591              	.LCFI26:
+ 592              		.cfi_def_cfa_register 7
+ 593 0006 7860     		str	r0, [r7, #4]
+ 430:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR      kernel_data;
+ 431:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR                old_default_isr;
+ 432:../MQXLITE/kernel/int.c ****     INTERRUPT_TABLE_STRUCT_PTR  int_table_ptr;
+ 433:../MQXLITE/kernel/int.c ****     _mqx_uint                   number;
+ 434:../MQXLITE/kernel/int.c **** 
+ 435:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 594              		.loc 1 435 0
+ 595 0008 164B     		ldr	r3, .L49
+ 596 000a 1B68     		ldr	r3, [r3]
+ 597 000c FB60     		str	r3, [r7, #12]
+ 436:../MQXLITE/kernel/int.c ****     _KLOGE2(KLOG_int_install_default_isr, default_isr);
+ 437:../MQXLITE/kernel/int.c **** 
+ 438:../MQXLITE/kernel/int.c ****     old_default_isr = kernel_data->DEFAULT_ISR;
+ 598              		.loc 1 438 0
+ 599 000e FB68     		ldr	r3, [r7, #12]
+ 600 0010 9B6A     		ldr	r3, [r3, #40]
+ 601 0012 BB60     		str	r3, [r7, #8]
+ 439:../MQXLITE/kernel/int.c ****     kernel_data->DEFAULT_ISR = default_isr;
+ 602              		.loc 1 439 0
+ 603 0014 FB68     		ldr	r3, [r7, #12]
+ 604 0016 7A68     		ldr	r2, [r7, #4]
+ 605 0018 9A62     		str	r2, [r3, #40]
+ 440:../MQXLITE/kernel/int.c **** 
+ 441:../MQXLITE/kernel/int.c ****     int_table_ptr = kernel_data->INTERRUPT_TABLE_PTR;
+ 606              		.loc 1 441 0
+ 607 001a FB68     		ldr	r3, [r7, #12]
+ 608 001c 9B6B     		ldr	r3, [r3, #56]
+ 609 001e 7B61     		str	r3, [r7, #20]
+ 442:../MQXLITE/kernel/int.c ****     if (int_table_ptr != NULL)
+ 610              		.loc 1 442 0
+ 611 0020 7B69     		ldr	r3, [r7, #20]
+ 612 0022 002B     		cmp	r3, #0
+ 613 0024 18D0     		beq	.L44
+ 443:../MQXLITE/kernel/int.c ****     {
+ 444:../MQXLITE/kernel/int.c ****         number = (kernel_data->LAST_USER_ISR_VECTOR -
+ 614              		.loc 1 444 0
+ 615 0026 FB68     		ldr	r3, [r7, #12]
+ 616 0028 1A6B     		ldr	r2, [r3, #48]
+ 445:../MQXLITE/kernel/int.c ****                         kernel_data->FIRST_USER_ISR_VECTOR) + 1 + 1;
+ 617              		.loc 1 445 0
+ 618 002a FB68     		ldr	r3, [r7, #12]
+ 619 002c DB6A     		ldr	r3, [r3, #44]
+ 444:../MQXLITE/kernel/int.c ****         number = (kernel_data->LAST_USER_ISR_VECTOR -
+ 620              		.loc 1 444 0
+ 621 002e D31A     		sub	r3, r2, r3
+ 622 0030 0233     		add	r3, r3, #2
+ 623 0032 3B61     		str	r3, [r7, #16]
+ 446:../MQXLITE/kernel/int.c **** 
+ 447:../MQXLITE/kernel/int.c ****         while (--number)
+ 624              		.loc 1 447 0
+ 625 0034 0AE0     		b	.L45
+ 626              	.L47:
+ 448:../MQXLITE/kernel/int.c ****         {
+ 449:../MQXLITE/kernel/int.c ****             if (int_table_ptr->APP_ISR == old_default_isr)
+ 627              		.loc 1 449 0
+ 628 0036 7B69     		ldr	r3, [r7, #20]
+ 629 0038 1A68     		ldr	r2, [r3]
+ 630 003a BB68     		ldr	r3, [r7, #8]
+ 631 003c 9A42     		cmp	r2, r3
+ 632 003e 02D1     		bne	.L46
+ 450:../MQXLITE/kernel/int.c ****             {
+ 451:../MQXLITE/kernel/int.c ****                 int_table_ptr->APP_ISR = default_isr;
+ 633              		.loc 1 451 0
+ 634 0040 7B69     		ldr	r3, [r7, #20]
+ 635 0042 7A68     		ldr	r2, [r7, #4]
+ 636 0044 1A60     		str	r2, [r3]
+ 637              	.L46:
+ 452:../MQXLITE/kernel/int.c ****             } /* Endif */
+ 453:../MQXLITE/kernel/int.c ****             ++int_table_ptr;
+ 638              		.loc 1 453 0
+ 639 0046 7B69     		ldr	r3, [r7, #20]
+ 640 0048 0C33     		add	r3, r3, #12
+ 641 004a 7B61     		str	r3, [r7, #20]
+ 642              	.L45:
+ 447:../MQXLITE/kernel/int.c ****         while (--number)
+ 643              		.loc 1 447 0
+ 644 004c 3B69     		ldr	r3, [r7, #16]
+ 645 004e 013B     		sub	r3, r3, #1
+ 646 0050 3B61     		str	r3, [r7, #16]
+ 647 0052 3B69     		ldr	r3, [r7, #16]
+ 648 0054 002B     		cmp	r3, #0
+ 649 0056 EED1     		bne	.L47
+ 650              	.L44:
+ 454:../MQXLITE/kernel/int.c ****         } /* Endwhile */
+ 455:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 456:../MQXLITE/kernel/int.c **** 
+ 457:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_install_default_isr, old_default_isr);
+ 458:../MQXLITE/kernel/int.c **** 
+ 459:../MQXLITE/kernel/int.c ****     return(old_default_isr);
+ 651              		.loc 1 459 0
+ 652 0058 BB68     		ldr	r3, [r7, #8]
+ 460:../MQXLITE/kernel/int.c **** 
+ 461:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 653              		.loc 1 461 0
+ 654 005a 181C     		mov	r0, r3
+ 655 005c BD46     		mov	sp, r7
+ 656 005e 06B0     		add	sp, sp, #24
+ 657              		@ sp needed for prologue
+ 658 0060 80BD     		pop	{r7, pc}
+ 659              	.L50:
+ 660 0062 C046     		.align	2
+ 661              	.L49:
+ 662 0064 00000000 		.word	_mqx_kernel_data
+ 663              		.cfi_endproc
+ 664              	.LFE8:
+ 666              		.section	.text._int_install_exception_isr,"ax",%progbits
+ 667              		.align	2
+ 668              		.global	_int_install_exception_isr
+ 669              		.code	16
+ 670              		.thumb_func
+ 672              	_int_install_exception_isr:
+ 673              	.LFB9:
+ 462:../MQXLITE/kernel/int.c **** 
+ 463:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 464:../MQXLITE/kernel/int.c **** 
+ 465:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_install_default_isr
+ 466:../MQXLITE/kernel/int.c **** (
+ 467:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR default_isr
+ 468:../MQXLITE/kernel/int.c **** )
+ 469:../MQXLITE/kernel/int.c **** { /* Body */
+ 470:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 471:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR           old_default_isr;
+ 472:../MQXLITE/kernel/int.c **** 
+ 473:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 474:../MQXLITE/kernel/int.c ****     _KLOGE2(KLOG_int_install_default_isr, default_isr);
+ 475:../MQXLITE/kernel/int.c **** 
+ 476:../MQXLITE/kernel/int.c ****     old_default_isr = kernel_data->DEFAULT_ISR;
+ 477:../MQXLITE/kernel/int.c ****     kernel_data->DEFAULT_ISR = default_isr;
+ 478:../MQXLITE/kernel/int.c **** 
+ 479:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_install_default_isr, old_default_isr);
+ 480:../MQXLITE/kernel/int.c **** 
+ 481:../MQXLITE/kernel/int.c ****     return(old_default_isr);
+ 482:../MQXLITE/kernel/int.c **** 
+ 483:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 484:../MQXLITE/kernel/int.c **** 
+ 485:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 486:../MQXLITE/kernel/int.c **** 
+ 487:../MQXLITE/kernel/int.c **** /*!
+ 488:../MQXLITE/kernel/int.c ****  * \brief Installs the MQX-provided _int_exception_isr() as the default ISR for
+ 489:../MQXLITE/kernel/int.c ****  * unhandled interrupts and exceptions.
+ 490:../MQXLITE/kernel/int.c ****  *
+ 491:../MQXLITE/kernel/int.c ****  * The exception ISR handler performs the following service:
+ 492:../MQXLITE/kernel/int.c ****  * \n If an unhandled interrupt occurs and
+ 493:../MQXLITE/kernel/int.c ****  * \n a) A task is running
+ 494:../MQXLITE/kernel/int.c ****  * \n - If the task has an exception handler, this handler is called
+ 495:../MQXLITE/kernel/int.c ****  * \n - Otherwise, the task is aborted (_task_abort)
+ 496:../MQXLITE/kernel/int.c ****  * \n b) An ISR is running
+ 497:../MQXLITE/kernel/int.c ****  * \n - If the ISR has an exception handler installed, then the exception handler
+ 498:../MQXLITE/kernel/int.c ****  * is called. Finally, both exception and ISR interrupt frames are removed.
+ 499:../MQXLITE/kernel/int.c ****  *
+ 500:../MQXLITE/kernel/int.c ****  * \return Pointer to the default exception handler before the function was called.
+ 501:../MQXLITE/kernel/int.c ****  *
+ 502:../MQXLITE/kernel/int.c ****  * \see _int_get_default_isr
+ 503:../MQXLITE/kernel/int.c ****  */
+ 504:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_install_exception_isr
+ 505:../MQXLITE/kernel/int.c **** (
+ 506:../MQXLITE/kernel/int.c ****     void
+ 507:../MQXLITE/kernel/int.c **** )
+ 508:../MQXLITE/kernel/int.c **** { /* Body */
+ 674              		.loc 1 508 0
+ 675              		.cfi_startproc
+ 676 0000 80B5     		push	{r7, lr}
+ 677              	.LCFI27:
+ 678              		.cfi_def_cfa_offset 8
+ 679              		.cfi_offset 7, -8
+ 680              		.cfi_offset 14, -4
+ 681 0002 82B0     		sub	sp, sp, #8
+ 682              	.LCFI28:
+ 683              		.cfi_def_cfa_offset 16
+ 684 0004 00AF     		add	r7, sp, #0
+ 685              	.LCFI29:
+ 686              		.cfi_def_cfa_register 7
+ 509:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 510:../MQXLITE/kernel/int.c **** 
+ 511:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 687              		.loc 1 511 0
+ 688 0006 094B     		ldr	r3, .L53
+ 689 0008 1B68     		ldr	r3, [r3]
+ 690 000a 7B60     		str	r3, [r7, #4]
+ 512:../MQXLITE/kernel/int.c ****     kernel_data->FLAGS |= MQX_FLAGS_EXCEPTION_HANDLER_INSTALLED;
+ 691              		.loc 1 512 0
+ 692 000c 7B68     		ldr	r3, [r7, #4]
+ 693 000e 9B8A     		ldrh	r3, [r3, #20]
+ 694 0010 0122     		mov	r2, #1
+ 695 0012 1343     		orr	r3, r2
+ 696 0014 9AB2     		uxth	r2, r3
+ 697 0016 7B68     		ldr	r3, [r7, #4]
+ 698 0018 9A82     		strh	r2, [r3, #20]
+ 513:../MQXLITE/kernel/int.c ****     return(_int_install_default_isr(_int_exception_isr));
+ 699              		.loc 1 513 0
+ 700 001a 054B     		ldr	r3, .L53+4
+ 701 001c 181C     		mov	r0, r3
+ 702 001e FFF7FEFF 		bl	_int_install_default_isr
+ 703 0022 031C     		mov	r3, r0
+ 514:../MQXLITE/kernel/int.c **** 
+ 515:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 704              		.loc 1 515 0
+ 705 0024 181C     		mov	r0, r3
+ 706 0026 BD46     		mov	sp, r7
+ 707 0028 02B0     		add	sp, sp, #8
+ 708              		@ sp needed for prologue
+ 709 002a 80BD     		pop	{r7, pc}
+ 710              	.L54:
+ 711              		.align	2
+ 712              	.L53:
+ 713 002c 00000000 		.word	_mqx_kernel_data
+ 714 0030 00000000 		.word	_int_exception_isr
+ 715              		.cfi_endproc
+ 716              	.LFE9:
+ 718              		.section	.text._int_install_isr,"ax",%progbits
+ 719              		.align	2
+ 720              		.global	_int_install_isr
+ 721              		.code	16
+ 722              		.thumb_func
+ 724              	_int_install_isr:
+ 725              	.LFB10:
+ 516:../MQXLITE/kernel/int.c **** 
+ 517:../MQXLITE/kernel/int.c **** /*!
+ 518:../MQXLITE/kernel/int.c ****  * \brief Installs the ISR.
+ 519:../MQXLITE/kernel/int.c ****  *
+ 520:../MQXLITE/kernel/int.c ****  * The application defines the ISR data, which can be a constant or a pointer to
+ 521:../MQXLITE/kernel/int.c ****  * a memory block from _mem_alloc().
+ 522:../MQXLITE/kernel/int.c ****  * \n MQX catches all hardware interrupts in the range that the BSP defined and saves
+ 523:../MQXLITE/kernel/int.c ****  * the context of the active task. For most interrupts, MQX calls the ISR that is
+ 524:../MQXLITE/kernel/int.c ****  * stored in the interrupt vector table at the location identified by its interrupt
+ 525:../MQXLITE/kernel/int.c ****  * vector number.
+ 526:../MQXLITE/kernel/int.c ****  *
+ 527:../MQXLITE/kernel/int.c ****  * \param[in] vector   Vector number (not the offset) of the interrupt.
+ 528:../MQXLITE/kernel/int.c ****  * \param[in] isr_ptr  Pointer to the ISR
+ 529:../MQXLITE/kernel/int.c ****  * \param[in] isr_data Pointer to the data to be passed as the first parameter to
+ 530:../MQXLITE/kernel/int.c ****  * the ISR when an interrupt occurs and the ISR runs
+ 531:../MQXLITE/kernel/int.c ****  *
+ 532:../MQXLITE/kernel/int.c ****  * \return Pointer to the ISR for the vector before calling the function.
+ 533:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 534:../MQXLITE/kernel/int.c ****  *
+ 535:../MQXLITE/kernel/int.c ****  * \see _int_get_default_isr
+ 536:../MQXLITE/kernel/int.c ****  * \see _int_install_default_isr
+ 537:../MQXLITE/kernel/int.c ****  * \see _int_get_isr_data
+ 538:../MQXLITE/kernel/int.c ****  * \see _int_set_isr_data
+ 539:../MQXLITE/kernel/int.c ****  * \see _int_get_isr
+ 540:../MQXLITE/kernel/int.c ****  * \see _task_set_error
+ 541:../MQXLITE/kernel/int.c ****  */
+ 542:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 543:../MQXLITE/kernel/int.c **** 
+ 544:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_install_isr
+ 545:../MQXLITE/kernel/int.c **** (
+ 546:../MQXLITE/kernel/int.c ****     _mqx_uint        vector,
+ 547:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR     isr_ptr,
+ 548:../MQXLITE/kernel/int.c ****     pointer          isr_data
+ 549:../MQXLITE/kernel/int.c **** )
+ 550:../MQXLITE/kernel/int.c **** { /* Body */
+ 726              		.loc 1 550 0
+ 727              		.cfi_startproc
+ 728 0000 80B5     		push	{r7, lr}
+ 729              	.LCFI30:
+ 730              		.cfi_def_cfa_offset 8
+ 731              		.cfi_offset 7, -8
+ 732              		.cfi_offset 14, -4
+ 733 0002 88B0     		sub	sp, sp, #32
+ 734              	.LCFI31:
+ 735              		.cfi_def_cfa_offset 40
+ 736 0004 00AF     		add	r7, sp, #0
+ 737              	.LCFI32:
+ 738              		.cfi_def_cfa_register 7
+ 739 0006 F860     		str	r0, [r7, #12]
+ 740 0008 B960     		str	r1, [r7, #8]
+ 741 000a 7A60     		str	r2, [r7, #4]
+ 551:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR     kernel_data;
+ 552:../MQXLITE/kernel/int.c ****     INTERRUPT_TABLE_STRUCT_PTR table_ptr;
+ 553:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR               old_isr_ptr;
+ 554:../MQXLITE/kernel/int.c **** 
+ 555:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 742              		.loc 1 555 0
+ 743 000c 1C4B     		ldr	r3, .L60
+ 744 000e 1B68     		ldr	r3, [r3]
+ 745 0010 FB61     		str	r3, [r7, #28]
+ 556:../MQXLITE/kernel/int.c **** 
+ 557:../MQXLITE/kernel/int.c ****     _KLOGE4(KLOG_int_install_isr, vector, isr_ptr, isr_data);
+ 558:../MQXLITE/kernel/int.c **** 
+ 559:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 560:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 746              		.loc 1 560 0
+ 747 0012 FB69     		ldr	r3, [r7, #28]
+ 748 0014 9B6B     		ldr	r3, [r3, #56]
+ 749 0016 002B     		cmp	r3, #0
+ 750 0018 04D1     		bne	.L56
+ 561:../MQXLITE/kernel/int.c ****     {
+ 562:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 751              		.loc 1 562 0
+ 752 001a 1820     		mov	r0, #24
+ 753 001c FFF7FEFF 		bl	_task_set_error
+ 563:../MQXLITE/kernel/int.c ****         return(NULL);
+ 754              		.loc 1 563 0
+ 755 0020 0023     		mov	r3, #0
+ 756 0022 28E0     		b	.L57
+ 757              	.L56:
+ 564:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 565:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 758              		.loc 1 565 0
+ 759 0024 FB69     		ldr	r3, [r7, #28]
+ 760 0026 DA6A     		ldr	r2, [r3, #44]
+ 761 0028 FB68     		ldr	r3, [r7, #12]
+ 762 002a 9A42     		cmp	r2, r3
+ 763 002c 04D8     		bhi	.L58
+ 566:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 764              		.loc 1 566 0
+ 765 002e FB69     		ldr	r3, [r7, #28]
+ 766 0030 1A6B     		ldr	r2, [r3, #48]
+ 565:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 767              		.loc 1 565 0
+ 768 0032 FB68     		ldr	r3, [r7, #12]
+ 769 0034 9A42     		cmp	r2, r3
+ 770 0036 04D2     		bcs	.L59
+ 771              	.L58:
+ 567:../MQXLITE/kernel/int.c ****     {
+ 568:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 772              		.loc 1 568 0
+ 773 0038 1420     		mov	r0, #20
+ 774 003a FFF7FEFF 		bl	_task_set_error
+ 569:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_install_isr, NULL);
+ 570:../MQXLITE/kernel/int.c ****         return(NULL);
+ 775              		.loc 1 570 0
+ 776 003e 0023     		mov	r3, #0
+ 777 0040 19E0     		b	.L57
+ 778              	.L59:
+ 571:../MQXLITE/kernel/int.c ****     }/* Endif */
+ 572:../MQXLITE/kernel/int.c **** #endif
+ 573:../MQXLITE/kernel/int.c **** 
+ 574:../MQXLITE/kernel/int.c ****     table_ptr = &kernel_data->INTERRUPT_TABLE_PTR[vector -
+ 779              		.loc 1 574 0
+ 780 0042 FB69     		ldr	r3, [r7, #28]
+ 781 0044 996B     		ldr	r1, [r3, #56]
+ 575:../MQXLITE/kernel/int.c ****                                                   kernel_data->FIRST_USER_ISR_VECTOR];
+ 782              		.loc 1 575 0
+ 783 0046 FB69     		ldr	r3, [r7, #28]
+ 784 0048 DB6A     		ldr	r3, [r3, #44]
+ 574:../MQXLITE/kernel/int.c ****     table_ptr = &kernel_data->INTERRUPT_TABLE_PTR[vector -
+ 785              		.loc 1 574 0
+ 786 004a FA68     		ldr	r2, [r7, #12]
+ 787 004c D21A     		sub	r2, r2, r3
+ 788 004e 131C     		mov	r3, r2
+ 789 0050 5B00     		lsl	r3, r3, #1
+ 790 0052 9B18     		add	r3, r3, r2
+ 791 0054 9B00     		lsl	r3, r3, #2
+ 792 0056 CB18     		add	r3, r1, r3
+ 793 0058 BB61     		str	r3, [r7, #24]
+ 576:../MQXLITE/kernel/int.c **** 
+ 577:../MQXLITE/kernel/int.c ****     _int_disable();
+ 794              		.loc 1 577 0
+ 795 005a FFF7FEFF 		bl	_int_disable
+ 578:../MQXLITE/kernel/int.c ****     old_isr_ptr = table_ptr->APP_ISR;
+ 796              		.loc 1 578 0
+ 797 005e BB69     		ldr	r3, [r7, #24]
+ 798 0060 1B68     		ldr	r3, [r3]
+ 799 0062 7B61     		str	r3, [r7, #20]
+ 579:../MQXLITE/kernel/int.c ****     table_ptr->APP_ISR  = isr_ptr;
+ 800              		.loc 1 579 0
+ 801 0064 BB69     		ldr	r3, [r7, #24]
+ 802 0066 BA68     		ldr	r2, [r7, #8]
+ 803 0068 1A60     		str	r2, [r3]
+ 580:../MQXLITE/kernel/int.c ****     table_ptr->APP_ISR_DATA = isr_data;
+ 804              		.loc 1 580 0
+ 805 006a BB69     		ldr	r3, [r7, #24]
+ 806 006c 7A68     		ldr	r2, [r7, #4]
+ 807 006e 9A60     		str	r2, [r3, #8]
+ 581:../MQXLITE/kernel/int.c ****     _int_enable();
+ 808              		.loc 1 581 0
+ 809 0070 FFF7FEFF 		bl	_int_enable
+ 582:../MQXLITE/kernel/int.c **** 
+ 583:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_install_isr, old_isr_ptr);
+ 584:../MQXLITE/kernel/int.c **** 
+ 585:../MQXLITE/kernel/int.c ****     return (old_isr_ptr);
+ 810              		.loc 1 585 0
+ 811 0074 7B69     		ldr	r3, [r7, #20]
+ 812              	.L57:
+ 586:../MQXLITE/kernel/int.c **** 
+ 587:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 813              		.loc 1 587 0
+ 814 0076 181C     		mov	r0, r3
+ 815 0078 BD46     		mov	sp, r7
+ 816 007a 08B0     		add	sp, sp, #32
+ 817              		@ sp needed for prologue
+ 818 007c 80BD     		pop	{r7, pc}
+ 819              	.L61:
+ 820 007e C046     		.align	2
+ 821              	.L60:
+ 822 0080 00000000 		.word	_mqx_kernel_data
+ 823              		.cfi_endproc
+ 824              	.LFE10:
+ 826              		.section	.text._int_install_unexpected_isr,"ax",%progbits
+ 827              		.align	2
+ 828              		.global	_int_install_unexpected_isr
+ 829              		.code	16
+ 830              		.thumb_func
+ 832              	_int_install_unexpected_isr:
+ 833              	.LFB11:
+ 588:../MQXLITE/kernel/int.c **** 
+ 589:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 590:../MQXLITE/kernel/int.c **** 
+ 591:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_install_isr
+ 592:../MQXLITE/kernel/int.c **** (
+ 593:../MQXLITE/kernel/int.c ****     _mqx_uint        vector,
+ 594:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR     isr_ptr,
+ 595:../MQXLITE/kernel/int.c ****     pointer          isr_data
+ 596:../MQXLITE/kernel/int.c **** )
+ 597:../MQXLITE/kernel/int.c **** { /* Body */
+ 598:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR          kernel_data;
+ 599:../MQXLITE/kernel/int.c ****     INTERRUPT_SPARSE_REC_STRUCT_PTR int_ptr;
+ 600:../MQXLITE/kernel/int.c ****     INT_ISR_FPTR                    old_isr_ptr;
+ 601:../MQXLITE/kernel/int.c **** 
+ 602:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 603:../MQXLITE/kernel/int.c **** 
+ 604:../MQXLITE/kernel/int.c ****     _KLOGE4(KLOG_int_install_isr, vector, isr_ptr, isr_data);
+ 605:../MQXLITE/kernel/int.c **** 
+ 606:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 607:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 608:../MQXLITE/kernel/int.c ****     {
+ 609:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 610:../MQXLITE/kernel/int.c ****         return(NULL);
+ 611:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 612:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 613:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 614:../MQXLITE/kernel/int.c ****     {
+ 615:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 616:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_install_isr, NULL);
+ 617:../MQXLITE/kernel/int.c ****         return(NULL);
+ 618:../MQXLITE/kernel/int.c ****     }/* Endif */
+ 619:../MQXLITE/kernel/int.c **** #endif
+ 620:../MQXLITE/kernel/int.c **** 
+ 621:../MQXLITE/kernel/int.c ****     _int_disable();
+ 622:../MQXLITE/kernel/int.c **** 
+ 623:../MQXLITE/kernel/int.c ****     int_ptr = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX
+ 624:../MQXLITE/kernel/int.c **** 
+ 625:../MQXLITE/kernel/int.c ****     while (int_ptr && int_ptr->VEC_NUM != vector)
+ 626:../MQXLITE/kernel/int.c ****     {
+ 627:../MQXLITE/kernel/int.c ****         int_ptr = int_ptr->NEXT;
+ 628:../MQXLITE/kernel/int.c ****     }
+ 629:../MQXLITE/kernel/int.c **** 
+ 630:../MQXLITE/kernel/int.c ****     if (!int_ptr)
+ 631:../MQXLITE/kernel/int.c ****     {
+ 632:../MQXLITE/kernel/int.c **** #if MQX_LITE_VERSION_NUMBER
+ 633:../MQXLITE/kernel/int.c ****         int_ptr = &sparse_struct;
+ 634:../MQXLITE/kernel/int.c **** #else
+ 635:../MQXLITE/kernel/int.c ****         int_ptr = _mem_alloc_system(sizeof(INTERRUPT_SPARSE_REC_STRUCT));
+ 636:../MQXLITE/kernel/int.c ****         _mem_set_type(int_ptr, MEM_TYPE_INTERRUPT_VECTOR);
+ 637:../MQXLITE/kernel/int.c **** #endif
+ 638:../MQXLITE/kernel/int.c **** 
+ 639:../MQXLITE/kernel/int.c ****         int_ptr->NEXT = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECT
+ 640:../MQXLITE/kernel/int.c ****         kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX_SPARS
+ 641:../MQXLITE/kernel/int.c **** 
+ 642:../MQXLITE/kernel/int.c ****         old_isr_ptr = _int_default_isr;
+ 643:../MQXLITE/kernel/int.c ****     }
+ 644:../MQXLITE/kernel/int.c ****     else
+ 645:../MQXLITE/kernel/int.c ****         old_isr_ptr = int_ptr->APP_ISR;
+ 646:../MQXLITE/kernel/int.c **** 
+ 647:../MQXLITE/kernel/int.c ****     int_ptr->VEC_NUM = vector;
+ 648:../MQXLITE/kernel/int.c ****     int_ptr->APP_ISR  = isr_ptr;
+ 649:../MQXLITE/kernel/int.c ****     int_ptr->APP_ISR_DATA = isr_data;
+ 650:../MQXLITE/kernel/int.c **** 
+ 651:../MQXLITE/kernel/int.c ****     _int_enable();
+ 652:../MQXLITE/kernel/int.c **** 
+ 653:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_install_isr, old_isr_ptr);
+ 654:../MQXLITE/kernel/int.c **** 
+ 655:../MQXLITE/kernel/int.c ****     return (old_isr_ptr);
+ 656:../MQXLITE/kernel/int.c **** 
+ 657:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 658:../MQXLITE/kernel/int.c **** 
+ 659:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 660:../MQXLITE/kernel/int.c **** 
+ 661:../MQXLITE/kernel/int.c **** /*!
+ 662:../MQXLITE/kernel/int.c ****  * \brief Installs the MQX-provided unexpected ISR, _int_unexpected_isr(), for all
+ 663:../MQXLITE/kernel/int.c ****  * interrupts that do not have an application-installed ISR.
+ 664:../MQXLITE/kernel/int.c ****  *
+ 665:../MQXLITE/kernel/int.c ****  * The installed ISR writes the cause of the unexpected interrupt to the standard
+ 666:../MQXLITE/kernel/int.c ****  * I/O stream.
+ 667:../MQXLITE/kernel/int.c ****  *
+ 668:../MQXLITE/kernel/int.c ****  * \return Pointer to the unexpected interrupt ISR before the function was called.
+ 669:../MQXLITE/kernel/int.c ****  *
+ 670:../MQXLITE/kernel/int.c ****  * \see _int_install_exception_isr
+ 671:../MQXLITE/kernel/int.c ****  * \see _int_unexpected_isr
+ 672:../MQXLITE/kernel/int.c ****  */
+ 673:../MQXLITE/kernel/int.c **** INT_ISR_FPTR _int_install_unexpected_isr
+ 674:../MQXLITE/kernel/int.c **** (
+ 675:../MQXLITE/kernel/int.c ****     void
+ 676:../MQXLITE/kernel/int.c **** )
+ 677:../MQXLITE/kernel/int.c **** { /* Body */
+ 834              		.loc 1 677 0
+ 835              		.cfi_startproc
+ 836 0000 80B5     		push	{r7, lr}
+ 837              	.LCFI33:
+ 838              		.cfi_def_cfa_offset 8
+ 839              		.cfi_offset 7, -8
+ 840              		.cfi_offset 14, -4
+ 841 0002 82B0     		sub	sp, sp, #8
+ 842              	.LCFI34:
+ 843              		.cfi_def_cfa_offset 16
+ 844 0004 00AF     		add	r7, sp, #0
+ 845              	.LCFI35:
+ 846              		.cfi_def_cfa_register 7
+ 678:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 679:../MQXLITE/kernel/int.c **** 
+ 680:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 847              		.loc 1 680 0
+ 848 0006 094B     		ldr	r3, .L64
+ 849 0008 1B68     		ldr	r3, [r3]
+ 850 000a 7B60     		str	r3, [r7, #4]
+ 681:../MQXLITE/kernel/int.c ****     kernel_data->FLAGS &= ~MQX_FLAGS_EXCEPTION_HANDLER_INSTALLED;
+ 851              		.loc 1 681 0
+ 852 000c 7B68     		ldr	r3, [r7, #4]
+ 853 000e 9B8A     		ldrh	r3, [r3, #20]
+ 854 0010 0122     		mov	r2, #1
+ 855 0012 9343     		bic	r3, r2
+ 856 0014 9AB2     		uxth	r2, r3
+ 857 0016 7B68     		ldr	r3, [r7, #4]
+ 858 0018 9A82     		strh	r2, [r3, #20]
+ 682:../MQXLITE/kernel/int.c **** 
+ 683:../MQXLITE/kernel/int.c ****     return(_int_install_default_isr(_int_unexpected_isr));
+ 859              		.loc 1 683 0
+ 860 001a 054B     		ldr	r3, .L64+4
+ 861 001c 181C     		mov	r0, r3
+ 862 001e FFF7FEFF 		bl	_int_install_default_isr
+ 863 0022 031C     		mov	r3, r0
+ 684:../MQXLITE/kernel/int.c **** 
+ 685:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 864              		.loc 1 685 0
+ 865 0024 181C     		mov	r0, r3
+ 866 0026 BD46     		mov	sp, r7
+ 867 0028 02B0     		add	sp, sp, #8
+ 868              		@ sp needed for prologue
+ 869 002a 80BD     		pop	{r7, pc}
+ 870              	.L65:
+ 871              		.align	2
+ 872              	.L64:
+ 873 002c 00000000 		.word	_mqx_kernel_data
+ 874 0030 00000000 		.word	_int_unexpected_isr
+ 875              		.cfi_endproc
+ 876              	.LFE11:
+ 878              		.section	.text._int_set_exception_handler,"ax",%progbits
+ 879              		.align	2
+ 880              		.global	_int_set_exception_handler
+ 881              		.code	16
+ 882              		.thumb_func
+ 884              	_int_set_exception_handler:
+ 885              	.LFB12:
+ 686:../MQXLITE/kernel/int.c **** 
+ 687:../MQXLITE/kernel/int.c **** /*!
+ 688:../MQXLITE/kernel/int.c ****  * \brief Sets the ISR exception handler for the interrupt vector.
+ 689:../MQXLITE/kernel/int.c ****  *
+ 690:../MQXLITE/kernel/int.c ****  * The function sets the exception handler for an ISR. When an exception (unhandled
+ 691:../MQXLITE/kernel/int.c ****  * interrupt) occurs while the ISR is running, MQX calls the exception handler
+ 692:../MQXLITE/kernel/int.c ****  * and terminates the ISR.
+ 693:../MQXLITE/kernel/int.c ****  * \n An application should install _int_exception_isr() as the MQX default ISR.
+ 694:../MQXLITE/kernel/int.c ****  * \n The returned exception handler is either the default handler or one that the
+ 695:../MQXLITE/kernel/int.c ****  * application previously installed with _int_set_exception_handler().
+ 696:../MQXLITE/kernel/int.c ****  *
+ 697:../MQXLITE/kernel/int.c ****  * \param[in] vector                Interrupt vector that this exception handler is for.
+ 698:../MQXLITE/kernel/int.c ****  * \param[in] error_handler_address Pointer to the exception handler.
+ 699:../MQXLITE/kernel/int.c ****  *
+ 700:../MQXLITE/kernel/int.c ****  * \return Pointer to the exception handler before the function was called.
+ 701:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 702:../MQXLITE/kernel/int.c ****  *
+ 703:../MQXLITE/kernel/int.c ****  * \warning On failure, the exception handler is not installed and _task_set_error()
+ 704:../MQXLITE/kernel/int.c ****  * is called to set the task error code.
+ 705:../MQXLITE/kernel/int.c ****  *
+ 706:../MQXLITE/kernel/int.c ****  * \see _int_get_exception_handler
+ 707:../MQXLITE/kernel/int.c ****  * \see _int_exception_isr
+ 708:../MQXLITE/kernel/int.c ****  * \see _task_set_error
+ 709:../MQXLITE/kernel/int.c ****  */
+ 710:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 711:../MQXLITE/kernel/int.c **** 
+ 712:../MQXLITE/kernel/int.c **** INT_EXCEPTION_FPTR _int_set_exception_handler
+ 713:../MQXLITE/kernel/int.c **** (
+ 714:../MQXLITE/kernel/int.c ****     _mqx_uint              vector,
+ 715:../MQXLITE/kernel/int.c ****     INT_EXCEPTION_FPTR error_handler_address
+ 716:../MQXLITE/kernel/int.c **** )
+ 717:../MQXLITE/kernel/int.c **** { /* Body */
+ 886              		.loc 1 717 0
+ 887              		.cfi_startproc
+ 888 0000 80B5     		push	{r7, lr}
+ 889              	.LCFI36:
+ 890              		.cfi_def_cfa_offset 8
+ 891              		.cfi_offset 7, -8
+ 892              		.cfi_offset 14, -4
+ 893 0002 84B0     		sub	sp, sp, #16
+ 894              	.LCFI37:
+ 895              		.cfi_def_cfa_offset 24
+ 896 0004 00AF     		add	r7, sp, #0
+ 897              	.LCFI38:
+ 898              		.cfi_def_cfa_register 7
+ 899 0006 7860     		str	r0, [r7, #4]
+ 900 0008 3960     		str	r1, [r7]
+ 718:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 719:../MQXLITE/kernel/int.c ****     INT_EXCEPTION_FPTR     old_handler = NULL;
+ 901              		.loc 1 719 0
+ 902 000a 0023     		mov	r3, #0
+ 903 000c FB60     		str	r3, [r7, #12]
+ 720:../MQXLITE/kernel/int.c **** 
+ 721:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 904              		.loc 1 721 0
+ 905 000e 1C4B     		ldr	r3, .L71
+ 906 0010 1B68     		ldr	r3, [r3]
+ 907 0012 BB60     		str	r3, [r7, #8]
+ 722:../MQXLITE/kernel/int.c ****     _KLOGE3(KLOG_int_set_exception_handler, vector, error_handler_address);
+ 723:../MQXLITE/kernel/int.c **** 
+ 724:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 725:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 908              		.loc 1 725 0
+ 909 0014 BB68     		ldr	r3, [r7, #8]
+ 910 0016 9B6B     		ldr	r3, [r3, #56]
+ 911 0018 002B     		cmp	r3, #0
+ 912 001a 04D1     		bne	.L67
+ 726:../MQXLITE/kernel/int.c ****     {
+ 727:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 913              		.loc 1 727 0
+ 914 001c 1820     		mov	r0, #24
+ 915 001e FFF7FEFF 		bl	_task_set_error
+ 728:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_exception_handler, NULL);
+ 729:../MQXLITE/kernel/int.c ****         return(NULL);
+ 916              		.loc 1 729 0
+ 917 0022 0023     		mov	r3, #0
+ 918 0024 28E0     		b	.L68
+ 919              	.L67:
+ 730:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 731:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 920              		.loc 1 731 0
+ 921 0026 BB68     		ldr	r3, [r7, #8]
+ 922 0028 DA6A     		ldr	r2, [r3, #44]
+ 923 002a 7B68     		ldr	r3, [r7, #4]
+ 924 002c 9A42     		cmp	r2, r3
+ 925 002e 04D8     		bhi	.L69
+ 732:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 926              		.loc 1 732 0
+ 927 0030 BB68     		ldr	r3, [r7, #8]
+ 928 0032 1A6B     		ldr	r2, [r3, #48]
+ 731:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 929              		.loc 1 731 0
+ 930 0034 7B68     		ldr	r3, [r7, #4]
+ 931 0036 9A42     		cmp	r2, r3
+ 932 0038 04D2     		bcs	.L70
+ 933              	.L69:
+ 733:../MQXLITE/kernel/int.c ****     {
+ 734:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 934              		.loc 1 734 0
+ 935 003a 1420     		mov	r0, #20
+ 936 003c FFF7FEFF 		bl	_task_set_error
+ 735:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_exception_handler, NULL);
+ 736:../MQXLITE/kernel/int.c ****         return(NULL);
+ 937              		.loc 1 736 0
+ 938 0040 0023     		mov	r3, #0
+ 939 0042 19E0     		b	.L68
+ 940              	.L70:
+ 737:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 738:../MQXLITE/kernel/int.c **** #endif
+ 739:../MQXLITE/kernel/int.c **** 
+ 740:../MQXLITE/kernel/int.c ****     vector -= kernel_data->FIRST_USER_ISR_VECTOR;
+ 941              		.loc 1 740 0
+ 942 0044 BB68     		ldr	r3, [r7, #8]
+ 943 0046 DB6A     		ldr	r3, [r3, #44]
+ 944 0048 7A68     		ldr	r2, [r7, #4]
+ 945 004a D31A     		sub	r3, r2, r3
+ 946 004c 7B60     		str	r3, [r7, #4]
+ 741:../MQXLITE/kernel/int.c **** 
+ 742:../MQXLITE/kernel/int.c ****     old_handler = kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR_EXCEPTION_HANDLER;
+ 947              		.loc 1 742 0
+ 948 004e BB68     		ldr	r3, [r7, #8]
+ 949 0050 996B     		ldr	r1, [r3, #56]
+ 950 0052 7A68     		ldr	r2, [r7, #4]
+ 951 0054 131C     		mov	r3, r2
+ 952 0056 5B00     		lsl	r3, r3, #1
+ 953 0058 9B18     		add	r3, r3, r2
+ 954 005a 9B00     		lsl	r3, r3, #2
+ 955 005c CB18     		add	r3, r1, r3
+ 956 005e 5B68     		ldr	r3, [r3, #4]
+ 957 0060 FB60     		str	r3, [r7, #12]
+ 743:../MQXLITE/kernel/int.c ****     kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR_EXCEPTION_HANDLER = error_handler_address;
+ 958              		.loc 1 743 0
+ 959 0062 BB68     		ldr	r3, [r7, #8]
+ 960 0064 996B     		ldr	r1, [r3, #56]
+ 961 0066 7A68     		ldr	r2, [r7, #4]
+ 962 0068 131C     		mov	r3, r2
+ 963 006a 5B00     		lsl	r3, r3, #1
+ 964 006c 9B18     		add	r3, r3, r2
+ 965 006e 9B00     		lsl	r3, r3, #2
+ 966 0070 CB18     		add	r3, r1, r3
+ 967 0072 3A68     		ldr	r2, [r7]
+ 968 0074 5A60     		str	r2, [r3, #4]
+ 744:../MQXLITE/kernel/int.c **** 
+ 745:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_set_exception_handler, old_handler);
+ 746:../MQXLITE/kernel/int.c ****     return(old_handler);
+ 969              		.loc 1 746 0
+ 970 0076 FB68     		ldr	r3, [r7, #12]
+ 971              	.L68:
+ 747:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 972              		.loc 1 747 0
+ 973 0078 181C     		mov	r0, r3
+ 974 007a BD46     		mov	sp, r7
+ 975 007c 04B0     		add	sp, sp, #16
+ 976              		@ sp needed for prologue
+ 977 007e 80BD     		pop	{r7, pc}
+ 978              	.L72:
+ 979              		.align	2
+ 980              	.L71:
+ 981 0080 00000000 		.word	_mqx_kernel_data
+ 982              		.cfi_endproc
+ 983              	.LFE12:
+ 985              		.section	.text._int_set_isr_data,"ax",%progbits
+ 986              		.align	2
+ 987              		.global	_int_set_isr_data
+ 988              		.code	16
+ 989              		.thumb_func
+ 991              	_int_set_isr_data:
+ 992              	.LFB13:
+ 748:../MQXLITE/kernel/int.c **** 
+ 749:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 750:../MQXLITE/kernel/int.c **** 
+ 751:../MQXLITE/kernel/int.c **** INT_EXCEPTION_FPTR _int_set_exception_handler
+ 752:../MQXLITE/kernel/int.c **** (
+ 753:../MQXLITE/kernel/int.c ****     _mqx_uint              vector,
+ 754:../MQXLITE/kernel/int.c ****     INT_EXCEPTION_FPTR error_handler_address
+ 755:../MQXLITE/kernel/int.c **** )
+ 756:../MQXLITE/kernel/int.c **** {
+ 757:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 758:../MQXLITE/kernel/int.c ****     INT_EXCEPTION_FPTR old_handler = NULL;
+ 759:../MQXLITE/kernel/int.c ****     INTERRUPT_SPARSE_REC_STRUCT_PTR int_ptr;
+ 760:../MQXLITE/kernel/int.c **** 
+ 761:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 762:../MQXLITE/kernel/int.c ****     _KLOGE3(KLOG_int_set_exception_handler, vector, error_handler_address);
+ 763:../MQXLITE/kernel/int.c **** 
+ 764:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 765:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 766:../MQXLITE/kernel/int.c ****     {
+ 767:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 768:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_exception_handler, NULL);
+ 769:../MQXLITE/kernel/int.c ****         return (NULL);
+ 770:../MQXLITE/kernel/int.c ****     }
+ 771:../MQXLITE/kernel/int.c **** 
+ 772:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 773:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 774:../MQXLITE/kernel/int.c ****     {
+ 775:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 776:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_exception_handler, NULL);
+ 777:../MQXLITE/kernel/int.c ****         return (NULL);
+ 778:../MQXLITE/kernel/int.c ****     }
+ 779:../MQXLITE/kernel/int.c **** #endif
+ 780:../MQXLITE/kernel/int.c **** 
+ 781:../MQXLITE/kernel/int.c ****     _int_disable();
+ 782:../MQXLITE/kernel/int.c **** 
+ 783:../MQXLITE/kernel/int.c ****     int_ptr = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX
+ 784:../MQXLITE/kernel/int.c **** 
+ 785:../MQXLITE/kernel/int.c ****     while (int_ptr && int_ptr->VEC_NUM != vector)
+ 786:../MQXLITE/kernel/int.c ****     {
+ 787:../MQXLITE/kernel/int.c ****         int_ptr = int_ptr->NEXT;
+ 788:../MQXLITE/kernel/int.c ****     }
+ 789:../MQXLITE/kernel/int.c **** 
+ 790:../MQXLITE/kernel/int.c ****     if (!int_ptr)
+ 791:../MQXLITE/kernel/int.c ****     {
+ 792:../MQXLITE/kernel/int.c **** #if MQX_LITE_VERSION_NUMBER
+ 793:../MQXLITE/kernel/int.c ****         int_ptr = &sparse_struct;
+ 794:../MQXLITE/kernel/int.c **** #else
+ 795:../MQXLITE/kernel/int.c ****         int_ptr = _mem_alloc_system(sizeof(INTERRUPT_SPARSE_REC_STRUCT));
+ 796:../MQXLITE/kernel/int.c ****         _mem_set_type(int_ptr, MEM_TYPE_INTERRUPT_VECTOR);
+ 797:../MQXLITE/kernel/int.c **** #endif
+ 798:../MQXLITE/kernel/int.c **** 
+ 799:../MQXLITE/kernel/int.c ****         int_ptr->NEXT = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECT
+ 800:../MQXLITE/kernel/int.c ****         kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX_SPARS
+ 801:../MQXLITE/kernel/int.c **** 
+ 802:../MQXLITE/kernel/int.c ****         old_handler = NULL;
+ 803:../MQXLITE/kernel/int.c ****     }
+ 804:../MQXLITE/kernel/int.c ****     else
+ 805:../MQXLITE/kernel/int.c ****         old_handler = int_ptr->APP_ISR_EXCEPTION_HANDLER;
+ 806:../MQXLITE/kernel/int.c **** 
+ 807:../MQXLITE/kernel/int.c **** 
+ 808:../MQXLITE/kernel/int.c ****     int_ptr->VEC_NUM = vector;
+ 809:../MQXLITE/kernel/int.c ****     int_ptr->APP_ISR_EXCEPTION_HANDLER  = error_handler_address;
+ 810:../MQXLITE/kernel/int.c **** 
+ 811:../MQXLITE/kernel/int.c ****     _int_enable();
+ 812:../MQXLITE/kernel/int.c **** 
+ 813:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_set_exception_handler, old_handler);
+ 814:../MQXLITE/kernel/int.c ****     return (old_handler);
+ 815:../MQXLITE/kernel/int.c **** }
+ 816:../MQXLITE/kernel/int.c **** 
+ 817:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 818:../MQXLITE/kernel/int.c **** 
+ 819:../MQXLITE/kernel/int.c **** /*!
+ 820:../MQXLITE/kernel/int.c ****  * \brief Sets the address of the interrupt handler data for the specified vector,
+ 821:../MQXLITE/kernel/int.c ****  * and returns the old value.
+ 822:../MQXLITE/kernel/int.c ****  *
+ 823:../MQXLITE/kernel/int.c ****  * \param[in] vector The interrupt vector that this data is for.
+ 824:../MQXLITE/kernel/int.c ****  * \param[in] data   Data that MQX passes to the ISR as its first parameter.
+ 825:../MQXLITE/kernel/int.c ****  *
+ 826:../MQXLITE/kernel/int.c ****  * \return ISR data before the function was called.
+ 827:../MQXLITE/kernel/int.c ****  * \return NULL (Failure.)
+ 828:../MQXLITE/kernel/int.c ****  *
+ 829:../MQXLITE/kernel/int.c ****  * \warning On failure, calls _task_set_error() to set the task error code.
+ 830:../MQXLITE/kernel/int.c ****  *
+ 831:../MQXLITE/kernel/int.c ****  * \see _int_get_isr
+ 832:../MQXLITE/kernel/int.c ****  * \see _int_get_isr_data
+ 833:../MQXLITE/kernel/int.c ****  */
+ 834:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 835:../MQXLITE/kernel/int.c **** 
+ 836:../MQXLITE/kernel/int.c **** pointer _int_set_isr_data
+ 837:../MQXLITE/kernel/int.c **** (
+ 838:../MQXLITE/kernel/int.c ****     _mqx_uint vector,
+ 839:../MQXLITE/kernel/int.c ****     pointer data
+ 840:../MQXLITE/kernel/int.c **** )
+ 841:../MQXLITE/kernel/int.c **** { /* Body */
+ 993              		.loc 1 841 0
+ 994              		.cfi_startproc
+ 995 0000 80B5     		push	{r7, lr}
+ 996              	.LCFI39:
+ 997              		.cfi_def_cfa_offset 8
+ 998              		.cfi_offset 7, -8
+ 999              		.cfi_offset 14, -4
+ 1000 0002 84B0     		sub	sp, sp, #16
+ 1001              	.LCFI40:
+ 1002              		.cfi_def_cfa_offset 24
+ 1003 0004 00AF     		add	r7, sp, #0
+ 1004              	.LCFI41:
+ 1005              		.cfi_def_cfa_register 7
+ 1006 0006 7860     		str	r0, [r7, #4]
+ 1007 0008 3960     		str	r1, [r7]
+ 842:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 843:../MQXLITE/kernel/int.c ****     pointer                old_data;
+ 844:../MQXLITE/kernel/int.c **** 
+ 845:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 1008              		.loc 1 845 0
+ 1009 000a 1C4B     		ldr	r3, .L78
+ 1010 000c 1B68     		ldr	r3, [r3]
+ 1011 000e FB60     		str	r3, [r7, #12]
+ 846:../MQXLITE/kernel/int.c ****     _KLOGE3(KLOG_int_set_isr_data,vector,data);
+ 847:../MQXLITE/kernel/int.c **** 
+ 848:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 849:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 1012              		.loc 1 849 0
+ 1013 0010 FB68     		ldr	r3, [r7, #12]
+ 1014 0012 9B6B     		ldr	r3, [r3, #56]
+ 1015 0014 002B     		cmp	r3, #0
+ 1016 0016 04D1     		bne	.L74
+ 850:../MQXLITE/kernel/int.c ****     {
+ 851:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 1017              		.loc 1 851 0
+ 1018 0018 1820     		mov	r0, #24
+ 1019 001a FFF7FEFF 		bl	_task_set_error
+ 852:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_isr_data,NULL);
+ 853:../MQXLITE/kernel/int.c ****         return(NULL);
+ 1020              		.loc 1 853 0
+ 1021 001e 0023     		mov	r3, #0
+ 1022 0020 28E0     		b	.L75
+ 1023              	.L74:
+ 854:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 855:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 1024              		.loc 1 855 0
+ 1025 0022 FB68     		ldr	r3, [r7, #12]
+ 1026 0024 DA6A     		ldr	r2, [r3, #44]
+ 1027 0026 7B68     		ldr	r3, [r7, #4]
+ 1028 0028 9A42     		cmp	r2, r3
+ 1029 002a 04D8     		bhi	.L76
+ 856:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 1030              		.loc 1 856 0
+ 1031 002c FB68     		ldr	r3, [r7, #12]
+ 1032 002e 1A6B     		ldr	r2, [r3, #48]
+ 855:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 1033              		.loc 1 855 0
+ 1034 0030 7B68     		ldr	r3, [r7, #4]
+ 1035 0032 9A42     		cmp	r2, r3
+ 1036 0034 04D2     		bcs	.L77
+ 1037              	.L76:
+ 857:../MQXLITE/kernel/int.c ****     {
+ 858:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 1038              		.loc 1 858 0
+ 1039 0036 1420     		mov	r0, #20
+ 1040 0038 FFF7FEFF 		bl	_task_set_error
+ 859:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_isr_data,NULL);
+ 860:../MQXLITE/kernel/int.c ****         return(NULL);
+ 1041              		.loc 1 860 0
+ 1042 003c 0023     		mov	r3, #0
+ 1043 003e 19E0     		b	.L75
+ 1044              	.L77:
+ 861:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 862:../MQXLITE/kernel/int.c **** #endif
+ 863:../MQXLITE/kernel/int.c **** 
+ 864:../MQXLITE/kernel/int.c ****     vector -= (kernel_data->FIRST_USER_ISR_VECTOR);
+ 1045              		.loc 1 864 0
+ 1046 0040 FB68     		ldr	r3, [r7, #12]
+ 1047 0042 DB6A     		ldr	r3, [r3, #44]
+ 1048 0044 7A68     		ldr	r2, [r7, #4]
+ 1049 0046 D31A     		sub	r3, r2, r3
+ 1050 0048 7B60     		str	r3, [r7, #4]
+ 865:../MQXLITE/kernel/int.c **** 
+ 866:../MQXLITE/kernel/int.c ****     old_data = kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR_DATA;
+ 1051              		.loc 1 866 0
+ 1052 004a FB68     		ldr	r3, [r7, #12]
+ 1053 004c 996B     		ldr	r1, [r3, #56]
+ 1054 004e 7A68     		ldr	r2, [r7, #4]
+ 1055 0050 131C     		mov	r3, r2
+ 1056 0052 5B00     		lsl	r3, r3, #1
+ 1057 0054 9B18     		add	r3, r3, r2
+ 1058 0056 9B00     		lsl	r3, r3, #2
+ 1059 0058 CB18     		add	r3, r1, r3
+ 1060 005a 9B68     		ldr	r3, [r3, #8]
+ 1061 005c BB60     		str	r3, [r7, #8]
+ 867:../MQXLITE/kernel/int.c ****     kernel_data->INTERRUPT_TABLE_PTR[vector].APP_ISR_DATA = data;
+ 1062              		.loc 1 867 0
+ 1063 005e FB68     		ldr	r3, [r7, #12]
+ 1064 0060 996B     		ldr	r1, [r3, #56]
+ 1065 0062 7A68     		ldr	r2, [r7, #4]
+ 1066 0064 131C     		mov	r3, r2
+ 1067 0066 5B00     		lsl	r3, r3, #1
+ 1068 0068 9B18     		add	r3, r3, r2
+ 1069 006a 9B00     		lsl	r3, r3, #2
+ 1070 006c CB18     		add	r3, r1, r3
+ 1071 006e 3A68     		ldr	r2, [r7]
+ 1072 0070 9A60     		str	r2, [r3, #8]
+ 868:../MQXLITE/kernel/int.c **** 
+ 869:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_set_isr_data,old_data);
+ 870:../MQXLITE/kernel/int.c ****     return old_data;
+ 1073              		.loc 1 870 0
+ 1074 0072 BB68     		ldr	r3, [r7, #8]
+ 1075              	.L75:
+ 871:../MQXLITE/kernel/int.c **** 
+ 872:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 1076              		.loc 1 872 0
+ 1077 0074 181C     		mov	r0, r3
+ 1078 0076 BD46     		mov	sp, r7
+ 1079 0078 04B0     		add	sp, sp, #16
+ 1080              		@ sp needed for prologue
+ 1081 007a 80BD     		pop	{r7, pc}
+ 1082              	.L79:
+ 1083              		.align	2
+ 1084              	.L78:
+ 1085 007c 00000000 		.word	_mqx_kernel_data
+ 1086              		.cfi_endproc
+ 1087              	.LFE13:
+ 1089              		.section	.text._int_init,"ax",%progbits
+ 1090              		.align	2
+ 1091              		.global	_int_init
+ 1092              		.code	16
+ 1093              		.thumb_func
+ 1095              	_int_init:
+ 1096              	.LFB14:
+ 873:../MQXLITE/kernel/int.c **** 
+ 874:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 875:../MQXLITE/kernel/int.c **** 
+ 876:../MQXLITE/kernel/int.c **** pointer _int_set_isr_data
+ 877:../MQXLITE/kernel/int.c **** (
+ 878:../MQXLITE/kernel/int.c ****     _mqx_uint vector,
+ 879:../MQXLITE/kernel/int.c ****     pointer data
+ 880:../MQXLITE/kernel/int.c **** )
+ 881:../MQXLITE/kernel/int.c **** {
+ 882:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR          kernel_data;
+ 883:../MQXLITE/kernel/int.c ****     pointer                         old_data = NULL;
+ 884:../MQXLITE/kernel/int.c ****     INTERRUPT_SPARSE_REC_STRUCT_PTR int_ptr;
+ 885:../MQXLITE/kernel/int.c **** 
+ 886:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 887:../MQXLITE/kernel/int.c ****     _KLOGE3(KLOG_int_set_isr_data,vector,data);
+ 888:../MQXLITE/kernel/int.c **** 
+ 889:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 890:../MQXLITE/kernel/int.c ****     if ( kernel_data->INTERRUPT_TABLE_PTR == NULL )
+ 891:../MQXLITE/kernel/int.c ****     {
+ 892:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_COMPONENT_DOES_NOT_EXIST);
+ 893:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_isr_data,NULL);
+ 894:../MQXLITE/kernel/int.c ****         return(NULL);
+ 895:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 896:../MQXLITE/kernel/int.c ****     if ((vector < kernel_data->FIRST_USER_ISR_VECTOR) ||
+ 897:../MQXLITE/kernel/int.c ****         (vector > kernel_data->LAST_USER_ISR_VECTOR))
+ 898:../MQXLITE/kernel/int.c ****     {
+ 899:../MQXLITE/kernel/int.c ****         _task_set_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 900:../MQXLITE/kernel/int.c ****         _KLOGX2(KLOG_int_set_isr_data,NULL);
+ 901:../MQXLITE/kernel/int.c ****         return(NULL);
+ 902:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 903:../MQXLITE/kernel/int.c **** #endif
+ 904:../MQXLITE/kernel/int.c **** 
+ 905:../MQXLITE/kernel/int.c ****     _int_disable();
+ 906:../MQXLITE/kernel/int.c **** 
+ 907:../MQXLITE/kernel/int.c ****     int_ptr = kernel_data->INTERRUPT_TABLE_PTR[(vector - kernel_data->FIRST_USER_ISR_VECTOR) >> MQX
+ 908:../MQXLITE/kernel/int.c **** 
+ 909:../MQXLITE/kernel/int.c ****     while (int_ptr && int_ptr->VEC_NUM != vector)
+ 910:../MQXLITE/kernel/int.c ****     {
+ 911:../MQXLITE/kernel/int.c ****         int_ptr = int_ptr->NEXT;
+ 912:../MQXLITE/kernel/int.c ****     }
+ 913:../MQXLITE/kernel/int.c **** 
+ 914:../MQXLITE/kernel/int.c ****     if (int_ptr)
+ 915:../MQXLITE/kernel/int.c ****     {
+ 916:../MQXLITE/kernel/int.c ****         old_data = int_ptr->APP_ISR_DATA;
+ 917:../MQXLITE/kernel/int.c ****         int_ptr->APP_ISR_DATA = data;
+ 918:../MQXLITE/kernel/int.c ****     }
+ 919:../MQXLITE/kernel/int.c **** 
+ 920:../MQXLITE/kernel/int.c ****     _int_enable();
+ 921:../MQXLITE/kernel/int.c **** 
+ 922:../MQXLITE/kernel/int.c ****     _KLOGX2(KLOG_int_set_isr_data,old_data);
+ 923:../MQXLITE/kernel/int.c ****     return old_data;
+ 924:../MQXLITE/kernel/int.c **** }
+ 925:../MQXLITE/kernel/int.c **** 
+ 926:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+ 927:../MQXLITE/kernel/int.c **** 
+ 928:../MQXLITE/kernel/int.c **** /*!
+ 929:../MQXLITE/kernel/int.c ****  * \brief This function initializes the kernel interrupt table.
+ 930:../MQXLITE/kernel/int.c ****  *
+ 931:../MQXLITE/kernel/int.c ****  * \param[in] first_user_isr_vector_number The first (lower) user ISR vector number.
+ 932:../MQXLITE/kernel/int.c ****  * \param[in] last_user_isr_vector_number  The last user ISR vector number.
+ 933:../MQXLITE/kernel/int.c ****  *
+ 934:../MQXLITE/kernel/int.c ****  * \return MQX_OK (Success.)
+ 935:../MQXLITE/kernel/int.c ****  * \return MQX_INVALID_PARAMETER (first_user_isr_vector_number is greater than
+ 936:../MQXLITE/kernel/int.c ****  * last_user_isr_vector_number.)
+ 937:../MQXLITE/kernel/int.c ****  * \return MQX_OUT_OF_MEMORY (Not enough free memory for the interrupt table.)
+ 938:../MQXLITE/kernel/int.c ****  */
+ 939:../MQXLITE/kernel/int.c **** _mqx_uint _int_init
+ 940:../MQXLITE/kernel/int.c **** (
+ 941:../MQXLITE/kernel/int.c ****     _mqx_uint          first_user_isr_vector_number,
+ 942:../MQXLITE/kernel/int.c ****     _mqx_uint          last_user_isr_vector_number
+ 943:../MQXLITE/kernel/int.c **** )
+ 944:../MQXLITE/kernel/int.c **** { /* Body */
+ 1097              		.loc 1 944 0
+ 1098              		.cfi_startproc
+ 1099 0000 80B5     		push	{r7, lr}
+ 1100              	.LCFI42:
+ 1101              		.cfi_def_cfa_offset 8
+ 1102              		.cfi_offset 7, -8
+ 1103              		.cfi_offset 14, -4
+ 1104 0002 86B0     		sub	sp, sp, #24
+ 1105              	.LCFI43:
+ 1106              		.cfi_def_cfa_offset 32
+ 1107 0004 00AF     		add	r7, sp, #0
+ 1108              	.LCFI44:
+ 1109              		.cfi_def_cfa_register 7
+ 1110 0006 7860     		str	r0, [r7, #4]
+ 1111 0008 3960     		str	r1, [r7]
+ 945:../MQXLITE/kernel/int.c ****     KERNEL_DATA_STRUCT_PTR     kernel_data;
+ 946:../MQXLITE/kernel/int.c ****     INTERRUPT_TABLE_STRUCT_PTR int_table_ptr;
+ 947:../MQXLITE/kernel/int.c ****     _mqx_uint                  number;
+ 948:../MQXLITE/kernel/int.c **** 
+ 949:../MQXLITE/kernel/int.c **** #if MQX_CHECK_ERRORS
+ 950:../MQXLITE/kernel/int.c ****     if (last_user_isr_vector_number < first_user_isr_vector_number)
+ 1112              		.loc 1 950 0
+ 1113 000a 3A68     		ldr	r2, [r7]
+ 1114 000c 7B68     		ldr	r3, [r7, #4]
+ 1115 000e 9A42     		cmp	r2, r3
+ 1116 0010 01D2     		bcs	.L81
+ 951:../MQXLITE/kernel/int.c ****     {
+ 952:../MQXLITE/kernel/int.c ****         return MQX_INVALID_PARAMETER;
+ 1117              		.loc 1 952 0
+ 1118 0012 0C23     		mov	r3, #12
+ 1119 0014 30E0     		b	.L82
+ 1120              	.L81:
+ 953:../MQXLITE/kernel/int.c ****     } /* Endif */
+ 954:../MQXLITE/kernel/int.c **** #endif
+ 955:../MQXLITE/kernel/int.c **** 
+ 956:../MQXLITE/kernel/int.c ****     _GET_KERNEL_DATA(kernel_data);
+ 1121              		.loc 1 956 0
+ 1122 0016 1A4B     		ldr	r3, .L85
+ 1123 0018 1B68     		ldr	r3, [r3]
+ 1124 001a FB60     		str	r3, [r7, #12]
+ 957:../MQXLITE/kernel/int.c ****     kernel_data->INT_KERNEL_ISR_ADDR = _int_kernel_isr;
+ 1125              		.loc 1 957 0
+ 1126 001c FA68     		ldr	r2, [r7, #12]
+ 1127 001e B823     		mov	r3, #184
+ 1128 0020 1849     		ldr	r1, .L85+4
+ 1129 0022 D150     		str	r1, [r2, r3]
+ 958:../MQXLITE/kernel/int.c **** 
+ 959:../MQXLITE/kernel/int.c ****     /* Set the current default ISR for MQX that is called whenever an
+ 960:../MQXLITE/kernel/int.c ****      * unhandled interrupt occurs
+ 961:../MQXLITE/kernel/int.c ****      */
+ 962:../MQXLITE/kernel/int.c ****     kernel_data->DEFAULT_ISR = _int_default_isr;
+ 1130              		.loc 1 962 0
+ 1131 0024 FB68     		ldr	r3, [r7, #12]
+ 1132 0026 184A     		ldr	r2, .L85+8
+ 1133 0028 9A62     		str	r2, [r3, #40]
+ 963:../MQXLITE/kernel/int.c **** 
+ 964:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 965:../MQXLITE/kernel/int.c ****     number = last_user_isr_vector_number - first_user_isr_vector_number + 1;
+ 1134              		.loc 1 965 0
+ 1135 002a 3A68     		ldr	r2, [r7]
+ 1136 002c 7B68     		ldr	r3, [r7, #4]
+ 1137 002e D31A     		sub	r3, r2, r3
+ 1138 0030 0133     		add	r3, r3, #1
+ 1139 0032 3B61     		str	r3, [r7, #16]
+ 966:../MQXLITE/kernel/int.c **** #else
+ 967:../MQXLITE/kernel/int.c ****     number = ((last_user_isr_vector_number - first_user_isr_vector_number + 1) >> MQX_SPARSE_ISR_SH
+ 968:../MQXLITE/kernel/int.c **** #endif
+ 969:../MQXLITE/kernel/int.c **** 
+ 970:../MQXLITE/kernel/int.c **** #ifdef MQX_LITE_VERSION_NUMBER
+ 971:../MQXLITE/kernel/int.c ****     int_table_ptr = mqx_static_isr_table;
+ 1140              		.loc 1 971 0
+ 1141 0034 154B     		ldr	r3, .L85+12
+ 1142 0036 7B61     		str	r3, [r7, #20]
+ 972:../MQXLITE/kernel/int.c **** #else
+ 973:../MQXLITE/kernel/int.c ****     int_table_ptr = _mem_alloc_system_zero((_mem_size)(sizeof(INTERRUPT_TABLE_STRUCT) * number));
+ 974:../MQXLITE/kernel/int.c **** 
+ 975:../MQXLITE/kernel/int.c **** #if MQX_CHECK_MEMORY_ALLOCATION_ERRORS
+ 976:../MQXLITE/kernel/int.c ****     if ( int_table_ptr == NULL )
+ 977:../MQXLITE/kernel/int.c ****     {
+ 978:../MQXLITE/kernel/int.c ****         return(MQX_OUT_OF_MEMORY);
+ 979:../MQXLITE/kernel/int.c ****     }/* Endif */
+ 980:../MQXLITE/kernel/int.c **** #endif /* MQX_CHECK_MEMORY_ALLOCATION_ERRORS */
+ 981:../MQXLITE/kernel/int.c ****     _mem_set_type(int_table_ptr, MEM_TYPE_INTERRUPT_TABLE);
+ 982:../MQXLITE/kernel/int.c **** #endif /* MQX_LITE_VERSION_NUMBER */
+ 983:../MQXLITE/kernel/int.c **** 
+ 984:../MQXLITE/kernel/int.c ****     kernel_data->INTERRUPT_TABLE_PTR   = int_table_ptr;
+ 1143              		.loc 1 984 0
+ 1144 0038 FB68     		ldr	r3, [r7, #12]
+ 1145 003a 7A69     		ldr	r2, [r7, #20]
+ 1146 003c 9A63     		str	r2, [r3, #56]
+ 985:../MQXLITE/kernel/int.c ****     kernel_data->FIRST_USER_ISR_VECTOR = first_user_isr_vector_number;
+ 1147              		.loc 1 985 0
+ 1148 003e FB68     		ldr	r3, [r7, #12]
+ 1149 0040 7A68     		ldr	r2, [r7, #4]
+ 1150 0042 DA62     		str	r2, [r3, #44]
+ 986:../MQXLITE/kernel/int.c ****     kernel_data->LAST_USER_ISR_VECTOR  = last_user_isr_vector_number;
+ 1151              		.loc 1 986 0
+ 1152 0044 FB68     		ldr	r3, [r7, #12]
+ 1153 0046 3A68     		ldr	r2, [r7]
+ 1154 0048 1A63     		str	r2, [r3, #48]
+ 987:../MQXLITE/kernel/int.c **** 
+ 988:../MQXLITE/kernel/int.c **** #if !MQX_SPARSE_ISR_TABLE
+ 989:../MQXLITE/kernel/int.c ****     while (number--)
+ 1155              		.loc 1 989 0
+ 1156 004a 0BE0     		b	.L83
+ 1157              	.L84:
+ 990:../MQXLITE/kernel/int.c ****     {
+ 991:../MQXLITE/kernel/int.c ****         int_table_ptr->APP_ISR      = _int_default_isr;
+ 1158              		.loc 1 991 0
+ 1159 004c 7B69     		ldr	r3, [r7, #20]
+ 1160 004e 0E4A     		ldr	r2, .L85+8
+ 1161 0050 1A60     		str	r2, [r3]
+ 992:../MQXLITE/kernel/int.c ****         int_table_ptr->APP_ISR_DATA = (pointer)(first_user_isr_vector_number++);
+ 1162              		.loc 1 992 0
+ 1163 0052 7A68     		ldr	r2, [r7, #4]
+ 1164 0054 7B69     		ldr	r3, [r7, #20]
+ 1165 0056 9A60     		str	r2, [r3, #8]
+ 1166 0058 7B68     		ldr	r3, [r7, #4]
+ 1167 005a 0133     		add	r3, r3, #1
+ 1168 005c 7B60     		str	r3, [r7, #4]
+ 993:../MQXLITE/kernel/int.c ****         ++int_table_ptr;
+ 1169              		.loc 1 993 0
+ 1170 005e 7B69     		ldr	r3, [r7, #20]
+ 1171 0060 0C33     		add	r3, r3, #12
+ 1172 0062 7B61     		str	r3, [r7, #20]
+ 1173              	.L83:
+ 989:../MQXLITE/kernel/int.c ****     while (number--)
+ 1174              		.loc 1 989 0
+ 1175 0064 3B69     		ldr	r3, [r7, #16]
+ 1176 0066 5A1E     		sub	r2, r3, #1
+ 1177 0068 9341     		sbc	r3, r3, r2
+ 1178 006a DBB2     		uxtb	r3, r3
+ 1179 006c 3A69     		ldr	r2, [r7, #16]
+ 1180 006e 013A     		sub	r2, r2, #1
+ 1181 0070 3A61     		str	r2, [r7, #16]
+ 1182 0072 002B     		cmp	r3, #0
+ 1183 0074 EAD1     		bne	.L84
+ 994:../MQXLITE/kernel/int.c ****     } /* Endwhile */
+ 995:../MQXLITE/kernel/int.c **** #else /* MQX_SPARSE_ISR_TABLE */
+ 996:../MQXLITE/kernel/int.c **** 
+ 997:../MQXLITE/kernel/int.c ****     kernel_data->SPARSE_ISR_COUNT = number;
+ 998:../MQXLITE/kernel/int.c ****     kernel_data->SPARSE_ISR_SHIFT = MQX_SPARSE_ISR_SHIFT;
+ 999:../MQXLITE/kernel/int.c **** 
+1000:../MQXLITE/kernel/int.c ****     while (number--)
+1001:../MQXLITE/kernel/int.c ****     {
+1002:../MQXLITE/kernel/int.c ****         int_table_ptr[number] = NULL;
+1003:../MQXLITE/kernel/int.c ****     }
+1004:../MQXLITE/kernel/int.c **** 
+1005:../MQXLITE/kernel/int.c **** #endif /* MQX_SPARSE_ISR_TABLE */
+1006:../MQXLITE/kernel/int.c **** 
+1007:../MQXLITE/kernel/int.c ****     return MQX_OK;
+ 1184              		.loc 1 1007 0
+ 1185 0076 0023     		mov	r3, #0
+ 1186              	.L82:
+1008:../MQXLITE/kernel/int.c **** 
+1009:../MQXLITE/kernel/int.c **** } /* Endbody */
+ 1187              		.loc 1 1009 0
+ 1188 0078 181C     		mov	r0, r3
+ 1189 007a BD46     		mov	sp, r7
+ 1190 007c 06B0     		add	sp, sp, #24
+ 1191              		@ sp needed for prologue
+ 1192 007e 80BD     		pop	{r7, pc}
+ 1193              	.L86:
+ 1194              		.align	2
+ 1195              	.L85:
+ 1196 0080 00000000 		.word	_mqx_kernel_data
+ 1197 0084 00000000 		.word	_int_kernel_isr
+ 1198 0088 00000000 		.word	_int_default_isr
+ 1199 008c 00000000 		.word	mqx_static_isr_table
+ 1200              		.cfi_endproc
+ 1201              	.LFE14:
+ 1203              		.text
+ 1204              	.Letext0:
+ 1205              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 1206              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 1207              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 1208              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 1209              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 1210              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+ 1211              		.file 8 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/MQX1.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 int.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:18     .text._int_default_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:23     .text._int_default_isr:00000000 _int_default_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:104    .text._int_disable:00000000 _int_disable
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:159    .text._int_enable:00000000 _int_enable
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:94     .text._int_default_isr:00000058 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:99     .text._int_disable:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:149    .text._int_disable:00000028 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:154    .text._int_enable:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:219    .text._int_enable:0000003c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:224    .text._int_get_default_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:229    .text._int_get_default_isr:00000000 _int_get_default_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:260    .text._int_get_default_isr:00000018 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:265    .text._int_get_exception_handler:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:270    .text._int_get_exception_handler:00000000 _int_get_exception_handler
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:349    .text._int_get_exception_handler:00000064 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:354    .text._int_get_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:359    .text._int_get_isr:00000000 _int_get_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:438    .text._int_get_isr:00000064 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:443    .text._int_get_isr_data:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:448    .text._int_get_isr_data:00000000 _int_get_isr_data
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:527    .text._int_get_isr_data:00000064 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:532    .text._int_get_isr_depth:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:537    .text._int_get_isr_depth:00000000 _int_get_isr_depth
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:568    .text._int_get_isr_depth:00000018 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:573    .text._int_install_default_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:578    .text._int_install_default_isr:00000000 _int_install_default_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:662    .text._int_install_default_isr:00000064 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:667    .text._int_install_exception_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:672    .text._int_install_exception_isr:00000000 _int_install_exception_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:713    .text._int_install_exception_isr:0000002c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:719    .text._int_install_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:724    .text._int_install_isr:00000000 _int_install_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:822    .text._int_install_isr:00000080 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:827    .text._int_install_unexpected_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:832    .text._int_install_unexpected_isr:00000000 _int_install_unexpected_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:873    .text._int_install_unexpected_isr:0000002c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:879    .text._int_set_exception_handler:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:884    .text._int_set_exception_handler:00000000 _int_set_exception_handler
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:981    .text._int_set_exception_handler:00000080 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:986    .text._int_set_isr_data:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:991    .text._int_set_isr_data:00000000 _int_set_isr_data
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:1085   .text._int_set_isr_data:0000007c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:1090   .text._int_init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:1095   .text._int_init:00000000 _int_init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccQ4J0w2.s:1196   .text._int_init:00000080 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_task_set_error_td_internal
+_mqx_kernel_data
+_task_set_error
+_int_exception_isr
+_int_unexpected_isr
+_int_kernel_isr
+mqx_static_isr_table

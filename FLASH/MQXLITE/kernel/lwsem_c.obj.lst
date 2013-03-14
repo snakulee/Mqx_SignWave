@@ -1,0 +1,3242 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"lwsem.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._lwsem_create_internal,"ax",%progbits
+  18              		.align	2
+  19              		.global	_lwsem_create_internal
+  20              		.code	16
+  21              		.thumb_func
+  23              	_lwsem_create_internal:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/kernel/lwsem.c"
+   1:../MQXLITE/kernel/lwsem.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/kernel/lwsem.c ****  *
+   3:../MQXLITE/kernel/lwsem.c ****  * Copyright (c) 2008 Freescale Semiconductor;
+   4:../MQXLITE/kernel/lwsem.c ****  * All Rights Reserved
+   5:../MQXLITE/kernel/lwsem.c ****  *
+   6:../MQXLITE/kernel/lwsem.c ****  * Copyright (c) 2004-2008 Embedded Access Inc.;
+   7:../MQXLITE/kernel/lwsem.c ****  * All Rights Reserved
+   8:../MQXLITE/kernel/lwsem.c ****  *
+   9:../MQXLITE/kernel/lwsem.c ****  * Copyright (c) 1989-2008 ARC International;
+  10:../MQXLITE/kernel/lwsem.c ****  * All Rights Reserved
+  11:../MQXLITE/kernel/lwsem.c ****  *
+  12:../MQXLITE/kernel/lwsem.c ****  ***************************************************************************
+  13:../MQXLITE/kernel/lwsem.c ****  *
+  14:../MQXLITE/kernel/lwsem.c ****  * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15:../MQXLITE/kernel/lwsem.c ****  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16:../MQXLITE/kernel/lwsem.c ****  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17:../MQXLITE/kernel/lwsem.c ****  * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18:../MQXLITE/kernel/lwsem.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19:../MQXLITE/kernel/lwsem.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20:../MQXLITE/kernel/lwsem.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21:../MQXLITE/kernel/lwsem.c ****  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22:../MQXLITE/kernel/lwsem.c ****  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23:../MQXLITE/kernel/lwsem.c ****  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24:../MQXLITE/kernel/lwsem.c ****  * THE POSSIBILITY OF SUCH DAMAGE.
+  25:../MQXLITE/kernel/lwsem.c ****  *
+  26:../MQXLITE/kernel/lwsem.c ****  **************************************************************************
+  27:../MQXLITE/kernel/lwsem.c ****  *
+  28:../MQXLITE/kernel/lwsem.c ****  * $FileName: lwsem.c$
+  29:../MQXLITE/kernel/lwsem.c ****  * $Version : 3.8.0.1$
+  30:../MQXLITE/kernel/lwsem.c ****  * $Date    : Feb-20-2012$
+  31:../MQXLITE/kernel/lwsem.c ****  *
+  32:../MQXLITE/kernel/lwsem.c ****  * Comments:
+  33:../MQXLITE/kernel/lwsem.c ****  *
+  34:../MQXLITE/kernel/lwsem.c ****  *   This file contains functions of the lightweight semaphore component.
+  35:../MQXLITE/kernel/lwsem.c ****  *
+  36:../MQXLITE/kernel/lwsem.c ****  *END************************************************************************/
+  37:../MQXLITE/kernel/lwsem.c **** 
+  38:../MQXLITE/kernel/lwsem.c **** #include "mqx_inc.h"
+  39:../MQXLITE/kernel/lwsem.c **** 
+  40:../MQXLITE/kernel/lwsem.c **** /*!
+  41:../MQXLITE/kernel/lwsem.c ****  * \private
+  42:../MQXLITE/kernel/lwsem.c ****  *
+  43:../MQXLITE/kernel/lwsem.c ****  * \brief Creates the lightweight semaphore.
+  44:../MQXLITE/kernel/lwsem.c ****  *
+  45:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr        Pointer to the lightweight semaphore to create.
+  46:../MQXLITE/kernel/lwsem.c ****  * \param[in] initial_number Inital number of semaphores available.
+  47:../MQXLITE/kernel/lwsem.c ****  * \param[in] hidden         TRUE if semaphore will ne hidden from kernel, FALSE if not.
+  48:../MQXLITE/kernel/lwsem.c ****  * \param[in] user           User mode functionality.
+  49:../MQXLITE/kernel/lwsem.c ****  *
+  50:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+  51:../MQXLITE/kernel/lwsem.c ****  * \return MQX_EINVAL
+  52:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM
+  53:../MQXLITE/kernel/lwsem.c ****  *
+  54:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+  55:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create_hidden
+  56:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+  57:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+  58:../MQXLITE/kernel/lwsem.c ****  */
+  59:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_create_internal
+  60:../MQXLITE/kernel/lwsem.c **** (
+  61:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+  62:../MQXLITE/kernel/lwsem.c ****     _mqx_int         initial_number,
+  63:../MQXLITE/kernel/lwsem.c ****     boolean          hidden,
+  64:../MQXLITE/kernel/lwsem.c ****     boolean          user
+  65:../MQXLITE/kernel/lwsem.c **** )
+  66:../MQXLITE/kernel/lwsem.c **** {
+  26              		.loc 1 66 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 88B0     		sub	sp, sp, #32
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 40
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 F860     		str	r0, [r7, #12]
+  40 0008 B960     		str	r1, [r7, #8]
+  41 000a 7A60     		str	r2, [r7, #4]
+  42 000c 3B60     		str	r3, [r7]
+  67:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+  68:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR       sem_chk_ptr;
+  69:../MQXLITE/kernel/lwsem.c **** 
+  70:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+  71:../MQXLITE/kernel/lwsem.c ****     if (user && !_psp_mem_check_access_mask((uint_32)sem_ptr, sizeof(LWSEM_STRUCT), MPU_UM_R, MPU_U
+  72:../MQXLITE/kernel/lwsem.c ****     {
+  73:../MQXLITE/kernel/lwsem.c ****         return MQX_INVALID_LWSEM;
+  74:../MQXLITE/kernel/lwsem.c ****     }
+  75:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+  76:../MQXLITE/kernel/lwsem.c **** 
+  77:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+  43              		.loc 1 77 0
+  44 000e 2C4B     		ldr	r3, .L7
+  45 0010 1B68     		ldr	r3, [r3]
+  46 0012 BB61     		str	r3, [r7, #24]
+  78:../MQXLITE/kernel/lwsem.c **** 
+  79:../MQXLITE/kernel/lwsem.c ****     _KLOGE2(KLOG_lwsem_create, initial_number);
+  80:../MQXLITE/kernel/lwsem.c **** 
+  81:../MQXLITE/kernel/lwsem.c ****     sem_ptr->VALUE = initial_number;
+  47              		.loc 1 81 0
+  48 0014 FB68     		ldr	r3, [r7, #12]
+  49 0016 BA68     		ldr	r2, [r7, #8]
+  50 0018 9A61     		str	r2, [r3, #24]
+  82:../MQXLITE/kernel/lwsem.c ****     _QUEUE_INIT(&sem_ptr->TD_QUEUE, 0);
+  51              		.loc 1 82 0
+  52 001a FB68     		ldr	r3, [r7, #12]
+  53 001c 0833     		add	r3, r3, #8
+  54 001e FA68     		ldr	r2, [r7, #12]
+  55 0020 0832     		add	r2, r2, #8
+  56 0022 1A60     		str	r2, [r3]
+  57 0024 FB68     		ldr	r3, [r7, #12]
+  58 0026 0833     		add	r3, r3, #8
+  59 0028 FA68     		ldr	r2, [r7, #12]
+  60 002a 0832     		add	r2, r2, #8
+  61 002c 5A60     		str	r2, [r3, #4]
+  62 002e FB68     		ldr	r3, [r7, #12]
+  63 0030 0833     		add	r3, r3, #8
+  64 0032 0022     		mov	r2, #0
+  65 0034 1A81     		strh	r2, [r3, #8]
+  66 0036 FB68     		ldr	r3, [r7, #12]
+  67 0038 0833     		add	r3, r3, #8
+  68 003a 0022     		mov	r2, #0
+  69 003c 5A81     		strh	r2, [r3, #10]
+  83:../MQXLITE/kernel/lwsem.c ****     _int_disable();
+  70              		.loc 1 83 0
+  71 003e FFF7FEFF 		bl	_int_disable
+  84:../MQXLITE/kernel/lwsem.c **** 
+  85:../MQXLITE/kernel/lwsem.c ****     if (!hidden)
+  72              		.loc 1 85 0
+  73 0042 7B68     		ldr	r3, [r7, #4]
+  74 0044 002B     		cmp	r3, #0
+  75 0046 31D1     		bne	.L2
+  86:../MQXLITE/kernel/lwsem.c ****     {
+  87:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_ERRORS
+  88:../MQXLITE/kernel/lwsem.c ****         /* Check if lwsem is already initialized */
+  89:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+  90:../MQXLITE/kernel/lwsem.c ****         if (user)
+  91:../MQXLITE/kernel/lwsem.c ****         {
+  92:../MQXLITE/kernel/lwsem.c ****             sem_chk_ptr = (LWSEM_STRUCT_PTR)((pointer)kernel_data->USR_LWSEM.NEXT);
+  93:../MQXLITE/kernel/lwsem.c ****             while (sem_chk_ptr != (LWSEM_STRUCT_PTR)((pointer)&kernel_data->USR_LWSEM))
+  94:../MQXLITE/kernel/lwsem.c ****             {
+  95:../MQXLITE/kernel/lwsem.c ****                 if (sem_chk_ptr == sem_ptr)
+  96:../MQXLITE/kernel/lwsem.c ****                 {
+  97:../MQXLITE/kernel/lwsem.c ****                     _int_enable();
+  98:../MQXLITE/kernel/lwsem.c ****                     _KLOGX2(KLOG_lwsem_create, MQX_EINVAL);
+  99:../MQXLITE/kernel/lwsem.c ****                     return(MQX_EINVAL);
+ 100:../MQXLITE/kernel/lwsem.c ****                 }
+ 101:../MQXLITE/kernel/lwsem.c **** 
+ 102:../MQXLITE/kernel/lwsem.c ****                 sem_chk_ptr = (LWSEM_STRUCT_PTR)((pointer)sem_chk_ptr->NEXT);
+ 103:../MQXLITE/kernel/lwsem.c ****             }
+ 104:../MQXLITE/kernel/lwsem.c ****         }
+ 105:../MQXLITE/kernel/lwsem.c ****         else
+ 106:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 107:../MQXLITE/kernel/lwsem.c ****         {
+ 108:../MQXLITE/kernel/lwsem.c ****             sem_chk_ptr = (LWSEM_STRUCT_PTR) ((pointer) kernel_data->LWSEM.NEXT);
+  76              		.loc 1 108 0
+  77 0048 BA69     		ldr	r2, [r7, #24]
+  78 004a E823     		mov	r3, #232
+  79 004c D358     		ldr	r3, [r2, r3]
+  80 004e FB61     		str	r3, [r7, #28]
+ 109:../MQXLITE/kernel/lwsem.c ****             while (sem_chk_ptr != (LWSEM_STRUCT_PTR) ((pointer) &kernel_data->LWSEM))
+  81              		.loc 1 109 0
+  82 0050 0BE0     		b	.L3
+  83              	.L6:
+ 110:../MQXLITE/kernel/lwsem.c ****             {
+ 111:../MQXLITE/kernel/lwsem.c ****                 if (sem_chk_ptr == sem_ptr)
+  84              		.loc 1 111 0
+  85 0052 FA69     		ldr	r2, [r7, #28]
+  86 0054 FB68     		ldr	r3, [r7, #12]
+  87 0056 9A42     		cmp	r2, r3
+  88 0058 04D1     		bne	.L4
+ 112:../MQXLITE/kernel/lwsem.c ****                 {
+ 113:../MQXLITE/kernel/lwsem.c ****                     _int_enable();
+  89              		.loc 1 113 0
+  90 005a FFF7FEFF 		bl	_int_enable
+ 114:../MQXLITE/kernel/lwsem.c ****                     _KLOGX2(KLOG_lwsem_create, MQX_EINVAL);
+ 115:../MQXLITE/kernel/lwsem.c ****                     return (MQX_EINVAL);
+  91              		.loc 1 115 0
+  92 005e 8223     		mov	r3, #130
+  93 0060 DB00     		lsl	r3, r3, #3
+  94 0062 29E0     		b	.L5
+  95              	.L4:
+ 116:../MQXLITE/kernel/lwsem.c ****                 }
+ 117:../MQXLITE/kernel/lwsem.c **** 
+ 118:../MQXLITE/kernel/lwsem.c ****                 sem_chk_ptr = (LWSEM_STRUCT_PTR) ((pointer) sem_chk_ptr->NEXT);
+  96              		.loc 1 118 0
+  97 0064 FB69     		ldr	r3, [r7, #28]
+  98 0066 1B68     		ldr	r3, [r3]
+  99 0068 FB61     		str	r3, [r7, #28]
+ 100              	.L3:
+ 109:../MQXLITE/kernel/lwsem.c ****             while (sem_chk_ptr != (LWSEM_STRUCT_PTR) ((pointer) &kernel_data->LWSEM))
+ 101              		.loc 1 109 0
+ 102 006a BB69     		ldr	r3, [r7, #24]
+ 103 006c 1A1C     		mov	r2, r3
+ 104 006e E832     		add	r2, r2, #232
+ 105 0070 FB69     		ldr	r3, [r7, #28]
+ 106 0072 9A42     		cmp	r2, r3
+ 107 0074 EDD1     		bne	.L6
+ 108              	.LBB2:
+ 119:../MQXLITE/kernel/lwsem.c ****             }
+ 120:../MQXLITE/kernel/lwsem.c ****         }
+ 121:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_CHECK_ERRORS */
+ 122:../MQXLITE/kernel/lwsem.c **** 
+ 123:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 124:../MQXLITE/kernel/lwsem.c ****         if (user)
+ 125:../MQXLITE/kernel/lwsem.c ****         {
+ 126:../MQXLITE/kernel/lwsem.c ****             _QUEUE_ENQUEUE(&kernel_data->USR_LWSEM, sem_ptr);
+ 127:../MQXLITE/kernel/lwsem.c ****         }
+ 128:../MQXLITE/kernel/lwsem.c ****         else
+ 129:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 130:../MQXLITE/kernel/lwsem.c ****         {
+ 131:../MQXLITE/kernel/lwsem.c ****             _QUEUE_ENQUEUE(&kernel_data->LWSEM, sem_ptr);
+ 109              		.loc 1 131 0
+ 110 0076 BB69     		ldr	r3, [r7, #24]
+ 111 0078 E833     		add	r3, r3, #232
+ 112 007a 5B68     		ldr	r3, [r3, #4]
+ 113 007c 1B68     		ldr	r3, [r3]
+ 114 007e 7B61     		str	r3, [r7, #20]
+ 115 0080 FB68     		ldr	r3, [r7, #12]
+ 116 0082 7A69     		ldr	r2, [r7, #20]
+ 117 0084 1A60     		str	r2, [r3]
+ 118 0086 BB69     		ldr	r3, [r7, #24]
+ 119 0088 E833     		add	r3, r3, #232
+ 120 008a 5B68     		ldr	r3, [r3, #4]
+ 121 008c FA68     		ldr	r2, [r7, #12]
+ 122 008e 1A60     		str	r2, [r3]
+ 123 0090 BB69     		ldr	r3, [r7, #24]
+ 124 0092 E833     		add	r3, r3, #232
+ 125 0094 5A68     		ldr	r2, [r3, #4]
+ 126 0096 FB68     		ldr	r3, [r7, #12]
+ 127 0098 5A60     		str	r2, [r3, #4]
+ 128 009a 7B69     		ldr	r3, [r7, #20]
+ 129 009c FA68     		ldr	r2, [r7, #12]
+ 130 009e 5A60     		str	r2, [r3, #4]
+ 131              	.LBE2:
+ 132 00a0 BB69     		ldr	r3, [r7, #24]
+ 133 00a2 E833     		add	r3, r3, #232
+ 134 00a4 1A89     		ldrh	r2, [r3, #8]
+ 135 00a6 0132     		add	r2, r2, #1
+ 136 00a8 92B2     		uxth	r2, r2
+ 137 00aa 1A81     		strh	r2, [r3, #8]
+ 138              	.L2:
+ 132:../MQXLITE/kernel/lwsem.c ****         }
+ 133:../MQXLITE/kernel/lwsem.c ****     }
+ 134:../MQXLITE/kernel/lwsem.c **** 
+ 135:../MQXLITE/kernel/lwsem.c ****     sem_ptr->VALID = LWSEM_VALID;
+ 139              		.loc 1 135 0
+ 140 00ac FB68     		ldr	r3, [r7, #12]
+ 141 00ae 054A     		ldr	r2, .L7+4
+ 142 00b0 5A61     		str	r2, [r3, #20]
+ 136:../MQXLITE/kernel/lwsem.c ****     _int_enable();
+ 143              		.loc 1 136 0
+ 144 00b2 FFF7FEFF 		bl	_int_enable
+ 137:../MQXLITE/kernel/lwsem.c **** 
+ 138:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_create, MQX_OK);
+ 139:../MQXLITE/kernel/lwsem.c **** 
+ 140:../MQXLITE/kernel/lwsem.c ****     return (MQX_OK);
+ 145              		.loc 1 140 0
+ 146 00b6 0023     		mov	r3, #0
+ 147              	.L5:
+ 141:../MQXLITE/kernel/lwsem.c **** }
+ 148              		.loc 1 141 0
+ 149 00b8 181C     		mov	r0, r3
+ 150 00ba BD46     		mov	sp, r7
+ 151 00bc 08B0     		add	sp, sp, #32
+ 152              		@ sp needed for prologue
+ 153 00be 80BD     		pop	{r7, pc}
+ 154              	.L8:
+ 155              		.align	2
+ 156              	.L7:
+ 157 00c0 00000000 		.word	_mqx_kernel_data
+ 158 00c4 6D73776C 		.word	1819767661
+ 159              		.cfi_endproc
+ 160              	.LFE0:
+ 162              		.section	.text._lwsem_create,"ax",%progbits
+ 163              		.align	2
+ 164              		.global	_lwsem_create
+ 165              		.code	16
+ 166              		.thumb_func
+ 168              	_lwsem_create:
+ 169              	.LFB1:
+ 142:../MQXLITE/kernel/lwsem.c **** 
+ 143:../MQXLITE/kernel/lwsem.c **** /*!
+ 144:../MQXLITE/kernel/lwsem.c ****  * \brief Creates the lightweight semaphore.
+ 145:../MQXLITE/kernel/lwsem.c ****  *
+ 146:../MQXLITE/kernel/lwsem.c ****  * Because lightweight semaphores are a core component, an application need not to
+ 147:../MQXLITE/kernel/lwsem.c ****  * create the component before it creates lightweight semaphores.
+ 148:../MQXLITE/kernel/lwsem.c ****  *
+ 149:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr        Pointer to the lightweight semaphore to create.
+ 150:../MQXLITE/kernel/lwsem.c ****  * \param[in] initial_number Inital number of semaphores available.
+ 151:../MQXLITE/kernel/lwsem.c ****  *
+ 152:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 153:../MQXLITE/kernel/lwsem.c ****  * \return MQX_EINVAL
+ 154:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM
+ 155:../MQXLITE/kernel/lwsem.c ****  *
+ 156:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create_hidden
+ 157:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_destroy
+ 158:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+ 159:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_test
+ 160:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait
+ 161:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_for
+ 162:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_ticks
+ 163:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_until
+ 164:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 165:../MQXLITE/kernel/lwsem.c ****  */
+ 166:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_create
+ 167:../MQXLITE/kernel/lwsem.c **** (
+ 168:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+ 169:../MQXLITE/kernel/lwsem.c ****     _mqx_int         initial_number
+ 170:../MQXLITE/kernel/lwsem.c **** )
+ 171:../MQXLITE/kernel/lwsem.c **** {
+ 170              		.loc 1 171 0
+ 171              		.cfi_startproc
+ 172 0000 80B5     		push	{r7, lr}
+ 173              	.LCFI3:
+ 174              		.cfi_def_cfa_offset 8
+ 175              		.cfi_offset 7, -8
+ 176              		.cfi_offset 14, -4
+ 177 0002 82B0     		sub	sp, sp, #8
+ 178              	.LCFI4:
+ 179              		.cfi_def_cfa_offset 16
+ 180 0004 00AF     		add	r7, sp, #0
+ 181              	.LCFI5:
+ 182              		.cfi_def_cfa_register 7
+ 183 0006 7860     		str	r0, [r7, #4]
+ 184 0008 3960     		str	r1, [r7]
+ 172:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+ 173:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+ 174:../MQXLITE/kernel/lwsem.c ****     {
+ 175:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_create(sem_ptr, initial_number);
+ 176:../MQXLITE/kernel/lwsem.c ****     }
+ 177:../MQXLITE/kernel/lwsem.c **** #endif
+ 178:../MQXLITE/kernel/lwsem.c **** 
+ 179:../MQXLITE/kernel/lwsem.c ****     return _lwsem_create_internal(sem_ptr, initial_number, FALSE, FALSE);
+ 185              		.loc 1 179 0
+ 186 000a 7A68     		ldr	r2, [r7, #4]
+ 187 000c 3B68     		ldr	r3, [r7]
+ 188 000e 101C     		mov	r0, r2
+ 189 0010 191C     		mov	r1, r3
+ 190 0012 0022     		mov	r2, #0
+ 191 0014 0023     		mov	r3, #0
+ 192 0016 FFF7FEFF 		bl	_lwsem_create_internal
+ 193 001a 031C     		mov	r3, r0
+ 180:../MQXLITE/kernel/lwsem.c **** }
+ 194              		.loc 1 180 0
+ 195 001c 181C     		mov	r0, r3
+ 196 001e BD46     		mov	sp, r7
+ 197 0020 02B0     		add	sp, sp, #8
+ 198              		@ sp needed for prologue
+ 199 0022 80BD     		pop	{r7, pc}
+ 200              		.cfi_endproc
+ 201              	.LFE1:
+ 203              		.section	.text._lwsem_create_hidden,"ax",%progbits
+ 204              		.align	2
+ 205              		.global	_lwsem_create_hidden
+ 206              		.code	16
+ 207              		.thumb_func
+ 209              	_lwsem_create_hidden:
+ 210              	.LFB2:
+ 181:../MQXLITE/kernel/lwsem.c **** 
+ 182:../MQXLITE/kernel/lwsem.c **** /*!
+ 183:../MQXLITE/kernel/lwsem.c ****  * \brief Creates the lightweight semaphore hidden from kernel.
+ 184:../MQXLITE/kernel/lwsem.c ****  *
+ 185:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr        Pointer to the lightweight semaphore to create.
+ 186:../MQXLITE/kernel/lwsem.c ****  * \param[in] initial_number Inital number of semaphores available.
+ 187:../MQXLITE/kernel/lwsem.c ****  *
+ 188:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 189:../MQXLITE/kernel/lwsem.c ****  * \return MQX_EINVAL
+ 190:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM
+ 191:../MQXLITE/kernel/lwsem.c ****  *
+ 192:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 193:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_destroy
+ 194:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+ 195:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_test
+ 196:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait
+ 197:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_for
+ 198:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_ticks
+ 199:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_until
+ 200:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 201:../MQXLITE/kernel/lwsem.c ****  */
+ 202:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_create_hidden
+ 203:../MQXLITE/kernel/lwsem.c **** (
+ 204:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+ 205:../MQXLITE/kernel/lwsem.c ****     _mqx_int         initial_number
+ 206:../MQXLITE/kernel/lwsem.c **** )
+ 207:../MQXLITE/kernel/lwsem.c **** {
+ 211              		.loc 1 207 0
+ 212              		.cfi_startproc
+ 213 0000 80B5     		push	{r7, lr}
+ 214              	.LCFI6:
+ 215              		.cfi_def_cfa_offset 8
+ 216              		.cfi_offset 7, -8
+ 217              		.cfi_offset 14, -4
+ 218 0002 82B0     		sub	sp, sp, #8
+ 219              	.LCFI7:
+ 220              		.cfi_def_cfa_offset 16
+ 221 0004 00AF     		add	r7, sp, #0
+ 222              	.LCFI8:
+ 223              		.cfi_def_cfa_register 7
+ 224 0006 7860     		str	r0, [r7, #4]
+ 225 0008 3960     		str	r1, [r7]
+ 208:../MQXLITE/kernel/lwsem.c ****     return _lwsem_create_internal(sem_ptr, initial_number, TRUE, FALSE);
+ 226              		.loc 1 208 0
+ 227 000a 7A68     		ldr	r2, [r7, #4]
+ 228 000c 3B68     		ldr	r3, [r7]
+ 229 000e 101C     		mov	r0, r2
+ 230 0010 191C     		mov	r1, r3
+ 231 0012 0122     		mov	r2, #1
+ 232 0014 0023     		mov	r3, #0
+ 233 0016 FFF7FEFF 		bl	_lwsem_create_internal
+ 234 001a 031C     		mov	r3, r0
+ 209:../MQXLITE/kernel/lwsem.c **** }
+ 235              		.loc 1 209 0
+ 236 001c 181C     		mov	r0, r3
+ 237 001e BD46     		mov	sp, r7
+ 238 0020 02B0     		add	sp, sp, #8
+ 239              		@ sp needed for prologue
+ 240 0022 80BD     		pop	{r7, pc}
+ 241              		.cfi_endproc
+ 242              	.LFE2:
+ 244              		.section	.text._lwsem_destroy_internal,"ax",%progbits
+ 245              		.align	2
+ 246              		.global	_lwsem_destroy_internal
+ 247              		.code	16
+ 248              		.thumb_func
+ 250              	_lwsem_destroy_internal:
+ 251              	.LFB3:
+ 210:../MQXLITE/kernel/lwsem.c **** 
+ 211:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 212:../MQXLITE/kernel/lwsem.c **** /*!
+ 213:../MQXLITE/kernel/lwsem.c ****  * \brief Creates the lightweight semaphore hidden form kernel.
+ 214:../MQXLITE/kernel/lwsem.c ****  *
+ 215:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_create() API call but it can be
+ 216:../MQXLITE/kernel/lwsem.c ****  * executed from within the User task or other code running in the CPU User mode.
+ 217:../MQXLITE/kernel/lwsem.c ****  * Parameters passed to this function by pointer are required to meet the memory
+ 218:../MQXLITE/kernel/lwsem.c ****  * protection requirements as described in the parameter list below.
+ 219:../MQXLITE/kernel/lwsem.c ****  *
+ 220:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr        Read only. Pointer to the lightweight semaphore to create.
+ 221:../MQXLITE/kernel/lwsem.c ****  * \param[in] initial_number Inital number of semaphores available.
+ 222:../MQXLITE/kernel/lwsem.c ****  *
+ 223:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 224:../MQXLITE/kernel/lwsem.c ****  * \return MQX_EINVAL
+ 225:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM
+ 226:../MQXLITE/kernel/lwsem.c ****  *
+ 227:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 228:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_destroy
+ 229:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_post
+ 230:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait
+ 231:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_for
+ 232:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_ticks
+ 233:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_until
+ 234:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 235:../MQXLITE/kernel/lwsem.c ****  */
+ 236:../MQXLITE/kernel/lwsem.c **** _mqx_uint _usr_lwsem_create
+ 237:../MQXLITE/kernel/lwsem.c **** (
+ 238:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+ 239:../MQXLITE/kernel/lwsem.c ****     _mqx_int         initial_number
+ 240:../MQXLITE/kernel/lwsem.c **** )
+ 241:../MQXLITE/kernel/lwsem.c **** {
+ 242:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params =
+ 243:../MQXLITE/kernel/lwsem.c ****     {   (uint_32)sem_ptr, (uint_32)initial_number, (uint_32)FALSE, 0, 0};
+ 244:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_CREATE, &params);
+ 245:../MQXLITE/kernel/lwsem.c **** }
+ 246:../MQXLITE/kernel/lwsem.c **** 
+ 247:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 248:../MQXLITE/kernel/lwsem.c **** 
+ 249:../MQXLITE/kernel/lwsem.c **** /*!
+ 250:../MQXLITE/kernel/lwsem.c ****  * \private
+ 251:../MQXLITE/kernel/lwsem.c ****  *
+ 252:../MQXLITE/kernel/lwsem.c ****  * \brief Destroys the lightweight semaphore.
+ 253:../MQXLITE/kernel/lwsem.c ****  *
+ 254:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the created lightweight semaphore.
+ 255:../MQXLITE/kernel/lwsem.c ****  * \param[in] user    User mode functionality.
+ 256:../MQXLITE/kernel/lwsem.c ****  *
+ 257:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 258:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Lwsem_ptr does not point to a valid lightweight semaphore.)
+ 259:../MQXLITE/kernel/lwsem.c ****  *
+ 260:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_destroy
+ 261:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 262:../MQXLITE/kernel/lwsem.c ****  */
+ 263:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_destroy_internal
+ 264:../MQXLITE/kernel/lwsem.c **** (
+ 265:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+ 266:../MQXLITE/kernel/lwsem.c ****     boolean          user
+ 267:../MQXLITE/kernel/lwsem.c **** )
+ 268:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 252              		.loc 1 268 0
+ 253              		.cfi_startproc
+ 254 0000 80B5     		push	{r7, lr}
+ 255              	.LCFI9:
+ 256              		.cfi_def_cfa_offset 8
+ 257              		.cfi_offset 7, -8
+ 258              		.cfi_offset 14, -4
+ 259 0002 8CB0     		sub	sp, sp, #48
+ 260              	.LCFI10:
+ 261              		.cfi_def_cfa_offset 56
+ 262 0004 00AF     		add	r7, sp, #0
+ 263              	.LCFI11:
+ 264              		.cfi_def_cfa_register 7
+ 265 0006 7860     		str	r0, [r7, #4]
+ 266 0008 3960     		str	r1, [r7]
+ 269:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 270:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR          td_ptr;
+ 271:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR       sem_chk_ptr;
+ 272:../MQXLITE/kernel/lwsem.c **** 
+ 273:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 267              		.loc 1 273 0
+ 268 000a 514B     		ldr	r3, .L24
+ 269 000c 1B68     		ldr	r3, [r3]
+ 270 000e BB62     		str	r3, [r7, #40]
+ 274:../MQXLITE/kernel/lwsem.c **** 
+ 275:../MQXLITE/kernel/lwsem.c ****     _KLOGE2(KLOG_lwsem_destroy, sem_ptr);
+ 276:../MQXLITE/kernel/lwsem.c **** 
+ 277:../MQXLITE/kernel/lwsem.c ****     _int_disable();
+ 271              		.loc 1 277 0
+ 272 0010 FFF7FEFF 		bl	_int_disable
+ 278:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+ 279:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 273              		.loc 1 279 0
+ 274 0014 7B68     		ldr	r3, [r7, #4]
+ 275 0016 5A69     		ldr	r2, [r3, #20]
+ 276 0018 4E4B     		ldr	r3, .L24+4
+ 277 001a 9A42     		cmp	r2, r3
+ 278 001c 03D0     		beq	.L14
+ 280:../MQXLITE/kernel/lwsem.c ****     {
+ 281:../MQXLITE/kernel/lwsem.c ****         _int_enable();
+ 279              		.loc 1 281 0
+ 280 001e FFF7FEFF 		bl	_int_enable
+ 282:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_destroy, MQX_INVALID_LWSEM);
+ 283:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 281              		.loc 1 283 0
+ 282 0022 1F23     		mov	r3, #31
+ 283 0024 8FE0     		b	.L15
+ 284              	.L14:
+ 284:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 285:../MQXLITE/kernel/lwsem.c **** #endif
+ 286:../MQXLITE/kernel/lwsem.c **** 
+ 287:../MQXLITE/kernel/lwsem.c ****     sem_ptr->VALID = 0; /* Invalidate the semaphore */
+ 285              		.loc 1 287 0
+ 286 0026 7B68     		ldr	r3, [r7, #4]
+ 287 0028 0022     		mov	r2, #0
+ 288 002a 5A61     		str	r2, [r3, #20]
+ 288:../MQXLITE/kernel/lwsem.c ****     while (_QUEUE_GET_SIZE(&sem_ptr->TD_QUEUE))
+ 289              		.loc 1 288 0
+ 290 002c 5CE0     		b	.L16
+ 291              	.L19:
+ 289:../MQXLITE/kernel/lwsem.c ****     {
+ 290:../MQXLITE/kernel/lwsem.c ****         _QUEUE_DEQUEUE(&sem_ptr->TD_QUEUE, td_ptr);
+ 292              		.loc 1 290 0
+ 293 002e 7B68     		ldr	r3, [r7, #4]
+ 294 0030 0833     		add	r3, r3, #8
+ 295 0032 1B68     		ldr	r3, [r3]
+ 296 0034 7B62     		str	r3, [r7, #36]
+ 297              	.LBB3:
+ 298 0036 7B6A     		ldr	r3, [r7, #36]
+ 299 0038 5B68     		ldr	r3, [r3, #4]
+ 300 003a 3B62     		str	r3, [r7, #32]
+ 301 003c 7B6A     		ldr	r3, [r7, #36]
+ 302 003e 1B68     		ldr	r3, [r3]
+ 303 0040 FB61     		str	r3, [r7, #28]
+ 304 0042 3B6A     		ldr	r3, [r7, #32]
+ 305 0044 FA69     		ldr	r2, [r7, #28]
+ 306 0046 1A60     		str	r2, [r3]
+ 307 0048 FB69     		ldr	r3, [r7, #28]
+ 308 004a 3A6A     		ldr	r2, [r7, #32]
+ 309 004c 5A60     		str	r2, [r3, #4]
+ 310              	.LBE3:
+ 311 004e 7B68     		ldr	r3, [r7, #4]
+ 312 0050 0833     		add	r3, r3, #8
+ 313 0052 1A89     		ldrh	r2, [r3, #8]
+ 314 0054 013A     		sub	r2, r2, #1
+ 315 0056 92B2     		uxth	r2, r2
+ 316 0058 1A81     		strh	r2, [r3, #8]
+ 291:../MQXLITE/kernel/lwsem.c ****         _BACKUP_POINTER(td_ptr, TD_STRUCT, AUX_QUEUE);
+ 317              		.loc 1 291 0
+ 318 005a 7B6A     		ldr	r3, [r7, #36]
+ 319 005c 303B     		sub	r3, r3, #48
+ 320 005e 7B62     		str	r3, [r7, #36]
+ 292:../MQXLITE/kernel/lwsem.c ****         _TIME_DEQUEUE(td_ptr, kernel_data);
+ 321              		.loc 1 292 0
+ 322 0060 7B6A     		ldr	r3, [r7, #36]
+ 323 0062 9A68     		ldr	r2, [r3, #8]
+ 324 0064 8023     		mov	r3, #128
+ 325 0066 5B00     		lsl	r3, r3, #1
+ 326 0068 1340     		and	r3, r2
+ 327 006a 1ED0     		beq	.L17
+ 328              	.LBB4:
+ 329              		.loc 1 292 0 is_stmt 0
+ 330 006c 7B6A     		ldr	r3, [r7, #36]
+ 331 006e 5B68     		ldr	r3, [r3, #4]
+ 332 0070 BB61     		str	r3, [r7, #24]
+ 333 0072 7B6A     		ldr	r3, [r7, #36]
+ 334 0074 1B68     		ldr	r3, [r3]
+ 335 0076 7B61     		str	r3, [r7, #20]
+ 336 0078 BB69     		ldr	r3, [r7, #24]
+ 337 007a 7A69     		ldr	r2, [r7, #20]
+ 338 007c 1A60     		str	r2, [r3]
+ 339 007e 7B69     		ldr	r3, [r7, #20]
+ 340 0080 BA69     		ldr	r2, [r7, #24]
+ 341 0082 5A60     		str	r2, [r3, #4]
+ 342              	.LBE4:
+ 343 0084 BB6A     		ldr	r3, [r7, #40]
+ 344 0086 2933     		add	r3, r3, #41
+ 345 0088 FF33     		add	r3, r3, #255
+ 346 008a 1A89     		ldrh	r2, [r3, #8]
+ 347 008c 013A     		sub	r2, r2, #1
+ 348 008e 92B2     		uxth	r2, r2
+ 349 0090 1A81     		strh	r2, [r3, #8]
+ 350 0092 7B6A     		ldr	r3, [r7, #36]
+ 351 0094 9A68     		ldr	r2, [r3, #8]
+ 352 0096 304B     		ldr	r3, .L24+8
+ 353 0098 1A40     		and	r2, r3
+ 354 009a 7B6A     		ldr	r3, [r7, #36]
+ 355 009c 9A60     		str	r2, [r3, #8]
+ 356 009e 7B6A     		ldr	r3, [r7, #36]
+ 357 00a0 9B68     		ldr	r3, [r3, #8]
+ 358 00a2 0322     		mov	r2, #3
+ 359 00a4 1A43     		orr	r2, r3
+ 360 00a6 7B6A     		ldr	r3, [r7, #36]
+ 361 00a8 9A60     		str	r2, [r3, #8]
+ 362              	.L17:
+ 293:../MQXLITE/kernel/lwsem.c ****         _TASK_READY(td_ptr, kernel_data);
+ 363              		.loc 1 293 0 is_stmt 1
+ 364 00aa 7B6A     		ldr	r3, [r7, #36]
+ 365 00ac DA69     		ldr	r2, [r3, #28]
+ 366 00ae BB6A     		ldr	r3, [r7, #40]
+ 367 00b0 5B6A     		ldr	r3, [r3, #36]
+ 368 00b2 9A42     		cmp	r2, r3
+ 369 00b4 03D9     		bls	.L18
+ 370              		.loc 1 293 0 is_stmt 0
+ 371 00b6 7B6A     		ldr	r3, [r7, #36]
+ 372 00b8 DA69     		ldr	r2, [r3, #28]
+ 373 00ba BB6A     		ldr	r3, [r7, #40]
+ 374 00bc 5A62     		str	r2, [r3, #36]
+ 375              	.L18:
+ 376              		.loc 1 293 0
+ 377 00be 7B6A     		ldr	r3, [r7, #36]
+ 378 00c0 0222     		mov	r2, #2
+ 379 00c2 9A60     		str	r2, [r3, #8]
+ 380 00c4 7B6A     		ldr	r3, [r7, #36]
+ 381 00c6 DB69     		ldr	r3, [r3, #28]
+ 382 00c8 5A68     		ldr	r2, [r3, #4]
+ 383 00ca 7B6A     		ldr	r3, [r7, #36]
+ 384 00cc 5A60     		str	r2, [r3, #4]
+ 385 00ce 7B6A     		ldr	r3, [r7, #36]
+ 386 00d0 5B68     		ldr	r3, [r3, #4]
+ 387 00d2 1A68     		ldr	r2, [r3]
+ 388 00d4 7B6A     		ldr	r3, [r7, #36]
+ 389 00d6 1A60     		str	r2, [r3]
+ 390 00d8 7B6A     		ldr	r3, [r7, #36]
+ 391 00da 5B68     		ldr	r3, [r3, #4]
+ 392 00dc 7A6A     		ldr	r2, [r7, #36]
+ 393 00de 1A60     		str	r2, [r3]
+ 394 00e0 7B6A     		ldr	r3, [r7, #36]
+ 395 00e2 DB69     		ldr	r3, [r3, #28]
+ 396 00e4 7A6A     		ldr	r2, [r7, #36]
+ 397 00e6 5A60     		str	r2, [r3, #4]
+ 398              	.L16:
+ 288:../MQXLITE/kernel/lwsem.c ****     while (_QUEUE_GET_SIZE(&sem_ptr->TD_QUEUE))
+ 399              		.loc 1 288 0 is_stmt 1
+ 400 00e8 7B68     		ldr	r3, [r7, #4]
+ 401 00ea 0833     		add	r3, r3, #8
+ 402 00ec 1B89     		ldrh	r3, [r3, #8]
+ 403 00ee 002B     		cmp	r3, #0
+ 404 00f0 9DD1     		bne	.L19
+ 294:../MQXLITE/kernel/lwsem.c ****     } /* Endwhile */
+ 295:../MQXLITE/kernel/lwsem.c **** 
+ 296:../MQXLITE/kernel/lwsem.c ****     /* Check if lwsem is in kernel's semaphore list */
+ 297:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 298:../MQXLITE/kernel/lwsem.c ****     if (user)
+ 299:../MQXLITE/kernel/lwsem.c ****     {
+ 300:../MQXLITE/kernel/lwsem.c ****         sem_chk_ptr = (LWSEM_STRUCT_PTR)((pointer)kernel_data->USR_LWSEM.NEXT);
+ 301:../MQXLITE/kernel/lwsem.c ****         while (sem_chk_ptr != (LWSEM_STRUCT_PTR)((pointer)&kernel_data->USR_LWSEM))
+ 302:../MQXLITE/kernel/lwsem.c ****         {
+ 303:../MQXLITE/kernel/lwsem.c ****             if (sem_chk_ptr == sem_ptr)
+ 304:../MQXLITE/kernel/lwsem.c ****             {
+ 305:../MQXLITE/kernel/lwsem.c ****                 /* remove semaphore from kernel LWSEM queue */
+ 306:../MQXLITE/kernel/lwsem.c ****                 _QUEUE_REMOVE(&kernel_data->USR_LWSEM, sem_ptr);
+ 307:../MQXLITE/kernel/lwsem.c ****                 break;
+ 308:../MQXLITE/kernel/lwsem.c ****             }
+ 309:../MQXLITE/kernel/lwsem.c ****             sem_chk_ptr = (LWSEM_STRUCT_PTR)((pointer)sem_chk_ptr->NEXT);
+ 310:../MQXLITE/kernel/lwsem.c ****         }
+ 311:../MQXLITE/kernel/lwsem.c ****     }
+ 312:../MQXLITE/kernel/lwsem.c ****     else
+ 313:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 314:../MQXLITE/kernel/lwsem.c ****     {
+ 315:../MQXLITE/kernel/lwsem.c ****         sem_chk_ptr = (LWSEM_STRUCT_PTR) ((pointer) kernel_data->LWSEM.NEXT);
+ 405              		.loc 1 315 0
+ 406 00f2 BA6A     		ldr	r2, [r7, #40]
+ 407 00f4 E823     		mov	r3, #232
+ 408 00f6 D358     		ldr	r3, [r2, r3]
+ 409 00f8 FB62     		str	r3, [r7, #44]
+ 316:../MQXLITE/kernel/lwsem.c ****         while (sem_chk_ptr != (LWSEM_STRUCT_PTR) ((pointer) &kernel_data->LWSEM))
+ 410              		.loc 1 316 0
+ 411 00fa 19E0     		b	.L20
+ 412              	.L23:
+ 317:../MQXLITE/kernel/lwsem.c ****         {
+ 318:../MQXLITE/kernel/lwsem.c ****             if (sem_chk_ptr == sem_ptr)
+ 413              		.loc 1 318 0
+ 414 00fc FA6A     		ldr	r2, [r7, #44]
+ 415 00fe 7B68     		ldr	r3, [r7, #4]
+ 416 0100 9A42     		cmp	r2, r3
+ 417 0102 12D1     		bne	.L21
+ 418              	.LBB5:
+ 319:../MQXLITE/kernel/lwsem.c ****             {
+ 320:../MQXLITE/kernel/lwsem.c ****                 /* remove semaphore from kernel LWSEM queue */
+ 321:../MQXLITE/kernel/lwsem.c ****                 _QUEUE_REMOVE(&kernel_data->LWSEM, sem_ptr);
+ 419              		.loc 1 321 0
+ 420 0104 7B68     		ldr	r3, [r7, #4]
+ 421 0106 5B68     		ldr	r3, [r3, #4]
+ 422 0108 3B61     		str	r3, [r7, #16]
+ 423 010a 7B68     		ldr	r3, [r7, #4]
+ 424 010c 1B68     		ldr	r3, [r3]
+ 425 010e FB60     		str	r3, [r7, #12]
+ 426 0110 3B69     		ldr	r3, [r7, #16]
+ 427 0112 FA68     		ldr	r2, [r7, #12]
+ 428 0114 1A60     		str	r2, [r3]
+ 429 0116 FB68     		ldr	r3, [r7, #12]
+ 430 0118 3A69     		ldr	r2, [r7, #16]
+ 431 011a 5A60     		str	r2, [r3, #4]
+ 432              	.LBE5:
+ 433 011c BB6A     		ldr	r3, [r7, #40]
+ 434 011e E833     		add	r3, r3, #232
+ 435 0120 1A89     		ldrh	r2, [r3, #8]
+ 436 0122 013A     		sub	r2, r2, #1
+ 437 0124 92B2     		uxth	r2, r2
+ 438 0126 1A81     		strh	r2, [r3, #8]
+ 322:../MQXLITE/kernel/lwsem.c ****                 break;
+ 439              		.loc 1 322 0
+ 440 0128 08E0     		b	.L22
+ 441              	.L21:
+ 323:../MQXLITE/kernel/lwsem.c ****             } /* Endif */
+ 324:../MQXLITE/kernel/lwsem.c ****             sem_chk_ptr = (LWSEM_STRUCT_PTR) ((pointer) sem_chk_ptr->NEXT);
+ 442              		.loc 1 324 0
+ 443 012a FB6A     		ldr	r3, [r7, #44]
+ 444 012c 1B68     		ldr	r3, [r3]
+ 445 012e FB62     		str	r3, [r7, #44]
+ 446              	.L20:
+ 316:../MQXLITE/kernel/lwsem.c ****         while (sem_chk_ptr != (LWSEM_STRUCT_PTR) ((pointer) &kernel_data->LWSEM))
+ 447              		.loc 1 316 0
+ 448 0130 BB6A     		ldr	r3, [r7, #40]
+ 449 0132 1A1C     		mov	r2, r3
+ 450 0134 E832     		add	r2, r2, #232
+ 451 0136 FB6A     		ldr	r3, [r7, #44]
+ 452 0138 9A42     		cmp	r2, r3
+ 453 013a DFD1     		bne	.L23
+ 454              	.L22:
+ 325:../MQXLITE/kernel/lwsem.c ****         } /* Endwhile */
+ 326:../MQXLITE/kernel/lwsem.c ****     }
+ 327:../MQXLITE/kernel/lwsem.c **** 
+ 328:../MQXLITE/kernel/lwsem.c ****     _int_enable();
+ 455              		.loc 1 328 0
+ 456 013c FFF7FEFF 		bl	_int_enable
+ 329:../MQXLITE/kernel/lwsem.c **** 
+ 330:../MQXLITE/kernel/lwsem.c ****     _CHECK_RUN_SCHEDULER(); /* Allow higher priority tasks to run */
+ 457              		.loc 1 330 0
+ 458 0140 FFF7FEFF 		bl	_sched_check_scheduler_internal
+ 331:../MQXLITE/kernel/lwsem.c **** 
+ 332:../MQXLITE/kernel/lwsem.c **** 
+ 333:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_destroy, MQX_OK);
+ 334:../MQXLITE/kernel/lwsem.c ****     return (MQX_OK);
+ 459              		.loc 1 334 0
+ 460 0144 0023     		mov	r3, #0
+ 461              	.L15:
+ 335:../MQXLITE/kernel/lwsem.c **** 
+ 336:../MQXLITE/kernel/lwsem.c **** } /* Endbody */
+ 462              		.loc 1 336 0
+ 463 0146 181C     		mov	r0, r3
+ 464 0148 BD46     		mov	sp, r7
+ 465 014a 0CB0     		add	sp, sp, #48
+ 466              		@ sp needed for prologue
+ 467 014c 80BD     		pop	{r7, pc}
+ 468              	.L25:
+ 469 014e C046     		.align	2
+ 470              	.L24:
+ 471 0150 00000000 		.word	_mqx_kernel_data
+ 472 0154 6D73776C 		.word	1819767661
+ 473 0158 FFFEFFFF 		.word	-257
+ 474              		.cfi_endproc
+ 475              	.LFE3:
+ 477              		.section	.text._lwsem_destroy,"ax",%progbits
+ 478              		.align	2
+ 479              		.global	_lwsem_destroy
+ 480              		.code	16
+ 481              		.thumb_func
+ 483              	_lwsem_destroy:
+ 484              	.LFB4:
+ 337:../MQXLITE/kernel/lwsem.c **** 
+ 338:../MQXLITE/kernel/lwsem.c **** 
+ 339:../MQXLITE/kernel/lwsem.c **** /*!
+ 340:../MQXLITE/kernel/lwsem.c ****  * \brief Destroys the lightweight semaphore.
+ 341:../MQXLITE/kernel/lwsem.c ****  *
+ 342:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the created lightweight semaphore.
+ 343:../MQXLITE/kernel/lwsem.c ****  *
+ 344:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 345:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Lwsem_ptr does not point to a valid lightweight semaphore.)
+ 346:../MQXLITE/kernel/lwsem.c ****  *
+ 347:../MQXLITE/kernel/lwsem.c ****  * \warning Puts all waiting tasks in their ready queues.
+ 348:../MQXLITE/kernel/lwsem.c ****  * \warning Cannot be called from an ISR.
+ 349:../MQXLITE/kernel/lwsem.c ****  *
+ 350:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 351:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create_hidden
+ 352:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 353:../MQXLITE/kernel/lwsem.c ****  */
+ 354:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_destroy
+ 355:../MQXLITE/kernel/lwsem.c **** (
+ 356:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 357:../MQXLITE/kernel/lwsem.c **** )
+ 358:../MQXLITE/kernel/lwsem.c **** {
+ 485              		.loc 1 358 0
+ 486              		.cfi_startproc
+ 487 0000 80B5     		push	{r7, lr}
+ 488              	.LCFI12:
+ 489              		.cfi_def_cfa_offset 8
+ 490              		.cfi_offset 7, -8
+ 491              		.cfi_offset 14, -4
+ 492 0002 82B0     		sub	sp, sp, #8
+ 493              	.LCFI13:
+ 494              		.cfi_def_cfa_offset 16
+ 495 0004 00AF     		add	r7, sp, #0
+ 496              	.LCFI14:
+ 497              		.cfi_def_cfa_register 7
+ 498 0006 7860     		str	r0, [r7, #4]
+ 359:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+ 360:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+ 361:../MQXLITE/kernel/lwsem.c ****     {
+ 362:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_destroy(sem_ptr);
+ 363:../MQXLITE/kernel/lwsem.c ****     }
+ 364:../MQXLITE/kernel/lwsem.c **** #endif
+ 365:../MQXLITE/kernel/lwsem.c **** 
+ 366:../MQXLITE/kernel/lwsem.c ****     return _lwsem_destroy_internal(sem_ptr, FALSE);
+ 499              		.loc 1 366 0
+ 500 0008 7B68     		ldr	r3, [r7, #4]
+ 501 000a 181C     		mov	r0, r3
+ 502 000c 0021     		mov	r1, #0
+ 503 000e FFF7FEFF 		bl	_lwsem_destroy_internal
+ 504 0012 031C     		mov	r3, r0
+ 367:../MQXLITE/kernel/lwsem.c **** }
+ 505              		.loc 1 367 0
+ 506 0014 181C     		mov	r0, r3
+ 507 0016 BD46     		mov	sp, r7
+ 508 0018 02B0     		add	sp, sp, #8
+ 509              		@ sp needed for prologue
+ 510 001a 80BD     		pop	{r7, pc}
+ 511              		.cfi_endproc
+ 512              	.LFE4:
+ 514              		.section	.text._lwsem_poll,"ax",%progbits
+ 515              		.align	2
+ 516              		.global	_lwsem_poll
+ 517              		.code	16
+ 518              		.thumb_func
+ 520              	_lwsem_poll:
+ 521              	.LFB5:
+ 368:../MQXLITE/kernel/lwsem.c **** 
+ 369:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 370:../MQXLITE/kernel/lwsem.c **** /*!
+ 371:../MQXLITE/kernel/lwsem.c ****  * \brief Destroys the lightweight semaphore.
+ 372:../MQXLITE/kernel/lwsem.c ****  *
+ 373:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_destroy() API call but it can be
+ 374:../MQXLITE/kernel/lwsem.c ****  * executed from within the User task or other code running in the CPU User mode.
+ 375:../MQXLITE/kernel/lwsem.c ****  * Parameters passed to this function by pointer are required to meet the memory
+ 376:../MQXLITE/kernel/lwsem.c ****  * protection requirements as described in the parameter list below.
+ 377:../MQXLITE/kernel/lwsem.c ****  *
+ 378:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Read only. Pointer to the created lightweight semaphore.
+ 379:../MQXLITE/kernel/lwsem.c ****  *
+ 380:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 381:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Lwsem_ptr does not point to a valid lightweight semaphore.)
+ 382:../MQXLITE/kernel/lwsem.c ****  *
+ 383:../MQXLITE/kernel/lwsem.c ****  * \warning Puts all waiting tasks in their ready queues.
+ 384:../MQXLITE/kernel/lwsem.c ****  * \warning Cannot be called from an ISR.
+ 385:../MQXLITE/kernel/lwsem.c ****  *
+ 386:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_destroy
+ 387:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+ 388:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 389:../MQXLITE/kernel/lwsem.c ****  */
+ 390:../MQXLITE/kernel/lwsem.c **** _mqx_uint _usr_lwsem_destroy
+ 391:../MQXLITE/kernel/lwsem.c **** (
+ 392:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 393:../MQXLITE/kernel/lwsem.c **** )
+ 394:../MQXLITE/kernel/lwsem.c **** {
+ 395:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params = {(uint_32)sem_ptr, 0, 0, 0, 0};
+ 396:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_DESTROY, &params);
+ 397:../MQXLITE/kernel/lwsem.c **** }
+ 398:../MQXLITE/kernel/lwsem.c **** 
+ 399:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 400:../MQXLITE/kernel/lwsem.c **** 
+ 401:../MQXLITE/kernel/lwsem.c **** /*!
+ 402:../MQXLITE/kernel/lwsem.c ****  * \brief Poll for the lightweight semaphore.
+ 403:../MQXLITE/kernel/lwsem.c ****  *
+ 404:../MQXLITE/kernel/lwsem.c ****  * The function is the nonblocking alternative to the _lwsem_wait family of functions.
+ 405:../MQXLITE/kernel/lwsem.c ****  *
+ 406:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the created lightweight semaphore.
+ 407:../MQXLITE/kernel/lwsem.c ****  *
+ 408:../MQXLITE/kernel/lwsem.c ****  * \return TRUE (Task got the lightweight semaphore.)
+ 409:../MQXLITE/kernel/lwsem.c ****  * \return FALSE (Lightweight semaphore was not available.)
+ 410:../MQXLITE/kernel/lwsem.c ****  *
+ 411:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 412:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create_hidden
+ 413:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait
+ 414:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_for
+ 415:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_ticks
+ 416:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_until
+ 417:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 418:../MQXLITE/kernel/lwsem.c ****  */
+ 419:../MQXLITE/kernel/lwsem.c **** boolean _lwsem_poll
+ 420:../MQXLITE/kernel/lwsem.c **** (
+ 421:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 422:../MQXLITE/kernel/lwsem.c **** )
+ 423:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 522              		.loc 1 423 0
+ 523              		.cfi_startproc
+ 524 0000 80B5     		push	{r7, lr}
+ 525              	.LCFI15:
+ 526              		.cfi_def_cfa_offset 8
+ 527              		.cfi_offset 7, -8
+ 528              		.cfi_offset 14, -4
+ 529 0002 84B0     		sub	sp, sp, #16
+ 530              	.LCFI16:
+ 531              		.cfi_def_cfa_offset 24
+ 532 0004 00AF     		add	r7, sp, #0
+ 533              	.LCFI17:
+ 534              		.cfi_def_cfa_register 7
+ 535 0006 7860     		str	r0, [r7, #4]
+ 424:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 425:../MQXLITE/kernel/lwsem.c ****     boolean                result;
+ 426:../MQXLITE/kernel/lwsem.c **** 
+ 427:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+ 428:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+ 429:../MQXLITE/kernel/lwsem.c ****     {
+ 430:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_poll(sem_ptr);
+ 431:../MQXLITE/kernel/lwsem.c ****     }
+ 432:../MQXLITE/kernel/lwsem.c **** #endif
+ 433:../MQXLITE/kernel/lwsem.c **** 
+ 434:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 536              		.loc 1 434 0
+ 537 0008 1D4B     		ldr	r3, .L36
+ 538 000a 1B68     		ldr	r3, [r3]
+ 539 000c BB60     		str	r3, [r7, #8]
+ 435:../MQXLITE/kernel/lwsem.c ****     _KLOGE2(KLOG_lwsem_poll, sem_ptr);
+ 436:../MQXLITE/kernel/lwsem.c **** 
+ 437:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+ 438:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 540              		.loc 1 438 0
+ 541 000e 7B68     		ldr	r3, [r7, #4]
+ 542 0010 5A69     		ldr	r2, [r3, #20]
+ 543 0012 1C4B     		ldr	r3, .L36+4
+ 544 0014 9A42     		cmp	r2, r3
+ 545 0016 01D0     		beq	.L29
+ 439:../MQXLITE/kernel/lwsem.c ****     {
+ 440:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_poll, FALSE);
+ 441:../MQXLITE/kernel/lwsem.c ****         return (FALSE);
+ 546              		.loc 1 441 0
+ 547 0018 0023     		mov	r3, #0
+ 548 001a 2DE0     		b	.L30
+ 549              	.L29:
+ 442:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 443:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_CHECK_VALIDITY */
+ 444:../MQXLITE/kernel/lwsem.c **** 
+ 445:../MQXLITE/kernel/lwsem.c ****     _INT_DISABLE();
+ 550              		.loc 1 445 0
+ 551 001c BB68     		ldr	r3, [r7, #8]
+ 552 001e DB69     		ldr	r3, [r3, #28]
+ 553 0020 9B6C     		ldr	r3, [r3, #72]
+ 554 0022 002B     		cmp	r3, #0
+ 555 0024 00D1     		bne	.L31
+ 556              		.loc 1 445 0 is_stmt 0
+ 557              	@ 445 "../MQXLITE/kernel/lwsem.c" 1
+ 558 0026 72B6     		cpsid i
+ 559              	@ 0 "" 2
+ 560              		.code	16
+ 561              	.L31:
+ 562              		.loc 1 445 0
+ 563 0028 BB68     		ldr	r3, [r7, #8]
+ 564 002a DB69     		ldr	r3, [r3, #28]
+ 565 002c 9A6C     		ldr	r2, [r3, #72]
+ 566 002e 0132     		add	r2, r2, #1
+ 567 0030 9A64     		str	r2, [r3, #72]
+ 446:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALUE <= 0)
+ 568              		.loc 1 446 0 is_stmt 1
+ 569 0032 7B68     		ldr	r3, [r7, #4]
+ 570 0034 9B69     		ldr	r3, [r3, #24]
+ 571 0036 002B     		cmp	r3, #0
+ 572 0038 02DC     		bgt	.L32
+ 447:../MQXLITE/kernel/lwsem.c ****     {
+ 448:../MQXLITE/kernel/lwsem.c ****         result = FALSE;
+ 573              		.loc 1 448 0
+ 574 003a 0023     		mov	r3, #0
+ 575 003c FB60     		str	r3, [r7, #12]
+ 576 003e 06E0     		b	.L33
+ 577              	.L32:
+ 449:../MQXLITE/kernel/lwsem.c ****     }
+ 450:../MQXLITE/kernel/lwsem.c ****     else
+ 451:../MQXLITE/kernel/lwsem.c ****     {
+ 452:../MQXLITE/kernel/lwsem.c ****         --sem_ptr->VALUE;
+ 578              		.loc 1 452 0
+ 579 0040 7B68     		ldr	r3, [r7, #4]
+ 580 0042 9B69     		ldr	r3, [r3, #24]
+ 581 0044 5A1E     		sub	r2, r3, #1
+ 582 0046 7B68     		ldr	r3, [r7, #4]
+ 583 0048 9A61     		str	r2, [r3, #24]
+ 453:../MQXLITE/kernel/lwsem.c ****         result = TRUE;
+ 584              		.loc 1 453 0
+ 585 004a 0123     		mov	r3, #1
+ 586 004c FB60     		str	r3, [r7, #12]
+ 587              	.L33:
+ 454:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 455:../MQXLITE/kernel/lwsem.c ****     _INT_ENABLE();
+ 588              		.loc 1 455 0
+ 589 004e BB68     		ldr	r3, [r7, #8]
+ 590 0050 DB69     		ldr	r3, [r3, #28]
+ 591 0052 9B6C     		ldr	r3, [r3, #72]
+ 592 0054 002B     		cmp	r3, #0
+ 593 0056 0ED0     		beq	.L34
+ 594              		.loc 1 455 0 is_stmt 0
+ 595 0058 BB68     		ldr	r3, [r7, #8]
+ 596 005a DB69     		ldr	r3, [r3, #28]
+ 597 005c 9A6C     		ldr	r2, [r3, #72]
+ 598 005e 013A     		sub	r2, r2, #1
+ 599 0060 9A64     		str	r2, [r3, #72]
+ 600 0062 9B6C     		ldr	r3, [r3, #72]
+ 601 0064 002B     		cmp	r3, #0
+ 602 0066 06D1     		bne	.L34
+ 603              		.loc 1 455 0
+ 604 0068 BB68     		ldr	r3, [r7, #8]
+ 605 006a 1B8B     		ldrh	r3, [r3, #24]
+ 606 006c 002B     		cmp	r3, #0
+ 607 006e 01D0     		beq	.L35
+ 608              		.loc 1 455 0
+ 609              	@ 455 "../MQXLITE/kernel/lwsem.c" 1
+ 610 0070 62B6     		cpsie i
+ 611              	@ 0 "" 2
+ 612              		.code	16
+ 613 0072 00E0     		b	.L34
+ 614              	.L35:
+ 615              		.loc 1 455 0
+ 616              	@ 455 "../MQXLITE/kernel/lwsem.c" 1
+ 617 0074 62B6     		cpsie i
+ 618              	@ 0 "" 2
+ 619              		.code	16
+ 620              	.L34:
+ 456:../MQXLITE/kernel/lwsem.c **** 
+ 457:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_poll, result);
+ 458:../MQXLITE/kernel/lwsem.c **** 
+ 459:../MQXLITE/kernel/lwsem.c ****     return (result);
+ 621              		.loc 1 459 0 is_stmt 1
+ 622 0076 FB68     		ldr	r3, [r7, #12]
+ 623              	.L30:
+ 460:../MQXLITE/kernel/lwsem.c **** 
+ 461:../MQXLITE/kernel/lwsem.c **** }
+ 624              		.loc 1 461 0
+ 625 0078 181C     		mov	r0, r3
+ 626 007a BD46     		mov	sp, r7
+ 627 007c 04B0     		add	sp, sp, #16
+ 628              		@ sp needed for prologue
+ 629 007e 80BD     		pop	{r7, pc}
+ 630              	.L37:
+ 631              		.align	2
+ 632              	.L36:
+ 633 0080 00000000 		.word	_mqx_kernel_data
+ 634 0084 6D73776C 		.word	1819767661
+ 635              		.cfi_endproc
+ 636              	.LFE5:
+ 638              		.section	.text._lwsem_post,"ax",%progbits
+ 639              		.align	2
+ 640              		.global	_lwsem_post
+ 641              		.code	16
+ 642              		.thumb_func
+ 644              	_lwsem_post:
+ 645              	.LFB6:
+ 462:../MQXLITE/kernel/lwsem.c **** 
+ 463:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 464:../MQXLITE/kernel/lwsem.c **** /*!
+ 465:../MQXLITE/kernel/lwsem.c ****  * \brief Poll for the lightweight semaphore.
+ 466:../MQXLITE/kernel/lwsem.c ****  *
+ 467:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_poll() API call but it can be
+ 468:../MQXLITE/kernel/lwsem.c ****  * executed from within the User task or other code running in the CPU User mode.
+ 469:../MQXLITE/kernel/lwsem.c ****  * Parameters passed to this function by pointer are required to meet the memory
+ 470:../MQXLITE/kernel/lwsem.c ****  * protection requirements as described in the parameter list below.
+ 471:../MQXLITE/kernel/lwsem.c ****  *
+ 472:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Read only. Pointer to the created lightweight semaphore.
+ 473:../MQXLITE/kernel/lwsem.c ****  *
+ 474:../MQXLITE/kernel/lwsem.c ****  * \return TRUE (Task got the lightweight semaphore.)
+ 475:../MQXLITE/kernel/lwsem.c ****  * \return FALSE (Lightweight semaphore was not available.)
+ 476:../MQXLITE/kernel/lwsem.c ****  *
+ 477:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_poll
+ 478:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+ 479:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait
+ 480:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_for
+ 481:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_ticks
+ 482:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_until
+ 483:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 484:../MQXLITE/kernel/lwsem.c ****  */
+ 485:../MQXLITE/kernel/lwsem.c **** boolean _usr_lwsem_poll
+ 486:../MQXLITE/kernel/lwsem.c **** (
+ 487:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 488:../MQXLITE/kernel/lwsem.c **** )
+ 489:../MQXLITE/kernel/lwsem.c **** {
+ 490:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params =
+ 491:../MQXLITE/kernel/lwsem.c ****     {   (uint_32)sem_ptr, 0, 0, 0, 0};
+ 492:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_POLL, &params);
+ 493:../MQXLITE/kernel/lwsem.c **** }
+ 494:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 495:../MQXLITE/kernel/lwsem.c **** 
+ 496:../MQXLITE/kernel/lwsem.c **** /*!
+ 497:../MQXLITE/kernel/lwsem.c ****  * \brief Posts the lightweight semaphore.
+ 498:../MQXLITE/kernel/lwsem.c ****  *
+ 499:../MQXLITE/kernel/lwsem.c ****  * If tasks are waiting for the lightweight semaphore, MQX removes the first one
+ 500:../MQXLITE/kernel/lwsem.c ****  * from the queue and puts it in the task's ready queue.
+ 501:../MQXLITE/kernel/lwsem.c ****  *
+ 502:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the created lightweight semaphore.
+ 503:../MQXLITE/kernel/lwsem.c ****  *
+ 504:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 505:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Lwsem_ptr does not point to a valid lightweight semaphore.)
+ 506:../MQXLITE/kernel/lwsem.c ****  *
+ 507:../MQXLITE/kernel/lwsem.c ****  * \warning Might put a waiting task in the task's ready queue.
+ 508:../MQXLITE/kernel/lwsem.c ****  *
+ 509:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 510:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait
+ 511:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_for
+ 512:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_ticks
+ 513:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_until
+ 514:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 515:../MQXLITE/kernel/lwsem.c ****  */
+ 516:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_post
+ 517:../MQXLITE/kernel/lwsem.c **** (
+ 518:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 519:../MQXLITE/kernel/lwsem.c **** )
+ 520:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 646              		.loc 1 520 0
+ 647              		.cfi_startproc
+ 648 0000 80B5     		push	{r7, lr}
+ 649              	.LCFI18:
+ 650              		.cfi_def_cfa_offset 8
+ 651              		.cfi_offset 7, -8
+ 652              		.cfi_offset 14, -4
+ 653 0002 88B0     		sub	sp, sp, #32
+ 654              	.LCFI19:
+ 655              		.cfi_def_cfa_offset 40
+ 656 0004 00AF     		add	r7, sp, #0
+ 657              	.LCFI20:
+ 658              		.cfi_def_cfa_register 7
+ 659 0006 7860     		str	r0, [r7, #4]
+ 521:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 522:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR          td_ptr;
+ 523:../MQXLITE/kernel/lwsem.c **** 
+ 524:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+ 525:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+ 526:../MQXLITE/kernel/lwsem.c ****     {
+ 527:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_post(sem_ptr);
+ 528:../MQXLITE/kernel/lwsem.c ****     }
+ 529:../MQXLITE/kernel/lwsem.c **** #endif
+ 530:../MQXLITE/kernel/lwsem.c **** 
+ 531:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 660              		.loc 1 531 0
+ 661 0008 4F4B     		ldr	r3, .L48
+ 662 000a 1B68     		ldr	r3, [r3]
+ 663 000c FB61     		str	r3, [r7, #28]
+ 532:../MQXLITE/kernel/lwsem.c **** 
+ 533:../MQXLITE/kernel/lwsem.c ****     _KLOGE2(KLOG_lwsem_post, sem_ptr);
+ 534:../MQXLITE/kernel/lwsem.c **** 
+ 535:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+ 536:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 664              		.loc 1 536 0
+ 665 000e 7B68     		ldr	r3, [r7, #4]
+ 666 0010 5A69     		ldr	r2, [r3, #20]
+ 667 0012 4E4B     		ldr	r3, .L48+4
+ 668 0014 9A42     		cmp	r2, r3
+ 669 0016 01D0     		beq	.L39
+ 537:../MQXLITE/kernel/lwsem.c ****     {
+ 538:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_post, MQX_INVALID_LWSEM);
+ 539:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 670              		.loc 1 539 0
+ 671 0018 1F23     		mov	r3, #31
+ 672 001a 90E0     		b	.L40
+ 673              	.L39:
+ 540:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 541:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_CHECK_VALIDITY */
+ 542:../MQXLITE/kernel/lwsem.c **** 
+ 543:../MQXLITE/kernel/lwsem.c ****     _INT_DISABLE();
+ 674              		.loc 1 543 0
+ 675 001c FB69     		ldr	r3, [r7, #28]
+ 676 001e DB69     		ldr	r3, [r3, #28]
+ 677 0020 9B6C     		ldr	r3, [r3, #72]
+ 678 0022 002B     		cmp	r3, #0
+ 679 0024 00D1     		bne	.L41
+ 680              		.loc 1 543 0 is_stmt 0
+ 681              	@ 543 "../MQXLITE/kernel/lwsem.c" 1
+ 682 0026 72B6     		cpsid i
+ 683              	@ 0 "" 2
+ 684              		.code	16
+ 685              	.L41:
+ 686              		.loc 1 543 0
+ 687 0028 FB69     		ldr	r3, [r7, #28]
+ 688 002a DB69     		ldr	r3, [r3, #28]
+ 689 002c 9A6C     		ldr	r2, [r3, #72]
+ 690 002e 0132     		add	r2, r2, #1
+ 691 0030 9A64     		str	r2, [r3, #72]
+ 544:../MQXLITE/kernel/lwsem.c ****     if ((sem_ptr->VALUE >= 0) && (_QUEUE_GET_SIZE(&sem_ptr->TD_QUEUE)))
+ 692              		.loc 1 544 0 is_stmt 1
+ 693 0032 7B68     		ldr	r3, [r7, #4]
+ 694 0034 9B69     		ldr	r3, [r3, #24]
+ 695 0036 002B     		cmp	r3, #0
+ 696 0038 67DB     		blt	.L42
+ 697              		.loc 1 544 0 is_stmt 0
+ 698 003a 7B68     		ldr	r3, [r7, #4]
+ 699 003c 0833     		add	r3, r3, #8
+ 700 003e 1B89     		ldrh	r3, [r3, #8]
+ 701 0040 002B     		cmp	r3, #0
+ 702 0042 62D0     		beq	.L42
+ 545:../MQXLITE/kernel/lwsem.c ****     {
+ 546:../MQXLITE/kernel/lwsem.c ****         _QUEUE_DEQUEUE(&sem_ptr->TD_QUEUE, td_ptr);
+ 703              		.loc 1 546 0 is_stmt 1
+ 704 0044 7B68     		ldr	r3, [r7, #4]
+ 705 0046 0833     		add	r3, r3, #8
+ 706 0048 1B68     		ldr	r3, [r3]
+ 707 004a BB61     		str	r3, [r7, #24]
+ 708              	.LBB6:
+ 709 004c BB69     		ldr	r3, [r7, #24]
+ 710 004e 5B68     		ldr	r3, [r3, #4]
+ 711 0050 7B61     		str	r3, [r7, #20]
+ 712 0052 BB69     		ldr	r3, [r7, #24]
+ 713 0054 1B68     		ldr	r3, [r3]
+ 714 0056 3B61     		str	r3, [r7, #16]
+ 715 0058 7B69     		ldr	r3, [r7, #20]
+ 716 005a 3A69     		ldr	r2, [r7, #16]
+ 717 005c 1A60     		str	r2, [r3]
+ 718 005e 3B69     		ldr	r3, [r7, #16]
+ 719 0060 7A69     		ldr	r2, [r7, #20]
+ 720 0062 5A60     		str	r2, [r3, #4]
+ 721              	.LBE6:
+ 722 0064 7B68     		ldr	r3, [r7, #4]
+ 723 0066 0833     		add	r3, r3, #8
+ 724 0068 1A89     		ldrh	r2, [r3, #8]
+ 725 006a 013A     		sub	r2, r2, #1
+ 726 006c 92B2     		uxth	r2, r2
+ 727 006e 1A81     		strh	r2, [r3, #8]
+ 547:../MQXLITE/kernel/lwsem.c ****         _BACKUP_POINTER(td_ptr, TD_STRUCT, AUX_QUEUE);
+ 728              		.loc 1 547 0
+ 729 0070 BB69     		ldr	r3, [r7, #24]
+ 730 0072 303B     		sub	r3, r3, #48
+ 731 0074 BB61     		str	r3, [r7, #24]
+ 548:../MQXLITE/kernel/lwsem.c ****         _TIME_DEQUEUE(td_ptr, kernel_data);
+ 732              		.loc 1 548 0
+ 733 0076 BB69     		ldr	r3, [r7, #24]
+ 734 0078 9A68     		ldr	r2, [r3, #8]
+ 735 007a 8023     		mov	r3, #128
+ 736 007c 5B00     		lsl	r3, r3, #1
+ 737 007e 1340     		and	r3, r2
+ 738 0080 1ED0     		beq	.L43
+ 739              	.LBB7:
+ 740              		.loc 1 548 0 is_stmt 0
+ 741 0082 BB69     		ldr	r3, [r7, #24]
+ 742 0084 5B68     		ldr	r3, [r3, #4]
+ 743 0086 FB60     		str	r3, [r7, #12]
+ 744 0088 BB69     		ldr	r3, [r7, #24]
+ 745 008a 1B68     		ldr	r3, [r3]
+ 746 008c BB60     		str	r3, [r7, #8]
+ 747 008e FB68     		ldr	r3, [r7, #12]
+ 748 0090 BA68     		ldr	r2, [r7, #8]
+ 749 0092 1A60     		str	r2, [r3]
+ 750 0094 BB68     		ldr	r3, [r7, #8]
+ 751 0096 FA68     		ldr	r2, [r7, #12]
+ 752 0098 5A60     		str	r2, [r3, #4]
+ 753              	.LBE7:
+ 754 009a FB69     		ldr	r3, [r7, #28]
+ 755 009c 2933     		add	r3, r3, #41
+ 756 009e FF33     		add	r3, r3, #255
+ 757 00a0 1A89     		ldrh	r2, [r3, #8]
+ 758 00a2 013A     		sub	r2, r2, #1
+ 759 00a4 92B2     		uxth	r2, r2
+ 760 00a6 1A81     		strh	r2, [r3, #8]
+ 761 00a8 BB69     		ldr	r3, [r7, #24]
+ 762 00aa 9A68     		ldr	r2, [r3, #8]
+ 763 00ac 284B     		ldr	r3, .L48+8
+ 764 00ae 1A40     		and	r2, r3
+ 765 00b0 BB69     		ldr	r3, [r7, #24]
+ 766 00b2 9A60     		str	r2, [r3, #8]
+ 767 00b4 BB69     		ldr	r3, [r7, #24]
+ 768 00b6 9B68     		ldr	r3, [r3, #8]
+ 769 00b8 0322     		mov	r2, #3
+ 770 00ba 1A43     		orr	r2, r3
+ 771 00bc BB69     		ldr	r3, [r7, #24]
+ 772 00be 9A60     		str	r2, [r3, #8]
+ 773              	.L43:
+ 549:../MQXLITE/kernel/lwsem.c ****         td_ptr->INFO = 0; /* Signal that post is activating the task */
+ 774              		.loc 1 549 0 is_stmt 1
+ 775 00c0 BB69     		ldr	r3, [r7, #24]
+ 776 00c2 0022     		mov	r2, #0
+ 777 00c4 DA62     		str	r2, [r3, #44]
+ 550:../MQXLITE/kernel/lwsem.c ****         _TASK_READY(td_ptr, kernel_data);
+ 778              		.loc 1 550 0
+ 779 00c6 BB69     		ldr	r3, [r7, #24]
+ 780 00c8 DA69     		ldr	r2, [r3, #28]
+ 781 00ca FB69     		ldr	r3, [r7, #28]
+ 782 00cc 5B6A     		ldr	r3, [r3, #36]
+ 783 00ce 9A42     		cmp	r2, r3
+ 784 00d0 03D9     		bls	.L44
+ 785              		.loc 1 550 0 is_stmt 0
+ 786 00d2 BB69     		ldr	r3, [r7, #24]
+ 787 00d4 DA69     		ldr	r2, [r3, #28]
+ 788 00d6 FB69     		ldr	r3, [r7, #28]
+ 789 00d8 5A62     		str	r2, [r3, #36]
+ 790              	.L44:
+ 791              		.loc 1 550 0
+ 792 00da BB69     		ldr	r3, [r7, #24]
+ 793 00dc 0222     		mov	r2, #2
+ 794 00de 9A60     		str	r2, [r3, #8]
+ 795 00e0 BB69     		ldr	r3, [r7, #24]
+ 796 00e2 DB69     		ldr	r3, [r3, #28]
+ 797 00e4 5A68     		ldr	r2, [r3, #4]
+ 798 00e6 BB69     		ldr	r3, [r7, #24]
+ 799 00e8 5A60     		str	r2, [r3, #4]
+ 800 00ea BB69     		ldr	r3, [r7, #24]
+ 801 00ec 5B68     		ldr	r3, [r3, #4]
+ 802 00ee 1A68     		ldr	r2, [r3]
+ 803 00f0 BB69     		ldr	r3, [r7, #24]
+ 804 00f2 1A60     		str	r2, [r3]
+ 805 00f4 BB69     		ldr	r3, [r7, #24]
+ 806 00f6 5B68     		ldr	r3, [r3, #4]
+ 807 00f8 BA69     		ldr	r2, [r7, #24]
+ 808 00fa 1A60     		str	r2, [r3]
+ 809 00fc BB69     		ldr	r3, [r7, #24]
+ 810 00fe DB69     		ldr	r3, [r3, #28]
+ 811 0100 BA69     		ldr	r2, [r7, #24]
+ 812 0102 5A60     		str	r2, [r3, #4]
+ 551:../MQXLITE/kernel/lwsem.c ****         _CHECK_RUN_SCHEDULER(); /* Let higher priority task run */
+ 813              		.loc 1 551 0 is_stmt 1
+ 814 0104 FFF7FEFF 		bl	_sched_check_scheduler_internal
+ 815 0108 04E0     		b	.L45
+ 816              	.L42:
+ 552:../MQXLITE/kernel/lwsem.c ****     }
+ 553:../MQXLITE/kernel/lwsem.c ****     else
+ 554:../MQXLITE/kernel/lwsem.c ****     {
+ 555:../MQXLITE/kernel/lwsem.c ****         ++sem_ptr->VALUE;
+ 817              		.loc 1 555 0
+ 818 010a 7B68     		ldr	r3, [r7, #4]
+ 819 010c 9B69     		ldr	r3, [r3, #24]
+ 820 010e 5A1C     		add	r2, r3, #1
+ 821 0110 7B68     		ldr	r3, [r7, #4]
+ 822 0112 9A61     		str	r2, [r3, #24]
+ 823              	.L45:
+ 556:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 557:../MQXLITE/kernel/lwsem.c ****     _INT_ENABLE();
+ 824              		.loc 1 557 0
+ 825 0114 FB69     		ldr	r3, [r7, #28]
+ 826 0116 DB69     		ldr	r3, [r3, #28]
+ 827 0118 9B6C     		ldr	r3, [r3, #72]
+ 828 011a 002B     		cmp	r3, #0
+ 829 011c 0ED0     		beq	.L46
+ 830              		.loc 1 557 0 is_stmt 0
+ 831 011e FB69     		ldr	r3, [r7, #28]
+ 832 0120 DB69     		ldr	r3, [r3, #28]
+ 833 0122 9A6C     		ldr	r2, [r3, #72]
+ 834 0124 013A     		sub	r2, r2, #1
+ 835 0126 9A64     		str	r2, [r3, #72]
+ 836 0128 9B6C     		ldr	r3, [r3, #72]
+ 837 012a 002B     		cmp	r3, #0
+ 838 012c 06D1     		bne	.L46
+ 839              		.loc 1 557 0
+ 840 012e FB69     		ldr	r3, [r7, #28]
+ 841 0130 1B8B     		ldrh	r3, [r3, #24]
+ 842 0132 002B     		cmp	r3, #0
+ 843 0134 01D0     		beq	.L47
+ 844              		.loc 1 557 0
+ 845              	@ 557 "../MQXLITE/kernel/lwsem.c" 1
+ 846 0136 62B6     		cpsie i
+ 847              	@ 0 "" 2
+ 848              		.code	16
+ 849 0138 00E0     		b	.L46
+ 850              	.L47:
+ 851              		.loc 1 557 0
+ 852              	@ 557 "../MQXLITE/kernel/lwsem.c" 1
+ 853 013a 62B6     		cpsie i
+ 854              	@ 0 "" 2
+ 855              		.code	16
+ 856              	.L46:
+ 558:../MQXLITE/kernel/lwsem.c **** 
+ 559:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_post, MQX_OK);
+ 560:../MQXLITE/kernel/lwsem.c **** 
+ 561:../MQXLITE/kernel/lwsem.c ****     return (MQX_OK);
+ 857              		.loc 1 561 0 is_stmt 1
+ 858 013c 0023     		mov	r3, #0
+ 859              	.L40:
+ 562:../MQXLITE/kernel/lwsem.c **** 
+ 563:../MQXLITE/kernel/lwsem.c **** }
+ 860              		.loc 1 563 0
+ 861 013e 181C     		mov	r0, r3
+ 862 0140 BD46     		mov	sp, r7
+ 863 0142 08B0     		add	sp, sp, #32
+ 864              		@ sp needed for prologue
+ 865 0144 80BD     		pop	{r7, pc}
+ 866              	.L49:
+ 867 0146 C046     		.align	2
+ 868              	.L48:
+ 869 0148 00000000 		.word	_mqx_kernel_data
+ 870 014c 6D73776C 		.word	1819767661
+ 871 0150 FFFEFFFF 		.word	-257
+ 872              		.cfi_endproc
+ 873              	.LFE6:
+ 875              		.section	.text._lwsem_test,"ax",%progbits
+ 876              		.align	2
+ 877              		.global	_lwsem_test
+ 878              		.code	16
+ 879              		.thumb_func
+ 881              	_lwsem_test:
+ 882              	.LFB7:
+ 564:../MQXLITE/kernel/lwsem.c **** 
+ 565:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 566:../MQXLITE/kernel/lwsem.c **** /*!
+ 567:../MQXLITE/kernel/lwsem.c ****  * \brief Posts the lightweight semaphore.
+ 568:../MQXLITE/kernel/lwsem.c ****  *
+ 569:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_post() API call but it can be
+ 570:../MQXLITE/kernel/lwsem.c ****  * executed from within the User task or other code running in the CPU User mode.
+ 571:../MQXLITE/kernel/lwsem.c ****  * Parameters passed to this function by pointer are required to meet the memory
+ 572:../MQXLITE/kernel/lwsem.c ****  * protection requirements as described in the parameter list below.
+ 573:../MQXLITE/kernel/lwsem.c ****  *
+ 574:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Read only. Pointer to the created lightweight semaphore.
+ 575:../MQXLITE/kernel/lwsem.c ****  *
+ 576:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 577:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Lwsem_ptr does not point to a valid lightweight semaphore.)
+ 578:../MQXLITE/kernel/lwsem.c ****  *
+ 579:../MQXLITE/kernel/lwsem.c ****  * \warning Might put a waiting task in the task's ready queue.
+ 580:../MQXLITE/kernel/lwsem.c ****  *
+ 581:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+ 582:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+ 583:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait
+ 584:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_for
+ 585:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_ticks
+ 586:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_until
+ 587:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 588:../MQXLITE/kernel/lwsem.c ****  */
+ 589:../MQXLITE/kernel/lwsem.c **** _mqx_uint _usr_lwsem_post
+ 590:../MQXLITE/kernel/lwsem.c **** (
+ 591:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 592:../MQXLITE/kernel/lwsem.c **** )
+ 593:../MQXLITE/kernel/lwsem.c **** {
+ 594:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params =
+ 595:../MQXLITE/kernel/lwsem.c ****     {   (uint_32)sem_ptr, 0, 0, 0, 0};
+ 596:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_POST, &params);
+ 597:../MQXLITE/kernel/lwsem.c **** }
+ 598:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 599:../MQXLITE/kernel/lwsem.c **** 
+ 600:../MQXLITE/kernel/lwsem.c **** /*!
+ 601:../MQXLITE/kernel/lwsem.c ****  * \brief Tests the data structures (including queues) of the lightweight semaphores
+ 602:../MQXLITE/kernel/lwsem.c ****  * component for consistency and validity.
+ 603:../MQXLITE/kernel/lwsem.c ****  *
+ 604:../MQXLITE/kernel/lwsem.c ****  * \param[out] lwsem_error_ptr Pointer to the lightweight semaphore in error (NULL
+ 605:../MQXLITE/kernel/lwsem.c ****  * if no error is found)
+ 606:../MQXLITE/kernel/lwsem.c ****  * \param[out] td_error_ptr    Pointer to the task descriptor of waiting task that
+ 607:../MQXLITE/kernel/lwsem.c ****  * has an error (NULL if no error is found).
+ 608:../MQXLITE/kernel/lwsem.c ****  *
+ 609:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 610:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Results of _queue_test().)
+ 611:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+ 612:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CORRUPT_QUEUE (An error was found.)
+ 613:../MQXLITE/kernel/lwsem.c ****  *
+ 614:../MQXLITE/kernel/lwsem.c ****  * \warning Cannot be called from an ISR.
+ 615:../MQXLITE/kernel/lwsem.c ****  * Disables and enables interrupts.
+ 616:../MQXLITE/kernel/lwsem.c ****  *
+ 617:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 618:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_destroy
+ 619:../MQXLITE/kernel/lwsem.c ****  * \see _queue_test
+ 620:../MQXLITE/kernel/lwsem.c ****  */
+ 621:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_test
+ 622:../MQXLITE/kernel/lwsem.c **** (
+ 623:../MQXLITE/kernel/lwsem.c ****     pointer _PTR_ lwsem_error_ptr,
+ 624:../MQXLITE/kernel/lwsem.c ****     pointer _PTR_ td_error_ptr
+ 625:../MQXLITE/kernel/lwsem.c **** )
+ 626:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 883              		.loc 1 626 0
+ 884              		.cfi_startproc
+ 885 0000 80B5     		push	{r7, lr}
+ 886              	.LCFI21:
+ 887              		.cfi_def_cfa_offset 8
+ 888              		.cfi_offset 7, -8
+ 889              		.cfi_offset 14, -4
+ 890 0002 86B0     		sub	sp, sp, #24
+ 891              	.LCFI22:
+ 892              		.cfi_def_cfa_offset 32
+ 893 0004 00AF     		add	r7, sp, #0
+ 894              	.LCFI23:
+ 895              		.cfi_def_cfa_register 7
+ 896 0006 7860     		str	r0, [r7, #4]
+ 897 0008 3960     		str	r1, [r7]
+ 627:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 628:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR       sem_ptr;
+ 629:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              queue_size;
+ 630:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              result;
+ 631:../MQXLITE/kernel/lwsem.c **** 
+ 632:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 898              		.loc 1 632 0
+ 899 000a 2C4B     		ldr	r3, .L61
+ 900 000c 1B68     		ldr	r3, [r3]
+ 901 000e BB60     		str	r3, [r7, #8]
+ 633:../MQXLITE/kernel/lwsem.c **** 
+ 634:../MQXLITE/kernel/lwsem.c ****     _KLOGE3(KLOG_lwsem_test, lwsem_error_ptr, td_error_ptr);
+ 635:../MQXLITE/kernel/lwsem.c **** 
+ 636:../MQXLITE/kernel/lwsem.c ****     *td_error_ptr = NULL;
+ 902              		.loc 1 636 0
+ 903 0010 3B68     		ldr	r3, [r7]
+ 904 0012 0022     		mov	r2, #0
+ 905 0014 1A60     		str	r2, [r3]
+ 637:../MQXLITE/kernel/lwsem.c ****     *lwsem_error_ptr = NULL;
+ 906              		.loc 1 637 0
+ 907 0016 7B68     		ldr	r3, [r7, #4]
+ 908 0018 0022     		mov	r2, #0
+ 909 001a 1A60     		str	r2, [r3]
+ 638:../MQXLITE/kernel/lwsem.c **** 
+ 639:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_ERRORS
+ 640:../MQXLITE/kernel/lwsem.c ****     if (kernel_data->IN_ISR)
+ 910              		.loc 1 640 0
+ 911 001c BB68     		ldr	r3, [r7, #8]
+ 912 001e 1B8B     		ldrh	r3, [r3, #24]
+ 913 0020 002B     		cmp	r3, #0
+ 914 0022 01D0     		beq	.L51
+ 641:../MQXLITE/kernel/lwsem.c ****     {
+ 642:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_test, MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 643:../MQXLITE/kernel/lwsem.c ****         return (MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 915              		.loc 1 643 0
+ 916 0024 0D23     		mov	r3, #13
+ 917 0026 45E0     		b	.L52
+ 918              	.L51:
+ 644:../MQXLITE/kernel/lwsem.c ****     }/* Endif */
+ 645:../MQXLITE/kernel/lwsem.c **** #endif
+ 646:../MQXLITE/kernel/lwsem.c **** 
+ 647:../MQXLITE/kernel/lwsem.c ****     _int_disable();
+ 919              		.loc 1 647 0
+ 920 0028 FFF7FEFF 		bl	_int_disable
+ 648:../MQXLITE/kernel/lwsem.c **** 
+ 649:../MQXLITE/kernel/lwsem.c ****     result = _queue_test((QUEUE_STRUCT_PTR) &kernel_data->LWSEM, lwsem_error_ptr);
+ 921              		.loc 1 649 0
+ 922 002c BB68     		ldr	r3, [r7, #8]
+ 923 002e 1A1C     		mov	r2, r3
+ 924 0030 E832     		add	r2, r2, #232
+ 925 0032 7B68     		ldr	r3, [r7, #4]
+ 926 0034 101C     		mov	r0, r2
+ 927 0036 191C     		mov	r1, r3
+ 928 0038 FFF7FEFF 		bl	_queue_test
+ 929 003c 031C     		mov	r3, r0
+ 930 003e FB60     		str	r3, [r7, #12]
+ 650:../MQXLITE/kernel/lwsem.c ****     if (result != MQX_OK)
+ 931              		.loc 1 650 0
+ 932 0040 FB68     		ldr	r3, [r7, #12]
+ 933 0042 002B     		cmp	r3, #0
+ 934 0044 01D0     		beq	.L53
+ 651:../MQXLITE/kernel/lwsem.c ****     {
+ 652:../MQXLITE/kernel/lwsem.c ****         _KLOGX3(KLOG_lwsem_test, result, *lwsem_error_ptr);
+ 653:../MQXLITE/kernel/lwsem.c ****         return (result);
+ 935              		.loc 1 653 0
+ 936 0046 FB68     		ldr	r3, [r7, #12]
+ 937 0048 34E0     		b	.L52
+ 938              	.L53:
+ 654:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 655:../MQXLITE/kernel/lwsem.c **** 
+ 656:../MQXLITE/kernel/lwsem.c ****     sem_ptr = (LWSEM_STRUCT_PTR) ((pointer) kernel_data->LWSEM.NEXT);
+ 939              		.loc 1 656 0
+ 940 004a BA68     		ldr	r2, [r7, #8]
+ 941 004c E823     		mov	r3, #232
+ 942 004e D358     		ldr	r3, [r2, r3]
+ 943 0050 7B61     		str	r3, [r7, #20]
+ 657:../MQXLITE/kernel/lwsem.c ****     queue_size = _QUEUE_GET_SIZE(&kernel_data->LWSEM);
+ 944              		.loc 1 657 0
+ 945 0052 BB68     		ldr	r3, [r7, #8]
+ 946 0054 E833     		add	r3, r3, #232
+ 947 0056 1B89     		ldrh	r3, [r3, #8]
+ 948 0058 3B61     		str	r3, [r7, #16]
+ 658:../MQXLITE/kernel/lwsem.c ****     while (queue_size--)
+ 949              		.loc 1 658 0
+ 950 005a 17E0     		b	.L54
+ 951              	.L58:
+ 659:../MQXLITE/kernel/lwsem.c ****     {
+ 660:../MQXLITE/kernel/lwsem.c ****         if (sem_ptr->VALID != LWSEM_VALID)
+ 952              		.loc 1 660 0
+ 953 005c 7B69     		ldr	r3, [r7, #20]
+ 954 005e 5A69     		ldr	r2, [r3, #20]
+ 955 0060 174B     		ldr	r3, .L61+4
+ 956 0062 9A42     		cmp	r2, r3
+ 957 0064 02D0     		beq	.L55
+ 661:../MQXLITE/kernel/lwsem.c ****         {
+ 662:../MQXLITE/kernel/lwsem.c ****             result = MQX_INVALID_LWSEM;
+ 958              		.loc 1 662 0
+ 959 0066 1F23     		mov	r3, #31
+ 960 0068 FB60     		str	r3, [r7, #12]
+ 663:../MQXLITE/kernel/lwsem.c ****             break;
+ 961              		.loc 1 663 0
+ 962 006a 1AE0     		b	.L56
+ 963              	.L55:
+ 664:../MQXLITE/kernel/lwsem.c ****         } /* Endif */
+ 665:../MQXLITE/kernel/lwsem.c **** 
+ 666:../MQXLITE/kernel/lwsem.c ****         result = _queue_test(&sem_ptr->TD_QUEUE, td_error_ptr);
+ 964              		.loc 1 666 0
+ 965 006c 7B69     		ldr	r3, [r7, #20]
+ 966 006e 1A1C     		mov	r2, r3
+ 967 0070 0832     		add	r2, r2, #8
+ 968 0072 3B68     		ldr	r3, [r7]
+ 969 0074 101C     		mov	r0, r2
+ 970 0076 191C     		mov	r1, r3
+ 971 0078 FFF7FEFF 		bl	_queue_test
+ 972 007c 031C     		mov	r3, r0
+ 973 007e FB60     		str	r3, [r7, #12]
+ 667:../MQXLITE/kernel/lwsem.c ****         if (result != MQX_OK)
+ 974              		.loc 1 667 0
+ 975 0080 FB68     		ldr	r3, [r7, #12]
+ 976 0082 002B     		cmp	r3, #0
+ 977 0084 0CD1     		bne	.L60
+ 978              	.L57:
+ 668:../MQXLITE/kernel/lwsem.c ****         {
+ 669:../MQXLITE/kernel/lwsem.c ****             break;
+ 670:../MQXLITE/kernel/lwsem.c ****         } /* Endif */
+ 671:../MQXLITE/kernel/lwsem.c **** 
+ 672:../MQXLITE/kernel/lwsem.c ****         sem_ptr = sem_ptr->NEXT;
+ 979              		.loc 1 672 0
+ 980 0086 7B69     		ldr	r3, [r7, #20]
+ 981 0088 1B68     		ldr	r3, [r3]
+ 982 008a 7B61     		str	r3, [r7, #20]
+ 983              	.L54:
+ 658:../MQXLITE/kernel/lwsem.c ****     while (queue_size--)
+ 984              		.loc 1 658 0
+ 985 008c 3B69     		ldr	r3, [r7, #16]
+ 986 008e 5A1E     		sub	r2, r3, #1
+ 987 0090 9341     		sbc	r3, r3, r2
+ 988 0092 DBB2     		uxtb	r3, r3
+ 989 0094 3A69     		ldr	r2, [r7, #16]
+ 990 0096 013A     		sub	r2, r2, #1
+ 991 0098 3A61     		str	r2, [r7, #16]
+ 992 009a 002B     		cmp	r3, #0
+ 993 009c DED1     		bne	.L58
+ 994 009e 00E0     		b	.L56
+ 995              	.L60:
+ 669:../MQXLITE/kernel/lwsem.c ****             break;
+ 996              		.loc 1 669 0
+ 997 00a0 C046     		mov	r8, r8
+ 998              	.L56:
+ 673:../MQXLITE/kernel/lwsem.c ****     } /* Endwhile */
+ 674:../MQXLITE/kernel/lwsem.c **** 
+ 675:../MQXLITE/kernel/lwsem.c ****     _int_enable();
+ 999              		.loc 1 675 0
+ 1000 00a2 FFF7FEFF 		bl	_int_enable
+ 676:../MQXLITE/kernel/lwsem.c **** 
+ 677:../MQXLITE/kernel/lwsem.c ****     if (result != MQX_OK)
+ 1001              		.loc 1 677 0
+ 1002 00a6 FB68     		ldr	r3, [r7, #12]
+ 1003 00a8 002B     		cmp	r3, #0
+ 1004 00aa 02D0     		beq	.L59
+ 678:../MQXLITE/kernel/lwsem.c ****     {
+ 679:../MQXLITE/kernel/lwsem.c ****         *lwsem_error_ptr = (pointer) sem_ptr;
+ 1005              		.loc 1 679 0
+ 1006 00ac 7B68     		ldr	r3, [r7, #4]
+ 1007 00ae 7A69     		ldr	r2, [r7, #20]
+ 1008 00b0 1A60     		str	r2, [r3]
+ 1009              	.L59:
+ 680:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 681:../MQXLITE/kernel/lwsem.c ****     _KLOGX4(KLOG_lwsem_test, result, *lwsem_error_ptr, *td_error_ptr);
+ 682:../MQXLITE/kernel/lwsem.c **** 
+ 683:../MQXLITE/kernel/lwsem.c ****     return (result);
+ 1010              		.loc 1 683 0
+ 1011 00b2 FB68     		ldr	r3, [r7, #12]
+ 1012              	.L52:
+ 684:../MQXLITE/kernel/lwsem.c **** 
+ 685:../MQXLITE/kernel/lwsem.c **** }
+ 1013              		.loc 1 685 0
+ 1014 00b4 181C     		mov	r0, r3
+ 1015 00b6 BD46     		mov	sp, r7
+ 1016 00b8 06B0     		add	sp, sp, #24
+ 1017              		@ sp needed for prologue
+ 1018 00ba 80BD     		pop	{r7, pc}
+ 1019              	.L62:
+ 1020              		.align	2
+ 1021              	.L61:
+ 1022 00bc 00000000 		.word	_mqx_kernel_data
+ 1023 00c0 6D73776C 		.word	1819767661
+ 1024              		.cfi_endproc
+ 1025              	.LFE7:
+ 1027              		.section	.text._lwsem_wait,"ax",%progbits
+ 1028              		.align	2
+ 1029              		.global	_lwsem_wait
+ 1030              		.code	16
+ 1031              		.thumb_func
+ 1033              	_lwsem_wait:
+ 1034              	.LFB8:
+ 686:../MQXLITE/kernel/lwsem.c **** 
+ 687:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 688:../MQXLITE/kernel/lwsem.c **** /*!
+ 689:../MQXLITE/kernel/lwsem.c ****  * \brief Checks whether the specified pointer corresponds with a valid lightweight
+ 690:../MQXLITE/kernel/lwsem.c ****  * semaphore.
+ 691:../MQXLITE/kernel/lwsem.c ****  *
+ 692:../MQXLITE/kernel/lwsem.c ****  * \param[in] tst_sem_ptr Pointer to the lightweight semaphore.
+ 693:../MQXLITE/kernel/lwsem.c ****  *
+ 694:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK (Valid lightweight semaphore.)
+ 695:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Specified lightweight semaphore is not valid.)
+ 696:../MQXLITE/kernel/lwsem.c ****  *
+ 697:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 698:../MQXLITE/kernel/lwsem.c ****  */
+ 699:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_usr_check
+ 700:../MQXLITE/kernel/lwsem.c **** (
+ 701:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR tst_sem_ptr
+ 702:../MQXLITE/kernel/lwsem.c **** )
+ 703:../MQXLITE/kernel/lwsem.c **** {
+ 704:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 705:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR       sem_ptr;
+ 706:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              result = MQX_INVALID_LWSEM;
+ 707:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              queue_size;
+ 708:../MQXLITE/kernel/lwsem.c **** 
+ 709:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 710:../MQXLITE/kernel/lwsem.c **** 
+ 711:../MQXLITE/kernel/lwsem.c ****     sem_ptr = (LWSEM_STRUCT_PTR)((pointer)kernel_data->USR_LWSEM.NEXT);
+ 712:../MQXLITE/kernel/lwsem.c ****     queue_size = _QUEUE_GET_SIZE(&kernel_data->USR_LWSEM);
+ 713:../MQXLITE/kernel/lwsem.c **** 
+ 714:../MQXLITE/kernel/lwsem.c ****     while (queue_size--)
+ 715:../MQXLITE/kernel/lwsem.c ****     {
+ 716:../MQXLITE/kernel/lwsem.c ****         if (sem_ptr->VALID != LWSEM_VALID)
+ 717:../MQXLITE/kernel/lwsem.c ****         {
+ 718:../MQXLITE/kernel/lwsem.c ****             break;
+ 719:../MQXLITE/kernel/lwsem.c ****         }
+ 720:../MQXLITE/kernel/lwsem.c **** 
+ 721:../MQXLITE/kernel/lwsem.c ****         if (tst_sem_ptr == sem_ptr)
+ 722:../MQXLITE/kernel/lwsem.c ****         {
+ 723:../MQXLITE/kernel/lwsem.c ****             result = MQX_OK;
+ 724:../MQXLITE/kernel/lwsem.c ****             break;
+ 725:../MQXLITE/kernel/lwsem.c ****         }
+ 726:../MQXLITE/kernel/lwsem.c **** 
+ 727:../MQXLITE/kernel/lwsem.c ****         sem_ptr = (LWSEM_STRUCT_PTR)(pointer)sem_ptr->NEXT;
+ 728:../MQXLITE/kernel/lwsem.c ****     }
+ 729:../MQXLITE/kernel/lwsem.c **** 
+ 730:../MQXLITE/kernel/lwsem.c ****     return result;
+ 731:../MQXLITE/kernel/lwsem.c **** }
+ 732:../MQXLITE/kernel/lwsem.c **** 
+ 733:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 734:../MQXLITE/kernel/lwsem.c **** 
+ 735:../MQXLITE/kernel/lwsem.c **** /*!
+ 736:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore until it is available.
+ 737:../MQXLITE/kernel/lwsem.c ****  *
+ 738:../MQXLITE/kernel/lwsem.c ****  * \note Because priority inversion might occur if tasks with different priorities
+ 739:../MQXLITE/kernel/lwsem.c ****  * access the same lightweight semaphore, we recommend under these circumstances
+ 740:../MQXLITE/kernel/lwsem.c ****  * that you use the semaphore component.
+ 741:../MQXLITE/kernel/lwsem.c ****  *
+ 742:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the lightweight semaphore.
+ 743:../MQXLITE/kernel/lwsem.c ****  *
+ 744:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 745:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+ 746:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+ 747:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+ 748:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+ 749:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+ 750:../MQXLITE/kernel/lwsem.c ****  *
+ 751:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+ 752:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+ 753:../MQXLITE/kernel/lwsem.c ****  *
+ 754:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 755:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+ 756:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 757:../MQXLITE/kernel/lwsem.c ****  */
+ 758:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_wait
+ 759:../MQXLITE/kernel/lwsem.c **** (
+ 760:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 761:../MQXLITE/kernel/lwsem.c **** )
+ 762:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 1035              		.loc 1 762 0
+ 1036              		.cfi_startproc
+ 1037 0000 80B5     		push	{r7, lr}
+ 1038              	.LCFI24:
+ 1039              		.cfi_def_cfa_offset 8
+ 1040              		.cfi_offset 7, -8
+ 1041              		.cfi_offset 14, -4
+ 1042 0002 88B0     		sub	sp, sp, #32
+ 1043              	.LCFI25:
+ 1044              		.cfi_def_cfa_offset 40
+ 1045 0004 00AF     		add	r7, sp, #0
+ 1046              	.LCFI26:
+ 1047              		.cfi_def_cfa_register 7
+ 1048 0006 7860     		str	r0, [r7, #4]
+ 763:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 764:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR td_ptr;
+ 765:../MQXLITE/kernel/lwsem.c **** 
+ 766:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+ 767:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+ 768:../MQXLITE/kernel/lwsem.c ****     {
+ 769:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_wait(sem_ptr);
+ 770:../MQXLITE/kernel/lwsem.c ****     }
+ 771:../MQXLITE/kernel/lwsem.c **** #endif
+ 772:../MQXLITE/kernel/lwsem.c **** 
+ 773:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 1049              		.loc 1 773 0
+ 1050 0008 3F4B     		ldr	r3, .L73
+ 1051 000a 1B68     		ldr	r3, [r3]
+ 1052 000c FB61     		str	r3, [r7, #28]
+ 774:../MQXLITE/kernel/lwsem.c **** 
+ 775:../MQXLITE/kernel/lwsem.c ****     _KLOGE2(KLOG_lwsem_wait, sem_ptr);
+ 776:../MQXLITE/kernel/lwsem.c **** 
+ 777:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_ERRORS
+ 778:../MQXLITE/kernel/lwsem.c ****     if (kernel_data->IN_ISR)
+ 1053              		.loc 1 778 0
+ 1054 000e FB69     		ldr	r3, [r7, #28]
+ 1055 0010 1B8B     		ldrh	r3, [r3, #24]
+ 1056 0012 002B     		cmp	r3, #0
+ 1057 0014 01D0     		beq	.L64
+ 779:../MQXLITE/kernel/lwsem.c ****     {
+ 780:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait, MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 781:../MQXLITE/kernel/lwsem.c ****         return (MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 1058              		.loc 1 781 0
+ 1059 0016 0D23     		mov	r3, #13
+ 1060 0018 72E0     		b	.L65
+ 1061              	.L64:
+ 782:../MQXLITE/kernel/lwsem.c ****     }
+ 783:../MQXLITE/kernel/lwsem.c **** #endif
+ 784:../MQXLITE/kernel/lwsem.c **** 
+ 785:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+ 786:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1062              		.loc 1 786 0
+ 1063 001a 7B68     		ldr	r3, [r7, #4]
+ 1064 001c 5A69     		ldr	r2, [r3, #20]
+ 1065 001e 3B4B     		ldr	r3, .L73+4
+ 1066 0020 9A42     		cmp	r2, r3
+ 1067 0022 01D0     		beq	.L66
+ 787:../MQXLITE/kernel/lwsem.c ****     {
+ 788:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait, MQX_INVALID_LWSEM);
+ 789:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1068              		.loc 1 789 0
+ 1069 0024 1F23     		mov	r3, #31
+ 1070 0026 6BE0     		b	.L65
+ 1071              	.L66:
+ 790:../MQXLITE/kernel/lwsem.c ****     }
+ 791:../MQXLITE/kernel/lwsem.c **** #endif
+ 792:../MQXLITE/kernel/lwsem.c **** 
+ 793:../MQXLITE/kernel/lwsem.c ****     _INT_DISABLE();
+ 1072              		.loc 1 793 0
+ 1073 0028 FB69     		ldr	r3, [r7, #28]
+ 1074 002a DB69     		ldr	r3, [r3, #28]
+ 1075 002c 9B6C     		ldr	r3, [r3, #72]
+ 1076 002e 002B     		cmp	r3, #0
+ 1077 0030 00D1     		bne	.L67
+ 1078              		.loc 1 793 0 is_stmt 0
+ 1079              	@ 793 "../MQXLITE/kernel/lwsem.c" 1
+ 1080 0032 72B6     		cpsid i
+ 1081              	@ 0 "" 2
+ 1082              		.code	16
+ 1083              	.L67:
+ 1084              		.loc 1 793 0
+ 1085 0034 FB69     		ldr	r3, [r7, #28]
+ 1086 0036 DB69     		ldr	r3, [r3, #28]
+ 1087 0038 9A6C     		ldr	r2, [r3, #72]
+ 1088 003a 0132     		add	r2, r2, #1
+ 1089 003c 9A64     		str	r2, [r3, #72]
+ 794:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALUE <= 0)
+ 1090              		.loc 1 794 0 is_stmt 1
+ 1091 003e 7B68     		ldr	r3, [r7, #4]
+ 1092 0040 9B69     		ldr	r3, [r3, #24]
+ 1093 0042 002B     		cmp	r3, #0
+ 1094 0044 39DC     		bgt	.L68
+ 795:../MQXLITE/kernel/lwsem.c ****     {
+ 796:../MQXLITE/kernel/lwsem.c ****         td_ptr = kernel_data->ACTIVE_PTR;
+ 1095              		.loc 1 796 0
+ 1096 0046 FB69     		ldr	r3, [r7, #28]
+ 1097 0048 DB69     		ldr	r3, [r3, #28]
+ 1098 004a BB61     		str	r3, [r7, #24]
+ 797:../MQXLITE/kernel/lwsem.c ****         td_ptr->STATE = LWSEM_BLOCKED;
+ 1099              		.loc 1 797 0
+ 1100 004c BB69     		ldr	r3, [r7, #24]
+ 1101 004e 304A     		ldr	r2, .L73+8
+ 1102 0050 9A60     		str	r2, [r3, #8]
+ 798:../MQXLITE/kernel/lwsem.c ****         td_ptr->INFO = (_mqx_uint) &sem_ptr->TD_QUEUE;
+ 1103              		.loc 1 798 0
+ 1104 0052 7B68     		ldr	r3, [r7, #4]
+ 1105 0054 0833     		add	r3, r3, #8
+ 1106 0056 1A1C     		mov	r2, r3
+ 1107 0058 BB69     		ldr	r3, [r7, #24]
+ 1108 005a DA62     		str	r2, [r3, #44]
+ 1109              	.LBB8:
+ 799:../MQXLITE/kernel/lwsem.c ****         _QUEUE_UNLINK(td_ptr);
+ 1110              		.loc 1 799 0
+ 1111 005c BB69     		ldr	r3, [r7, #24]
+ 1112 005e 5B68     		ldr	r3, [r3, #4]
+ 1113 0060 7B61     		str	r3, [r7, #20]
+ 1114 0062 BB69     		ldr	r3, [r7, #24]
+ 1115 0064 1B68     		ldr	r3, [r3]
+ 1116 0066 3B61     		str	r3, [r7, #16]
+ 1117 0068 7B69     		ldr	r3, [r7, #20]
+ 1118 006a 3A69     		ldr	r2, [r7, #16]
+ 1119 006c 1A60     		str	r2, [r3]
+ 1120 006e 3B69     		ldr	r3, [r7, #16]
+ 1121 0070 7A69     		ldr	r2, [r7, #20]
+ 1122 0072 5A60     		str	r2, [r3, #4]
+ 1123              	.LBE8:
+ 1124              	.LBB9:
+ 800:../MQXLITE/kernel/lwsem.c ****         _QUEUE_ENQUEUE(&sem_ptr->TD_QUEUE, &td_ptr->AUX_QUEUE);
+ 1125              		.loc 1 800 0
+ 1126 0074 7B68     		ldr	r3, [r7, #4]
+ 1127 0076 0833     		add	r3, r3, #8
+ 1128 0078 5B68     		ldr	r3, [r3, #4]
+ 1129 007a 1B68     		ldr	r3, [r3]
+ 1130 007c FB60     		str	r3, [r7, #12]
+ 1131 007e BB69     		ldr	r3, [r7, #24]
+ 1132 0080 3033     		add	r3, r3, #48
+ 1133 0082 FA68     		ldr	r2, [r7, #12]
+ 1134 0084 1A60     		str	r2, [r3]
+ 1135 0086 7B68     		ldr	r3, [r7, #4]
+ 1136 0088 0833     		add	r3, r3, #8
+ 1137 008a 5B68     		ldr	r3, [r3, #4]
+ 1138 008c BA69     		ldr	r2, [r7, #24]
+ 1139 008e 3032     		add	r2, r2, #48
+ 1140 0090 1A60     		str	r2, [r3]
+ 1141 0092 BB69     		ldr	r3, [r7, #24]
+ 1142 0094 3033     		add	r3, r3, #48
+ 1143 0096 7A68     		ldr	r2, [r7, #4]
+ 1144 0098 0832     		add	r2, r2, #8
+ 1145 009a 5268     		ldr	r2, [r2, #4]
+ 1146 009c 5A60     		str	r2, [r3, #4]
+ 1147 009e BB69     		ldr	r3, [r7, #24]
+ 1148 00a0 1A1C     		mov	r2, r3
+ 1149 00a2 3032     		add	r2, r2, #48
+ 1150 00a4 FB68     		ldr	r3, [r7, #12]
+ 1151 00a6 5A60     		str	r2, [r3, #4]
+ 1152              	.LBE9:
+ 1153 00a8 7B68     		ldr	r3, [r7, #4]
+ 1154 00aa 0833     		add	r3, r3, #8
+ 1155 00ac 1A89     		ldrh	r2, [r3, #8]
+ 1156 00ae 0132     		add	r2, r2, #1
+ 1157 00b0 92B2     		uxth	r2, r2
+ 1158 00b2 1A81     		strh	r2, [r3, #8]
+ 801:../MQXLITE/kernel/lwsem.c ****         _sched_execute_scheduler_internal(); /* Let the other tasks run */
+ 1159              		.loc 1 801 0
+ 1160 00b4 FFF7FEFF 		bl	_sched_execute_scheduler_internal
+ 1161 00b8 04E0     		b	.L69
+ 1162              	.L68:
+ 802:../MQXLITE/kernel/lwsem.c ****         /* Another task has posted a semaphore, and it has been tranfered to this
+ 803:../MQXLITE/kernel/lwsem.c ****          ** task.
+ 804:../MQXLITE/kernel/lwsem.c ****          */
+ 805:../MQXLITE/kernel/lwsem.c ****     }
+ 806:../MQXLITE/kernel/lwsem.c ****     else
+ 807:../MQXLITE/kernel/lwsem.c ****     {
+ 808:../MQXLITE/kernel/lwsem.c ****         --sem_ptr->VALUE;
+ 1163              		.loc 1 808 0
+ 1164 00ba 7B68     		ldr	r3, [r7, #4]
+ 1165 00bc 9B69     		ldr	r3, [r3, #24]
+ 1166 00be 5A1E     		sub	r2, r3, #1
+ 1167 00c0 7B68     		ldr	r3, [r7, #4]
+ 1168 00c2 9A61     		str	r2, [r3, #24]
+ 1169              	.L69:
+ 809:../MQXLITE/kernel/lwsem.c ****     }
+ 810:../MQXLITE/kernel/lwsem.c **** 
+ 811:../MQXLITE/kernel/lwsem.c ****     /* We must check for component destruction */
+ 812:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1170              		.loc 1 812 0
+ 1171 00c4 7B68     		ldr	r3, [r7, #4]
+ 1172 00c6 5A69     		ldr	r2, [r3, #20]
+ 1173 00c8 104B     		ldr	r3, .L73+4
+ 1174 00ca 9A42     		cmp	r2, r3
+ 1175 00cc 03D0     		beq	.L70
+ 813:../MQXLITE/kernel/lwsem.c ****     {
+ 814:../MQXLITE/kernel/lwsem.c ****         _int_enable();
+ 1176              		.loc 1 814 0
+ 1177 00ce FFF7FEFF 		bl	_int_enable
+ 815:../MQXLITE/kernel/lwsem.c ****         /* The semaphore has been deleted */
+ 816:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait, MQX_INVALID_LWSEM);
+ 817:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1178              		.loc 1 817 0
+ 1179 00d2 1F23     		mov	r3, #31
+ 1180 00d4 14E0     		b	.L65
+ 1181              	.L70:
+ 818:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 819:../MQXLITE/kernel/lwsem.c **** 
+ 820:../MQXLITE/kernel/lwsem.c ****     _INT_ENABLE();
+ 1182              		.loc 1 820 0
+ 1183 00d6 FB69     		ldr	r3, [r7, #28]
+ 1184 00d8 DB69     		ldr	r3, [r3, #28]
+ 1185 00da 9B6C     		ldr	r3, [r3, #72]
+ 1186 00dc 002B     		cmp	r3, #0
+ 1187 00de 0ED0     		beq	.L71
+ 1188              		.loc 1 820 0 is_stmt 0
+ 1189 00e0 FB69     		ldr	r3, [r7, #28]
+ 1190 00e2 DB69     		ldr	r3, [r3, #28]
+ 1191 00e4 9A6C     		ldr	r2, [r3, #72]
+ 1192 00e6 013A     		sub	r2, r2, #1
+ 1193 00e8 9A64     		str	r2, [r3, #72]
+ 1194 00ea 9B6C     		ldr	r3, [r3, #72]
+ 1195 00ec 002B     		cmp	r3, #0
+ 1196 00ee 06D1     		bne	.L71
+ 1197              		.loc 1 820 0
+ 1198 00f0 FB69     		ldr	r3, [r7, #28]
+ 1199 00f2 1B8B     		ldrh	r3, [r3, #24]
+ 1200 00f4 002B     		cmp	r3, #0
+ 1201 00f6 01D0     		beq	.L72
+ 1202              		.loc 1 820 0
+ 1203              	@ 820 "../MQXLITE/kernel/lwsem.c" 1
+ 1204 00f8 62B6     		cpsie i
+ 1205              	@ 0 "" 2
+ 1206              		.code	16
+ 1207 00fa 00E0     		b	.L71
+ 1208              	.L72:
+ 1209              		.loc 1 820 0
+ 1210              	@ 820 "../MQXLITE/kernel/lwsem.c" 1
+ 1211 00fc 62B6     		cpsie i
+ 1212              	@ 0 "" 2
+ 1213              		.code	16
+ 1214              	.L71:
+ 821:../MQXLITE/kernel/lwsem.c **** 
+ 822:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_wait, MQX_OK);
+ 823:../MQXLITE/kernel/lwsem.c **** 
+ 824:../MQXLITE/kernel/lwsem.c ****     return (MQX_OK);
+ 1215              		.loc 1 824 0 is_stmt 1
+ 1216 00fe 0023     		mov	r3, #0
+ 1217              	.L65:
+ 825:../MQXLITE/kernel/lwsem.c **** }
+ 1218              		.loc 1 825 0
+ 1219 0100 181C     		mov	r0, r3
+ 1220 0102 BD46     		mov	sp, r7
+ 1221 0104 08B0     		add	sp, sp, #32
+ 1222              		@ sp needed for prologue
+ 1223 0106 80BD     		pop	{r7, pc}
+ 1224              	.L74:
+ 1225              		.align	2
+ 1226              	.L73:
+ 1227 0108 00000000 		.word	_mqx_kernel_data
+ 1228 010c 6D73776C 		.word	1819767661
+ 1229 0110 2B040000 		.word	1067
+ 1230              		.cfi_endproc
+ 1231              	.LFE8:
+ 1233              		.section	.text._lwsem_wait_timed_internal,"ax",%progbits
+ 1234              		.align	2
+ 1235              		.global	_lwsem_wait_timed_internal
+ 1236              		.code	16
+ 1237              		.thumb_func
+ 1239              	_lwsem_wait_timed_internal:
+ 1240              	.LFB9:
+ 826:../MQXLITE/kernel/lwsem.c **** 
+ 827:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+ 828:../MQXLITE/kernel/lwsem.c **** /*!
+ 829:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore until it is available.
+ 830:../MQXLITE/kernel/lwsem.c ****  *
+ 831:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_wait() API call but it can be
+ 832:../MQXLITE/kernel/lwsem.c ****  * executed from within the User task or other code running in the CPU User mode.
+ 833:../MQXLITE/kernel/lwsem.c ****  * Parameters passed to this function by pointer are required to meet the memory
+ 834:../MQXLITE/kernel/lwsem.c ****  * protection requirements as described in the parameter list below.
+ 835:../MQXLITE/kernel/lwsem.c ****  *
+ 836:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Read only. Pointer to the lightweight semaphore.
+ 837:../MQXLITE/kernel/lwsem.c ****  *
+ 838:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 839:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+ 840:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+ 841:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+ 842:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+ 843:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+ 844:../MQXLITE/kernel/lwsem.c ****  *
+ 845:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+ 846:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+ 847:../MQXLITE/kernel/lwsem.c ****  *
+ 848:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait
+ 849:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+ 850:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_post
+ 851:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 852:../MQXLITE/kernel/lwsem.c ****  */
+ 853:../MQXLITE/kernel/lwsem.c **** _mqx_uint _usr_lwsem_wait
+ 854:../MQXLITE/kernel/lwsem.c **** (
+ 855:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr
+ 856:../MQXLITE/kernel/lwsem.c **** )
+ 857:../MQXLITE/kernel/lwsem.c **** {
+ 858:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params =
+ 859:../MQXLITE/kernel/lwsem.c ****     {   (uint_32)sem_ptr, 0, 0, 0, 0};
+ 860:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_WAIT, &params);
+ 861:../MQXLITE/kernel/lwsem.c **** }
+ 862:../MQXLITE/kernel/lwsem.c **** 
+ 863:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+ 864:../MQXLITE/kernel/lwsem.c **** 
+ 865:../MQXLITE/kernel/lwsem.c **** /*!
+ 866:../MQXLITE/kernel/lwsem.c ****  * \private
+ 867:../MQXLITE/kernel/lwsem.c ****  *
+ 868:../MQXLITE/kernel/lwsem.c ****  * \brief This function is an internal funciton, it waits for a light weight
+ 869:../MQXLITE/kernel/lwsem.c ****  * semaphore with a pre-calcualted timeout.
+ 870:../MQXLITE/kernel/lwsem.c ****  *
+ 871:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the lightweight semaphore.
+ 872:../MQXLITE/kernel/lwsem.c ****  * \param[in] td_ptr  Pointer to the task descriptor waiting.
+ 873:../MQXLITE/kernel/lwsem.c ****  *
+ 874:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 875:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT
+ 876:../MQXLITE/kernel/lwsem.c ****  *
+ 877:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait
+ 878:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_for
+ 879:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_ticks
+ 880:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_until
+ 881:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait
+ 882:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_for
+ 883:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_ticks
+ 884:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_wait_until
+ 885:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 886:../MQXLITE/kernel/lwsem.c ****  * \see TD_STRUCT
+ 887:../MQXLITE/kernel/lwsem.c ****  */
+ 888:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_wait_timed_internal
+ 889:../MQXLITE/kernel/lwsem.c **** (
+ 890:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+ 891:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR    td_ptr
+ 892:../MQXLITE/kernel/lwsem.c **** )
+ 893:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 1241              		.loc 1 893 0
+ 1242              		.cfi_startproc
+ 1243 0000 80B5     		push	{r7, lr}
+ 1244              	.LCFI27:
+ 1245              		.cfi_def_cfa_offset 8
+ 1246              		.cfi_offset 7, -8
+ 1247              		.cfi_offset 14, -4
+ 1248 0002 86B0     		sub	sp, sp, #24
+ 1249              	.LCFI28:
+ 1250              		.cfi_def_cfa_offset 32
+ 1251 0004 00AF     		add	r7, sp, #0
+ 1252              	.LCFI29:
+ 1253              		.cfi_def_cfa_register 7
+ 1254 0006 7860     		str	r0, [r7, #4]
+ 1255 0008 3960     		str	r1, [r7]
+ 894:../MQXLITE/kernel/lwsem.c **** 
+ 895:../MQXLITE/kernel/lwsem.c ****     td_ptr->STATE = LWSEM_BLOCKED;
+ 1256              		.loc 1 895 0
+ 1257 000a 3B68     		ldr	r3, [r7]
+ 1258 000c 204A     		ldr	r2, .L78
+ 1259 000e 9A60     		str	r2, [r3, #8]
+ 896:../MQXLITE/kernel/lwsem.c ****     td_ptr->INFO  = (_mqx_uint) &sem_ptr->TD_QUEUE;
+ 1260              		.loc 1 896 0
+ 1261 0010 7B68     		ldr	r3, [r7, #4]
+ 1262 0012 0833     		add	r3, r3, #8
+ 1263 0014 1A1C     		mov	r2, r3
+ 1264 0016 3B68     		ldr	r3, [r7]
+ 1265 0018 DA62     		str	r2, [r3, #44]
+ 1266              	.LBB10:
+ 897:../MQXLITE/kernel/lwsem.c ****     _QUEUE_UNLINK(td_ptr);
+ 1267              		.loc 1 897 0
+ 1268 001a 3B68     		ldr	r3, [r7]
+ 1269 001c 5B68     		ldr	r3, [r3, #4]
+ 1270 001e 7B61     		str	r3, [r7, #20]
+ 1271 0020 3B68     		ldr	r3, [r7]
+ 1272 0022 1B68     		ldr	r3, [r3]
+ 1273 0024 3B61     		str	r3, [r7, #16]
+ 1274 0026 7B69     		ldr	r3, [r7, #20]
+ 1275 0028 3A69     		ldr	r2, [r7, #16]
+ 1276 002a 1A60     		str	r2, [r3]
+ 1277 002c 3B69     		ldr	r3, [r7, #16]
+ 1278 002e 7A69     		ldr	r2, [r7, #20]
+ 1279 0030 5A60     		str	r2, [r3, #4]
+ 1280              	.LBE10:
+ 1281              	.LBB11:
+ 898:../MQXLITE/kernel/lwsem.c ****     _QUEUE_ENQUEUE(&sem_ptr->TD_QUEUE, &td_ptr->AUX_QUEUE);
+ 1282              		.loc 1 898 0
+ 1283 0032 7B68     		ldr	r3, [r7, #4]
+ 1284 0034 0833     		add	r3, r3, #8
+ 1285 0036 5B68     		ldr	r3, [r3, #4]
+ 1286 0038 1B68     		ldr	r3, [r3]
+ 1287 003a FB60     		str	r3, [r7, #12]
+ 1288 003c 3B68     		ldr	r3, [r7]
+ 1289 003e 3033     		add	r3, r3, #48
+ 1290 0040 FA68     		ldr	r2, [r7, #12]
+ 1291 0042 1A60     		str	r2, [r3]
+ 1292 0044 7B68     		ldr	r3, [r7, #4]
+ 1293 0046 0833     		add	r3, r3, #8
+ 1294 0048 5B68     		ldr	r3, [r3, #4]
+ 1295 004a 3A68     		ldr	r2, [r7]
+ 1296 004c 3032     		add	r2, r2, #48
+ 1297 004e 1A60     		str	r2, [r3]
+ 1298 0050 3B68     		ldr	r3, [r7]
+ 1299 0052 3033     		add	r3, r3, #48
+ 1300 0054 7A68     		ldr	r2, [r7, #4]
+ 1301 0056 0832     		add	r2, r2, #8
+ 1302 0058 5268     		ldr	r2, [r2, #4]
+ 1303 005a 5A60     		str	r2, [r3, #4]
+ 1304 005c 3B68     		ldr	r3, [r7]
+ 1305 005e 1A1C     		mov	r2, r3
+ 1306 0060 3032     		add	r2, r2, #48
+ 1307 0062 FB68     		ldr	r3, [r7, #12]
+ 1308 0064 5A60     		str	r2, [r3, #4]
+ 1309              	.LBE11:
+ 1310 0066 7B68     		ldr	r3, [r7, #4]
+ 1311 0068 0833     		add	r3, r3, #8
+ 1312 006a 1A89     		ldrh	r2, [r3, #8]
+ 1313 006c 0132     		add	r2, r2, #1
+ 1314 006e 92B2     		uxth	r2, r2
+ 1315 0070 1A81     		strh	r2, [r3, #8]
+ 899:../MQXLITE/kernel/lwsem.c ****     _time_delay_internal(td_ptr);
+ 1316              		.loc 1 899 0
+ 1317 0072 3B68     		ldr	r3, [r7]
+ 1318 0074 181C     		mov	r0, r3
+ 1319 0076 FFF7FEFF 		bl	_time_delay_internal
+ 900:../MQXLITE/kernel/lwsem.c ****     if (td_ptr->INFO != 0)
+ 1320              		.loc 1 900 0
+ 1321 007a 3B68     		ldr	r3, [r7]
+ 1322 007c DB6A     		ldr	r3, [r3, #44]
+ 1323 007e 002B     		cmp	r3, #0
+ 1324 0080 01D0     		beq	.L76
+ 901:../MQXLITE/kernel/lwsem.c ****     {
+ 902:../MQXLITE/kernel/lwsem.c ****         /*_QUEUE_REMOVE(&sem_ptr->TD_QUEUE, &td_ptr->AUX_QUEUE);*/
+ 903:../MQXLITE/kernel/lwsem.c ****         return (MQX_LWSEM_WAIT_TIMEOUT);
+ 1325              		.loc 1 903 0
+ 1326 0082 3723     		mov	r3, #55
+ 1327 0084 00E0     		b	.L77
+ 1328              	.L76:
+ 904:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 905:../MQXLITE/kernel/lwsem.c **** 
+ 906:../MQXLITE/kernel/lwsem.c ****     return (MQX_OK);
+ 1329              		.loc 1 906 0
+ 1330 0086 0023     		mov	r3, #0
+ 1331              	.L77:
+ 907:../MQXLITE/kernel/lwsem.c **** 
+ 908:../MQXLITE/kernel/lwsem.c **** } /* Endbody */
+ 1332              		.loc 1 908 0
+ 1333 0088 181C     		mov	r0, r3
+ 1334 008a BD46     		mov	sp, r7
+ 1335 008c 06B0     		add	sp, sp, #24
+ 1336              		@ sp needed for prologue
+ 1337 008e 80BD     		pop	{r7, pc}
+ 1338              	.L79:
+ 1339              		.align	2
+ 1340              	.L78:
+ 1341 0090 2B040000 		.word	1067
+ 1342              		.cfi_endproc
+ 1343              	.LFE9:
+ 1345              		.section	.text._lwsem_wait_for,"ax",%progbits
+ 1346              		.align	2
+ 1347              		.global	_lwsem_wait_for
+ 1348              		.code	16
+ 1349              		.thumb_func
+ 1351              	_lwsem_wait_for:
+ 1352              	.LFB10:
+ 909:../MQXLITE/kernel/lwsem.c **** 
+ 910:../MQXLITE/kernel/lwsem.c **** #if MQX_HAS_TICK
+ 911:../MQXLITE/kernel/lwsem.c **** 
+ 912:../MQXLITE/kernel/lwsem.c **** /*!
+ 913:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore for the number of
+ 914:../MQXLITE/kernel/lwsem.c ****  * ticks (in tick time).
+ 915:../MQXLITE/kernel/lwsem.c ****  *
+ 916:../MQXLITE/kernel/lwsem.c ****  * \note Because priority inversion might occur if tasks with different priorities access
+ 917:../MQXLITE/kernel/lwsem.c ****  * the same lightweight semaphore, we recommend under these circumstances that you
+ 918:../MQXLITE/kernel/lwsem.c ****  * use the semaphore component.
+ 919:../MQXLITE/kernel/lwsem.c ****  *
+ 920:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the lightweight semaphore.
+ 921:../MQXLITE/kernel/lwsem.c ****  * \param[in] ticks   Pointer to the maximum number of ticks to wait or NULL
+ 922:../MQXLITE/kernel/lwsem.c ****  * (unlimited wait).
+ 923:../MQXLITE/kernel/lwsem.c ****  *
+ 924:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+ 925:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+ 926:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+ 927:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+ 928:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+ 929:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+ 930:../MQXLITE/kernel/lwsem.c ****  *
+ 931:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+ 932:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+ 933:../MQXLITE/kernel/lwsem.c ****  *
+ 934:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+ 935:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+ 936:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+ 937:../MQXLITE/kernel/lwsem.c ****  * \see MQX_TICK_STRUCT
+ 938:../MQXLITE/kernel/lwsem.c ****  */
+ 939:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_wait_for
+ 940:../MQXLITE/kernel/lwsem.c **** (
+ 941:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR    sem_ptr,
+ 942:../MQXLITE/kernel/lwsem.c ****     MQX_TICK_STRUCT_PTR ticks
+ 943:../MQXLITE/kernel/lwsem.c **** )
+ 944:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 1353              		.loc 1 944 0
+ 1354              		.cfi_startproc
+ 1355 0000 80B5     		push	{r7, lr}
+ 1356              	.LCFI30:
+ 1357              		.cfi_def_cfa_offset 8
+ 1358              		.cfi_offset 7, -8
+ 1359              		.cfi_offset 14, -4
+ 1360 0002 86B0     		sub	sp, sp, #24
+ 1361              	.LCFI31:
+ 1362              		.cfi_def_cfa_offset 32
+ 1363 0004 00AF     		add	r7, sp, #0
+ 1364              	.LCFI32:
+ 1365              		.cfi_def_cfa_register 7
+ 1366 0006 7860     		str	r0, [r7, #4]
+ 1367 0008 3960     		str	r1, [r7]
+ 945:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 946:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR          td_ptr;
+ 947:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              result;
+ 948:../MQXLITE/kernel/lwsem.c **** 
+ 949:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+ 950:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+ 951:../MQXLITE/kernel/lwsem.c ****     {
+ 952:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_wait_for(sem_ptr, ticks);
+ 953:../MQXLITE/kernel/lwsem.c ****     }
+ 954:../MQXLITE/kernel/lwsem.c **** #endif
+ 955:../MQXLITE/kernel/lwsem.c **** 
+ 956:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 1368              		.loc 1 956 0
+ 1369 000a 304B     		ldr	r3, .L90
+ 1370 000c 1B68     		ldr	r3, [r3]
+ 1371 000e 3B61     		str	r3, [r7, #16]
+ 957:../MQXLITE/kernel/lwsem.c **** 
+ 958:../MQXLITE/kernel/lwsem.c ****     _KLOGE3(KLOG_lwsem_wait_for, sem_ptr, ticks);
+ 959:../MQXLITE/kernel/lwsem.c **** 
+ 960:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_ERRORS
+ 961:../MQXLITE/kernel/lwsem.c ****     if (kernel_data->IN_ISR)
+ 1372              		.loc 1 961 0
+ 1373 0010 3B69     		ldr	r3, [r7, #16]
+ 1374 0012 1B8B     		ldrh	r3, [r3, #24]
+ 1375 0014 002B     		cmp	r3, #0
+ 1376 0016 01D0     		beq	.L81
+ 962:../MQXLITE/kernel/lwsem.c ****     {
+ 963:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_for, MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 964:../MQXLITE/kernel/lwsem.c ****         return (MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 1377              		.loc 1 964 0
+ 1378 0018 0D23     		mov	r3, #13
+ 1379 001a 52E0     		b	.L82
+ 1380              	.L81:
+ 965:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 966:../MQXLITE/kernel/lwsem.c **** #endif
+ 967:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+ 968:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1381              		.loc 1 968 0
+ 1382 001c 7B68     		ldr	r3, [r7, #4]
+ 1383 001e 5A69     		ldr	r2, [r3, #20]
+ 1384 0020 2B4B     		ldr	r3, .L90+4
+ 1385 0022 9A42     		cmp	r2, r3
+ 1386 0024 01D0     		beq	.L83
+ 969:../MQXLITE/kernel/lwsem.c ****     {
+ 970:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_for, MQX_INVALID_LWSEM);
+ 971:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1387              		.loc 1 971 0
+ 1388 0026 1F23     		mov	r3, #31
+ 1389 0028 4BE0     		b	.L82
+ 1390              	.L83:
+ 972:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 973:../MQXLITE/kernel/lwsem.c **** #endif
+ 974:../MQXLITE/kernel/lwsem.c **** 
+ 975:../MQXLITE/kernel/lwsem.c ****     _INT_DISABLE();
+ 1391              		.loc 1 975 0
+ 1392 002a 3B69     		ldr	r3, [r7, #16]
+ 1393 002c DB69     		ldr	r3, [r3, #28]
+ 1394 002e 9B6C     		ldr	r3, [r3, #72]
+ 1395 0030 002B     		cmp	r3, #0
+ 1396 0032 00D1     		bne	.L84
+ 1397              		.loc 1 975 0 is_stmt 0
+ 1398              	@ 975 "../MQXLITE/kernel/lwsem.c" 1
+ 1399 0034 72B6     		cpsid i
+ 1400              	@ 0 "" 2
+ 1401              		.code	16
+ 1402              	.L84:
+ 1403              		.loc 1 975 0
+ 1404 0036 3B69     		ldr	r3, [r7, #16]
+ 1405 0038 DB69     		ldr	r3, [r3, #28]
+ 1406 003a 9A6C     		ldr	r2, [r3, #72]
+ 1407 003c 0132     		add	r2, r2, #1
+ 1408 003e 9A64     		str	r2, [r3, #72]
+ 976:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALUE <= 0)
+ 1409              		.loc 1 976 0 is_stmt 1
+ 1410 0040 7B68     		ldr	r3, [r7, #4]
+ 1411 0042 9B69     		ldr	r3, [r3, #24]
+ 1412 0044 002B     		cmp	r3, #0
+ 1413 0046 17DC     		bgt	.L85
+ 977:../MQXLITE/kernel/lwsem.c ****     {
+ 978:../MQXLITE/kernel/lwsem.c ****         td_ptr = kernel_data->ACTIVE_PTR;
+ 1414              		.loc 1 978 0
+ 1415 0048 3B69     		ldr	r3, [r7, #16]
+ 1416 004a DB69     		ldr	r3, [r3, #28]
+ 1417 004c FB60     		str	r3, [r7, #12]
+ 979:../MQXLITE/kernel/lwsem.c ****         /* Calculate time to wake up the task */
+ 980:../MQXLITE/kernel/lwsem.c ****         PSP_ADD_TICKS(ticks, &kernel_data->TIME, &td_ptr->TIMEOUT);
+ 1418              		.loc 1 980 0
+ 1419 004e 3B69     		ldr	r3, [r7, #16]
+ 1420 0050 8821     		mov	r1, #136
+ 1421 0052 4900     		lsl	r1, r1, #1
+ 1422 0054 5A18     		add	r2, r3, r1
+ 1423 0056 FB68     		ldr	r3, [r7, #12]
+ 1424 0058 3833     		add	r3, r3, #56
+ 1425 005a 3968     		ldr	r1, [r7]
+ 1426 005c 081C     		mov	r0, r1
+ 1427 005e 111C     		mov	r1, r2
+ 1428 0060 1A1C     		mov	r2, r3
+ 1429 0062 FFF7FEFF 		bl	_psp_add_ticks
+ 981:../MQXLITE/kernel/lwsem.c ****         result = _lwsem_wait_timed_internal(sem_ptr, td_ptr);
+ 1430              		.loc 1 981 0
+ 1431 0066 7A68     		ldr	r2, [r7, #4]
+ 1432 0068 FB68     		ldr	r3, [r7, #12]
+ 1433 006a 101C     		mov	r0, r2
+ 1434 006c 191C     		mov	r1, r3
+ 1435 006e FFF7FEFF 		bl	_lwsem_wait_timed_internal
+ 1436 0072 031C     		mov	r3, r0
+ 1437 0074 7B61     		str	r3, [r7, #20]
+ 1438 0076 06E0     		b	.L86
+ 1439              	.L85:
+ 982:../MQXLITE/kernel/lwsem.c ****     }
+ 983:../MQXLITE/kernel/lwsem.c ****     else
+ 984:../MQXLITE/kernel/lwsem.c ****     {
+ 985:../MQXLITE/kernel/lwsem.c ****         --sem_ptr->VALUE;
+ 1440              		.loc 1 985 0
+ 1441 0078 7B68     		ldr	r3, [r7, #4]
+ 1442 007a 9B69     		ldr	r3, [r3, #24]
+ 1443 007c 5A1E     		sub	r2, r3, #1
+ 1444 007e 7B68     		ldr	r3, [r7, #4]
+ 1445 0080 9A61     		str	r2, [r3, #24]
+ 986:../MQXLITE/kernel/lwsem.c ****         result = MQX_OK;
+ 1446              		.loc 1 986 0
+ 1447 0082 0023     		mov	r3, #0
+ 1448 0084 7B61     		str	r3, [r7, #20]
+ 1449              	.L86:
+ 987:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 988:../MQXLITE/kernel/lwsem.c **** 
+ 989:../MQXLITE/kernel/lwsem.c ****     /* We must check for component destruction */
+ 990:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1450              		.loc 1 990 0
+ 1451 0086 7B68     		ldr	r3, [r7, #4]
+ 1452 0088 5A69     		ldr	r2, [r3, #20]
+ 1453 008a 114B     		ldr	r3, .L90+4
+ 1454 008c 9A42     		cmp	r2, r3
+ 1455 008e 03D0     		beq	.L87
+ 991:../MQXLITE/kernel/lwsem.c ****     {
+ 992:../MQXLITE/kernel/lwsem.c ****         _int_enable();
+ 1456              		.loc 1 992 0
+ 1457 0090 FFF7FEFF 		bl	_int_enable
+ 993:../MQXLITE/kernel/lwsem.c ****         /* The semaphore has been deleted */
+ 994:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_for, MQX_INVALID_LWSEM);
+ 995:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1458              		.loc 1 995 0
+ 1459 0094 1F23     		mov	r3, #31
+ 1460 0096 14E0     		b	.L82
+ 1461              	.L87:
+ 996:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+ 997:../MQXLITE/kernel/lwsem.c **** 
+ 998:../MQXLITE/kernel/lwsem.c ****     _INT_ENABLE();
+ 1462              		.loc 1 998 0
+ 1463 0098 3B69     		ldr	r3, [r7, #16]
+ 1464 009a DB69     		ldr	r3, [r3, #28]
+ 1465 009c 9B6C     		ldr	r3, [r3, #72]
+ 1466 009e 002B     		cmp	r3, #0
+ 1467 00a0 0ED0     		beq	.L88
+ 1468              		.loc 1 998 0 is_stmt 0
+ 1469 00a2 3B69     		ldr	r3, [r7, #16]
+ 1470 00a4 DB69     		ldr	r3, [r3, #28]
+ 1471 00a6 9A6C     		ldr	r2, [r3, #72]
+ 1472 00a8 013A     		sub	r2, r2, #1
+ 1473 00aa 9A64     		str	r2, [r3, #72]
+ 1474 00ac 9B6C     		ldr	r3, [r3, #72]
+ 1475 00ae 002B     		cmp	r3, #0
+ 1476 00b0 06D1     		bne	.L88
+ 1477              		.loc 1 998 0
+ 1478 00b2 3B69     		ldr	r3, [r7, #16]
+ 1479 00b4 1B8B     		ldrh	r3, [r3, #24]
+ 1480 00b6 002B     		cmp	r3, #0
+ 1481 00b8 01D0     		beq	.L89
+ 1482              		.loc 1 998 0
+ 1483              	@ 998 "../MQXLITE/kernel/lwsem.c" 1
+ 1484 00ba 62B6     		cpsie i
+ 1485              	@ 0 "" 2
+ 1486              		.code	16
+ 1487 00bc 00E0     		b	.L88
+ 1488              	.L89:
+ 1489              		.loc 1 998 0
+ 1490              	@ 998 "../MQXLITE/kernel/lwsem.c" 1
+ 1491 00be 62B6     		cpsie i
+ 1492              	@ 0 "" 2
+ 1493              		.code	16
+ 1494              	.L88:
+ 999:../MQXLITE/kernel/lwsem.c **** 
+1000:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_wait_for, result);
+1001:../MQXLITE/kernel/lwsem.c **** 
+1002:../MQXLITE/kernel/lwsem.c ****     return (result);
+ 1495              		.loc 1 1002 0 is_stmt 1
+ 1496 00c0 7B69     		ldr	r3, [r7, #20]
+ 1497              	.L82:
+1003:../MQXLITE/kernel/lwsem.c **** 
+1004:../MQXLITE/kernel/lwsem.c **** }
+ 1498              		.loc 1 1004 0
+ 1499 00c2 181C     		mov	r0, r3
+ 1500 00c4 BD46     		mov	sp, r7
+ 1501 00c6 06B0     		add	sp, sp, #24
+ 1502              		@ sp needed for prologue
+ 1503 00c8 80BD     		pop	{r7, pc}
+ 1504              	.L91:
+ 1505 00ca C046     		.align	2
+ 1506              	.L90:
+ 1507 00cc 00000000 		.word	_mqx_kernel_data
+ 1508 00d0 6D73776C 		.word	1819767661
+ 1509              		.cfi_endproc
+ 1510              	.LFE10:
+ 1512              		.section	.text._lwsem_wait_ticks,"ax",%progbits
+ 1513              		.align	2
+ 1514              		.global	_lwsem_wait_ticks
+ 1515              		.code	16
+ 1516              		.thumb_func
+ 1518              	_lwsem_wait_ticks:
+ 1519              	.LFB11:
+1005:../MQXLITE/kernel/lwsem.c **** 
+1006:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+1007:../MQXLITE/kernel/lwsem.c **** /*!
+1008:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore for the number of
+1009:../MQXLITE/kernel/lwsem.c ****  * ticks (in tick time).
+1010:../MQXLITE/kernel/lwsem.c ****  *
+1011:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_wait_for() API call but it can be
+1012:../MQXLITE/kernel/lwsem.c ****  * executed from within the User task or other code running in the CPU User mode.
+1013:../MQXLITE/kernel/lwsem.c ****  * Parameters passed to this function by pointer are required to meet the memory
+1014:../MQXLITE/kernel/lwsem.c ****  * protection requirements as described in the parameter list below.
+1015:../MQXLITE/kernel/lwsem.c ****  *
+1016:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Read only. Pointer to the lightweight semaphore.
+1017:../MQXLITE/kernel/lwsem.c ****  * \param[in] ticks   Read/write. Pointer to the maximum number of ticks to wait
+1018:../MQXLITE/kernel/lwsem.c ****  * or NULL (unlimited wait).
+1019:../MQXLITE/kernel/lwsem.c ****  *
+1020:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+1021:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+1022:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+1023:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+1024:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+1025:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+1026:../MQXLITE/kernel/lwsem.c ****  *
+1027:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+1028:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+1029:../MQXLITE/kernel/lwsem.c ****  *
+1030:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_for
+1031:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+1032:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_post
+1033:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+1034:../MQXLITE/kernel/lwsem.c ****  * \see MQX_TICK_STRUCT
+1035:../MQXLITE/kernel/lwsem.c ****  */
+1036:../MQXLITE/kernel/lwsem.c **** _mqx_uint _usr_lwsem_wait_for
+1037:../MQXLITE/kernel/lwsem.c **** (
+1038:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR    sem_ptr,
+1039:../MQXLITE/kernel/lwsem.c ****     MQX_TICK_STRUCT_PTR ticks
+1040:../MQXLITE/kernel/lwsem.c **** )
+1041:../MQXLITE/kernel/lwsem.c **** {
+1042:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params =
+1043:../MQXLITE/kernel/lwsem.c ****     {   (uint_32)sem_ptr, (uint_32)ticks, 0, 0, 0};
+1044:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_WAIT_FOR, &params);
+1045:../MQXLITE/kernel/lwsem.c **** }
+1046:../MQXLITE/kernel/lwsem.c **** 
+1047:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+1048:../MQXLITE/kernel/lwsem.c **** 
+1049:../MQXLITE/kernel/lwsem.c **** /*!
+1050:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore for the number of ticks.
+1051:../MQXLITE/kernel/lwsem.c ****  *
+1052:../MQXLITE/kernel/lwsem.c ****  * \note Because priority inversion might occur if tasks with different priorities
+1053:../MQXLITE/kernel/lwsem.c ****  * access the same lightweight semaphore, we recommend under these circumstances
+1054:../MQXLITE/kernel/lwsem.c ****  * that you use the semaphore component.
+1055:../MQXLITE/kernel/lwsem.c ****  *
+1056:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr       Pointer to the lightweight semaphore.
+1057:../MQXLITE/kernel/lwsem.c ****  * \param[in] time_in_ticks Maximum number of ticks to wait or 0 (unlimited wait).
+1058:../MQXLITE/kernel/lwsem.c ****  *
+1059:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+1060:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+1061:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+1062:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+1063:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+1064:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+1065:../MQXLITE/kernel/lwsem.c ****  *
+1066:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+1067:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+1068:../MQXLITE/kernel/lwsem.c ****  *
+1069:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+1070:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+1071:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+1072:../MQXLITE/kernel/lwsem.c ****  */
+1073:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_wait_ticks
+1074:../MQXLITE/kernel/lwsem.c **** (
+1075:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+1076:../MQXLITE/kernel/lwsem.c ****     _mqx_uint        time_in_ticks
+1077:../MQXLITE/kernel/lwsem.c **** )
+1078:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 1520              		.loc 1 1078 0
+ 1521              		.cfi_startproc
+ 1522 0000 B0B5     		push	{r4, r5, r7, lr}
+ 1523              	.LCFI33:
+ 1524              		.cfi_def_cfa_offset 16
+ 1525              		.cfi_offset 4, -16
+ 1526              		.cfi_offset 5, -12
+ 1527              		.cfi_offset 7, -8
+ 1528              		.cfi_offset 14, -4
+ 1529 0002 88B0     		sub	sp, sp, #32
+ 1530              	.LCFI34:
+ 1531              		.cfi_def_cfa_offset 48
+ 1532 0004 00AF     		add	r7, sp, #0
+ 1533              	.LCFI35:
+ 1534              		.cfi_def_cfa_register 7
+ 1535 0006 7860     		str	r0, [r7, #4]
+ 1536 0008 3960     		str	r1, [r7]
+1079:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+1080:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR          td_ptr;
+1081:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              result;
+1082:../MQXLITE/kernel/lwsem.c **** 
+1083:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+1084:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+1085:../MQXLITE/kernel/lwsem.c ****     {
+1086:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_wait_ticks(sem_ptr, time_in_ticks);
+1087:../MQXLITE/kernel/lwsem.c ****     }
+1088:../MQXLITE/kernel/lwsem.c **** #endif
+1089:../MQXLITE/kernel/lwsem.c **** 
+1090:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 1537              		.loc 1 1090 0
+ 1538 000a 504A     		ldr	r2, .L103
+ 1539 000c 1268     		ldr	r2, [r2]
+ 1540 000e BA61     		str	r2, [r7, #24]
+1091:../MQXLITE/kernel/lwsem.c **** 
+1092:../MQXLITE/kernel/lwsem.c ****     _KLOGE3(KLOG_lwsem_wait_ticks, sem_ptr, time_in_ticks);
+1093:../MQXLITE/kernel/lwsem.c **** 
+1094:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_ERRORS
+1095:../MQXLITE/kernel/lwsem.c ****     if (kernel_data->IN_ISR)
+ 1541              		.loc 1 1095 0
+ 1542 0010 BA69     		ldr	r2, [r7, #24]
+ 1543 0012 128B     		ldrh	r2, [r2, #24]
+ 1544 0014 002A     		cmp	r2, #0
+ 1545 0016 01D0     		beq	.L93
+1096:../MQXLITE/kernel/lwsem.c ****     {
+1097:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_ticks, MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+1098:../MQXLITE/kernel/lwsem.c ****         return (MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 1546              		.loc 1 1098 0
+ 1547 0018 0D23     		mov	r3, #13
+ 1548 001a 92E0     		b	.L94
+ 1549              	.L93:
+1099:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1100:../MQXLITE/kernel/lwsem.c **** #endif
+1101:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+1102:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1550              		.loc 1 1102 0
+ 1551 001c 7A68     		ldr	r2, [r7, #4]
+ 1552 001e 5169     		ldr	r1, [r2, #20]
+ 1553 0020 4B4A     		ldr	r2, .L103+4
+ 1554 0022 9142     		cmp	r1, r2
+ 1555 0024 01D0     		beq	.L95
+1103:../MQXLITE/kernel/lwsem.c ****     {
+1104:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_ticks, MQX_INVALID_LWSEM);
+1105:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1556              		.loc 1 1105 0
+ 1557 0026 1F23     		mov	r3, #31
+ 1558 0028 8BE0     		b	.L94
+ 1559              	.L95:
+1106:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1107:../MQXLITE/kernel/lwsem.c **** #endif
+1108:../MQXLITE/kernel/lwsem.c **** 
+1109:../MQXLITE/kernel/lwsem.c ****     _INT_DISABLE();
+ 1560              		.loc 1 1109 0
+ 1561 002a BA69     		ldr	r2, [r7, #24]
+ 1562 002c D269     		ldr	r2, [r2, #28]
+ 1563 002e 926C     		ldr	r2, [r2, #72]
+ 1564 0030 002A     		cmp	r2, #0
+ 1565 0032 00D1     		bne	.L96
+ 1566              		.loc 1 1109 0 is_stmt 0
+ 1567              	@ 1109 "../MQXLITE/kernel/lwsem.c" 1
+ 1568 0034 72B6     		cpsid i
+ 1569              	@ 0 "" 2
+ 1570              		.code	16
+ 1571              	.L96:
+ 1572              		.loc 1 1109 0
+ 1573 0036 BA69     		ldr	r2, [r7, #24]
+ 1574 0038 D269     		ldr	r2, [r2, #28]
+ 1575 003a 916C     		ldr	r1, [r2, #72]
+ 1576 003c 0131     		add	r1, r1, #1
+ 1577 003e 9164     		str	r1, [r2, #72]
+1110:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALUE <= 0)
+ 1578              		.loc 1 1110 0 is_stmt 1
+ 1579 0040 7A68     		ldr	r2, [r7, #4]
+ 1580 0042 9269     		ldr	r2, [r2, #24]
+ 1581 0044 002A     		cmp	r2, #0
+ 1582 0046 57DC     		bgt	.L97
+1111:../MQXLITE/kernel/lwsem.c ****     {
+1112:../MQXLITE/kernel/lwsem.c ****         td_ptr = kernel_data->ACTIVE_PTR;
+ 1583              		.loc 1 1112 0
+ 1584 0048 BA69     		ldr	r2, [r7, #24]
+ 1585 004a D269     		ldr	r2, [r2, #28]
+ 1586 004c 7A61     		str	r2, [r7, #20]
+1113:../MQXLITE/kernel/lwsem.c ****         if (time_in_ticks == 0)
+ 1587              		.loc 1 1113 0
+ 1588 004e 3A68     		ldr	r2, [r7]
+ 1589 0050 002A     		cmp	r2, #0
+ 1590 0052 38D1     		bne	.L98
+1114:../MQXLITE/kernel/lwsem.c ****         {
+1115:../MQXLITE/kernel/lwsem.c ****             td_ptr->STATE = LWSEM_BLOCKED;
+ 1591              		.loc 1 1115 0
+ 1592 0054 7B69     		ldr	r3, [r7, #20]
+ 1593 0056 3F4A     		ldr	r2, .L103+8
+ 1594 0058 9A60     		str	r2, [r3, #8]
+1116:../MQXLITE/kernel/lwsem.c ****             td_ptr->INFO = (_mqx_uint) &sem_ptr->TD_QUEUE;
+ 1595              		.loc 1 1116 0
+ 1596 005a 7B68     		ldr	r3, [r7, #4]
+ 1597 005c 0833     		add	r3, r3, #8
+ 1598 005e 1A1C     		mov	r2, r3
+ 1599 0060 7B69     		ldr	r3, [r7, #20]
+ 1600 0062 DA62     		str	r2, [r3, #44]
+ 1601              	.LBB12:
+1117:../MQXLITE/kernel/lwsem.c ****             _QUEUE_UNLINK(td_ptr);
+ 1602              		.loc 1 1117 0
+ 1603 0064 7B69     		ldr	r3, [r7, #20]
+ 1604 0066 5B68     		ldr	r3, [r3, #4]
+ 1605 0068 3B61     		str	r3, [r7, #16]
+ 1606 006a 7B69     		ldr	r3, [r7, #20]
+ 1607 006c 1B68     		ldr	r3, [r3]
+ 1608 006e FB60     		str	r3, [r7, #12]
+ 1609 0070 3B69     		ldr	r3, [r7, #16]
+ 1610 0072 FA68     		ldr	r2, [r7, #12]
+ 1611 0074 1A60     		str	r2, [r3]
+ 1612 0076 FB68     		ldr	r3, [r7, #12]
+ 1613 0078 3A69     		ldr	r2, [r7, #16]
+ 1614 007a 5A60     		str	r2, [r3, #4]
+ 1615              	.LBE12:
+ 1616              	.LBB13:
+1118:../MQXLITE/kernel/lwsem.c ****             _QUEUE_ENQUEUE(&sem_ptr->TD_QUEUE, &td_ptr->AUX_QUEUE);
+ 1617              		.loc 1 1118 0
+ 1618 007c 7B68     		ldr	r3, [r7, #4]
+ 1619 007e 0833     		add	r3, r3, #8
+ 1620 0080 5B68     		ldr	r3, [r3, #4]
+ 1621 0082 1B68     		ldr	r3, [r3]
+ 1622 0084 BB60     		str	r3, [r7, #8]
+ 1623 0086 7B69     		ldr	r3, [r7, #20]
+ 1624 0088 3033     		add	r3, r3, #48
+ 1625 008a BA68     		ldr	r2, [r7, #8]
+ 1626 008c 1A60     		str	r2, [r3]
+ 1627 008e 7B68     		ldr	r3, [r7, #4]
+ 1628 0090 0833     		add	r3, r3, #8
+ 1629 0092 5B68     		ldr	r3, [r3, #4]
+ 1630 0094 7A69     		ldr	r2, [r7, #20]
+ 1631 0096 3032     		add	r2, r2, #48
+ 1632 0098 1A60     		str	r2, [r3]
+ 1633 009a 7B69     		ldr	r3, [r7, #20]
+ 1634 009c 3033     		add	r3, r3, #48
+ 1635 009e 7A68     		ldr	r2, [r7, #4]
+ 1636 00a0 0832     		add	r2, r2, #8
+ 1637 00a2 5268     		ldr	r2, [r2, #4]
+ 1638 00a4 5A60     		str	r2, [r3, #4]
+ 1639 00a6 7B69     		ldr	r3, [r7, #20]
+ 1640 00a8 1A1C     		mov	r2, r3
+ 1641 00aa 3032     		add	r2, r2, #48
+ 1642 00ac BB68     		ldr	r3, [r7, #8]
+ 1643 00ae 5A60     		str	r2, [r3, #4]
+ 1644              	.LBE13:
+ 1645 00b0 7B68     		ldr	r3, [r7, #4]
+ 1646 00b2 0833     		add	r3, r3, #8
+ 1647 00b4 1A89     		ldrh	r2, [r3, #8]
+ 1648 00b6 0132     		add	r2, r2, #1
+ 1649 00b8 92B2     		uxth	r2, r2
+ 1650 00ba 1A81     		strh	r2, [r3, #8]
+1119:../MQXLITE/kernel/lwsem.c ****             _sched_execute_scheduler_internal(); /* Let the other tasks run */
+ 1651              		.loc 1 1119 0
+ 1652 00bc FFF7FEFF 		bl	_sched_execute_scheduler_internal
+1120:../MQXLITE/kernel/lwsem.c ****             /* Another task has posted a semaphore, and it has been tranfered to this
+1121:../MQXLITE/kernel/lwsem.c ****              ** task.
+1122:../MQXLITE/kernel/lwsem.c ****              */
+1123:../MQXLITE/kernel/lwsem.c ****             result = MQX_OK;
+ 1653              		.loc 1 1123 0
+ 1654 00c0 0023     		mov	r3, #0
+ 1655 00c2 FB61     		str	r3, [r7, #28]
+ 1656 00c4 1FE0     		b	.L99
+ 1657              	.L98:
+1124:../MQXLITE/kernel/lwsem.c ****         }
+1125:../MQXLITE/kernel/lwsem.c ****         else
+1126:../MQXLITE/kernel/lwsem.c ****         {
+1127:../MQXLITE/kernel/lwsem.c ****             PSP_ADD_TICKS_TO_TICK_STRUCT(&kernel_data->TIME, time_in_ticks,
+ 1658              		.loc 1 1127 0
+ 1659 00c6 7A69     		ldr	r2, [r7, #20]
+ 1660 00c8 101C     		mov	r0, r2
+ 1661 00ca 3830     		add	r0, r0, #56
+ 1662 00cc BA69     		ldr	r2, [r7, #24]
+ 1663 00ce 1132     		add	r2, r2, #17
+ 1664 00d0 FF32     		add	r2, r2, #255
+ 1665 00d2 1168     		ldr	r1, [r2]
+ 1666 00d4 5268     		ldr	r2, [r2, #4]
+ 1667 00d6 3D68     		ldr	r5, [r7]
+ 1668 00d8 2B1C     		mov	r3, r5
+ 1669 00da 0025     		mov	r5, #0
+ 1670 00dc 2C1C     		mov	r4, r5
+ 1671 00de 5B18     		add	r3, r3, r1
+ 1672 00e0 5441     		adc	r4, r4, r2
+ 1673 00e2 0360     		str	r3, [r0]
+ 1674 00e4 4460     		str	r4, [r0, #4]
+1128:../MQXLITE/kernel/lwsem.c ****                             &td_ptr->TIMEOUT);
+1129:../MQXLITE/kernel/lwsem.c ****             result = _lwsem_wait_timed_internal(sem_ptr, td_ptr);
+ 1675              		.loc 1 1129 0
+ 1676 00e6 7A68     		ldr	r2, [r7, #4]
+ 1677 00e8 7B69     		ldr	r3, [r7, #20]
+ 1678 00ea 101C     		mov	r0, r2
+ 1679 00ec 191C     		mov	r1, r3
+ 1680 00ee FFF7FEFF 		bl	_lwsem_wait_timed_internal
+ 1681 00f2 031C     		mov	r3, r0
+ 1682 00f4 FB61     		str	r3, [r7, #28]
+ 1683 00f6 06E0     		b	.L99
+ 1684              	.L97:
+1130:../MQXLITE/kernel/lwsem.c ****         } /* Endif */
+1131:../MQXLITE/kernel/lwsem.c ****     }
+1132:../MQXLITE/kernel/lwsem.c ****     else
+1133:../MQXLITE/kernel/lwsem.c ****     {
+1134:../MQXLITE/kernel/lwsem.c ****         --sem_ptr->VALUE;
+ 1685              		.loc 1 1134 0
+ 1686 00f8 7B68     		ldr	r3, [r7, #4]
+ 1687 00fa 9B69     		ldr	r3, [r3, #24]
+ 1688 00fc 5A1E     		sub	r2, r3, #1
+ 1689 00fe 7B68     		ldr	r3, [r7, #4]
+ 1690 0100 9A61     		str	r2, [r3, #24]
+1135:../MQXLITE/kernel/lwsem.c ****         result = MQX_OK;
+ 1691              		.loc 1 1135 0
+ 1692 0102 0023     		mov	r3, #0
+ 1693 0104 FB61     		str	r3, [r7, #28]
+ 1694              	.L99:
+1136:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1137:../MQXLITE/kernel/lwsem.c **** 
+1138:../MQXLITE/kernel/lwsem.c ****     /* We must check for component destruction */
+1139:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1695              		.loc 1 1139 0
+ 1696 0106 7B68     		ldr	r3, [r7, #4]
+ 1697 0108 5A69     		ldr	r2, [r3, #20]
+ 1698 010a 114B     		ldr	r3, .L103+4
+ 1699 010c 9A42     		cmp	r2, r3
+ 1700 010e 03D0     		beq	.L100
+1140:../MQXLITE/kernel/lwsem.c ****     {
+1141:../MQXLITE/kernel/lwsem.c ****         _int_enable();
+ 1701              		.loc 1 1141 0
+ 1702 0110 FFF7FEFF 		bl	_int_enable
+1142:../MQXLITE/kernel/lwsem.c ****         /* The semaphore has been deleted */
+1143:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_ticks, MQX_INVALID_LWSEM);
+1144:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1703              		.loc 1 1144 0
+ 1704 0114 1F23     		mov	r3, #31
+ 1705 0116 14E0     		b	.L94
+ 1706              	.L100:
+1145:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1146:../MQXLITE/kernel/lwsem.c **** 
+1147:../MQXLITE/kernel/lwsem.c ****     _INT_ENABLE();
+ 1707              		.loc 1 1147 0
+ 1708 0118 BB69     		ldr	r3, [r7, #24]
+ 1709 011a DB69     		ldr	r3, [r3, #28]
+ 1710 011c 9B6C     		ldr	r3, [r3, #72]
+ 1711 011e 002B     		cmp	r3, #0
+ 1712 0120 0ED0     		beq	.L101
+ 1713              		.loc 1 1147 0 is_stmt 0
+ 1714 0122 BB69     		ldr	r3, [r7, #24]
+ 1715 0124 DB69     		ldr	r3, [r3, #28]
+ 1716 0126 9A6C     		ldr	r2, [r3, #72]
+ 1717 0128 013A     		sub	r2, r2, #1
+ 1718 012a 9A64     		str	r2, [r3, #72]
+ 1719 012c 9B6C     		ldr	r3, [r3, #72]
+ 1720 012e 002B     		cmp	r3, #0
+ 1721 0130 06D1     		bne	.L101
+ 1722              		.loc 1 1147 0
+ 1723 0132 BB69     		ldr	r3, [r7, #24]
+ 1724 0134 1B8B     		ldrh	r3, [r3, #24]
+ 1725 0136 002B     		cmp	r3, #0
+ 1726 0138 01D0     		beq	.L102
+ 1727              		.loc 1 1147 0
+ 1728              	@ 1147 "../MQXLITE/kernel/lwsem.c" 1
+ 1729 013a 62B6     		cpsie i
+ 1730              	@ 0 "" 2
+ 1731              		.code	16
+ 1732 013c 00E0     		b	.L101
+ 1733              	.L102:
+ 1734              		.loc 1 1147 0
+ 1735              	@ 1147 "../MQXLITE/kernel/lwsem.c" 1
+ 1736 013e 62B6     		cpsie i
+ 1737              	@ 0 "" 2
+ 1738              		.code	16
+ 1739              	.L101:
+1148:../MQXLITE/kernel/lwsem.c **** 
+1149:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_wait_ticks, result);
+1150:../MQXLITE/kernel/lwsem.c **** 
+1151:../MQXLITE/kernel/lwsem.c ****     return (result);
+ 1740              		.loc 1 1151 0 is_stmt 1
+ 1741 0140 FB69     		ldr	r3, [r7, #28]
+ 1742              	.L94:
+1152:../MQXLITE/kernel/lwsem.c **** 
+1153:../MQXLITE/kernel/lwsem.c **** }
+ 1743              		.loc 1 1153 0
+ 1744 0142 181C     		mov	r0, r3
+ 1745 0144 BD46     		mov	sp, r7
+ 1746 0146 08B0     		add	sp, sp, #32
+ 1747              		@ sp needed for prologue
+ 1748 0148 B0BD     		pop	{r4, r5, r7, pc}
+ 1749              	.L104:
+ 1750 014a C046     		.align	2
+ 1751              	.L103:
+ 1752 014c 00000000 		.word	_mqx_kernel_data
+ 1753 0150 6D73776C 		.word	1819767661
+ 1754 0154 2B040000 		.word	1067
+ 1755              		.cfi_endproc
+ 1756              	.LFE11:
+ 1758              		.section	.text._lwsem_wait_until,"ax",%progbits
+ 1759              		.align	2
+ 1760              		.global	_lwsem_wait_until
+ 1761              		.code	16
+ 1762              		.thumb_func
+ 1764              	_lwsem_wait_until:
+ 1765              	.LFB12:
+1154:../MQXLITE/kernel/lwsem.c **** 
+1155:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE
+1156:../MQXLITE/kernel/lwsem.c **** /*!
+1157:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore for the number of ticks.
+1158:../MQXLITE/kernel/lwsem.c ****  *
+1159:../MQXLITE/kernel/lwsem.c ****  * This function is an equivalent to the _lwsem_wait_ticks() API call but it can
+1160:../MQXLITE/kernel/lwsem.c ****  * be executed from within the User task or other code running in the CPU User
+1161:../MQXLITE/kernel/lwsem.c ****  * mode. Parameters passed to this function by pointer are required to meet the
+1162:../MQXLITE/kernel/lwsem.c ****  * memory protection requirements as described in the parameter list below.
+1163:../MQXLITE/kernel/lwsem.c ****  *
+1164:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr       Rread only. Pointer to the lightweight semaphore.
+1165:../MQXLITE/kernel/lwsem.c ****  * \param[in] time_in_ticks Maximum number of ticks to wait or 0 (unlimited wait).
+1166:../MQXLITE/kernel/lwsem.c ****  *
+1167:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+1168:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+1169:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+1170:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+1171:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+1172:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+1173:../MQXLITE/kernel/lwsem.c ****  *
+1174:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+1175:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+1176:../MQXLITE/kernel/lwsem.c ****  *
+1177:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_wait_ticks
+1178:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_create
+1179:../MQXLITE/kernel/lwsem.c ****  * \see _usr_lwsem_post
+1180:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+1181:../MQXLITE/kernel/lwsem.c ****  */
+1182:../MQXLITE/kernel/lwsem.c **** _mqx_uint _usr_lwsem_wait_ticks
+1183:../MQXLITE/kernel/lwsem.c **** (
+1184:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR sem_ptr,
+1185:../MQXLITE/kernel/lwsem.c ****     _mqx_uint        time_in_ticks
+1186:../MQXLITE/kernel/lwsem.c **** )
+1187:../MQXLITE/kernel/lwsem.c **** {
+1188:../MQXLITE/kernel/lwsem.c ****     MQX_API_CALL_PARAMS params =
+1189:../MQXLITE/kernel/lwsem.c ****     {   (uint_32)sem_ptr, (uint_32)time_in_ticks, 0, 0, 0};
+1190:../MQXLITE/kernel/lwsem.c ****     return _mqx_api_call(MQX_API_LWSEM_WAIT_TICKS, &params);
+1191:../MQXLITE/kernel/lwsem.c **** }
+1192:../MQXLITE/kernel/lwsem.c **** 
+1193:../MQXLITE/kernel/lwsem.c **** #endif /* MQX_ENABLE_USER_MODE */
+1194:../MQXLITE/kernel/lwsem.c **** 
+1195:../MQXLITE/kernel/lwsem.c **** /*!
+1196:../MQXLITE/kernel/lwsem.c ****  * \brief Waits (in FIFO order) for the lightweight semaphore until the specified
+1197:../MQXLITE/kernel/lwsem.c ****  * time (in tick time).
+1198:../MQXLITE/kernel/lwsem.c ****  *
+1199:../MQXLITE/kernel/lwsem.c ****  * \note Because priority inversion might occur if tasks with different priorities
+1200:../MQXLITE/kernel/lwsem.c ****  * access the same lightweight semaphore, we recommend under these circumstances
+1201:../MQXLITE/kernel/lwsem.c ****  * that you use the semaphore component.
+1202:../MQXLITE/kernel/lwsem.c ****  *
+1203:../MQXLITE/kernel/lwsem.c ****  * \param[in] sem_ptr Pointer to the lightweight semaphore.
+1204:../MQXLITE/kernel/lwsem.c ****  * \param[in] ticks   Pointer to the time (in tick time) until which to wait or
+1205:../MQXLITE/kernel/lwsem.c ****  * NULL (unlimited wait).
+1206:../MQXLITE/kernel/lwsem.c ****  *
+1207:../MQXLITE/kernel/lwsem.c ****  * \return MQX_OK
+1208:../MQXLITE/kernel/lwsem.c ****  * \return MQX_CANNOT_CALL_FUNCTION_FROM_ISR (Function cannot be called from an ISR.)
+1209:../MQXLITE/kernel/lwsem.c ****  * \return MQX_INVALID_LWSEM (Sem_ptr is for a lightweight semaphore that is not
+1210:../MQXLITE/kernel/lwsem.c ****  * longer valid.)
+1211:../MQXLITE/kernel/lwsem.c ****  * \return MQX_LWSEM_WAIT_TIMEOUT (Timeout expired before the task could get the
+1212:../MQXLITE/kernel/lwsem.c ****  * lightweight semaphore.)
+1213:../MQXLITE/kernel/lwsem.c ****  *
+1214:../MQXLITE/kernel/lwsem.c ****  * \warning Might block the calling task.
+1215:../MQXLITE/kernel/lwsem.c ****  * Cannot be called from an ISR.
+1216:../MQXLITE/kernel/lwsem.c ****  *
+1217:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_create
+1218:../MQXLITE/kernel/lwsem.c ****  * \see _lwsem_post
+1219:../MQXLITE/kernel/lwsem.c ****  * \see LWSEM_STRUCT
+1220:../MQXLITE/kernel/lwsem.c ****  * \see MQX_TICK_STRUCT
+1221:../MQXLITE/kernel/lwsem.c ****  */
+1222:../MQXLITE/kernel/lwsem.c **** _mqx_uint _lwsem_wait_until
+1223:../MQXLITE/kernel/lwsem.c **** (
+1224:../MQXLITE/kernel/lwsem.c ****     LWSEM_STRUCT_PTR    sem_ptr,
+1225:../MQXLITE/kernel/lwsem.c ****     MQX_TICK_STRUCT_PTR ticks
+1226:../MQXLITE/kernel/lwsem.c **** )
+1227:../MQXLITE/kernel/lwsem.c **** { /* Body */
+ 1766              		.loc 1 1227 0
+ 1767              		.cfi_startproc
+ 1768 0000 90B5     		push	{r4, r7, lr}
+ 1769              	.LCFI36:
+ 1770              		.cfi_def_cfa_offset 12
+ 1771              		.cfi_offset 4, -12
+ 1772              		.cfi_offset 7, -8
+ 1773              		.cfi_offset 14, -4
+ 1774 0002 87B0     		sub	sp, sp, #28
+ 1775              	.LCFI37:
+ 1776              		.cfi_def_cfa_offset 40
+ 1777 0004 00AF     		add	r7, sp, #0
+ 1778              	.LCFI38:
+ 1779              		.cfi_def_cfa_register 7
+ 1780 0006 7860     		str	r0, [r7, #4]
+ 1781 0008 3960     		str	r1, [r7]
+1228:../MQXLITE/kernel/lwsem.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+1229:../MQXLITE/kernel/lwsem.c ****     TD_STRUCT_PTR          td_ptr;
+1230:../MQXLITE/kernel/lwsem.c ****     _mqx_uint              result;
+1231:../MQXLITE/kernel/lwsem.c **** 
+1232:../MQXLITE/kernel/lwsem.c **** #if MQX_ENABLE_USER_MODE && MQX_ENABLE_USER_STDAPI
+1233:../MQXLITE/kernel/lwsem.c ****     if (MQX_RUN_IN_USER_MODE)
+1234:../MQXLITE/kernel/lwsem.c ****     {
+1235:../MQXLITE/kernel/lwsem.c ****         return _usr_lwsem_wait_until(sem_ptr, ticks);
+1236:../MQXLITE/kernel/lwsem.c ****     }
+1237:../MQXLITE/kernel/lwsem.c **** #endif
+1238:../MQXLITE/kernel/lwsem.c **** 
+1239:../MQXLITE/kernel/lwsem.c ****     _GET_KERNEL_DATA(kernel_data);
+ 1782              		.loc 1 1239 0
+ 1783 000a 2C4B     		ldr	r3, .L115
+ 1784 000c 1B68     		ldr	r3, [r3]
+ 1785 000e 3B61     		str	r3, [r7, #16]
+1240:../MQXLITE/kernel/lwsem.c **** 
+1241:../MQXLITE/kernel/lwsem.c ****     _KLOGE3(KLOG_lwsem_wait_until, sem_ptr, ticks);
+1242:../MQXLITE/kernel/lwsem.c **** 
+1243:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_ERRORS
+1244:../MQXLITE/kernel/lwsem.c ****     if (kernel_data->IN_ISR)
+ 1786              		.loc 1 1244 0
+ 1787 0010 3B69     		ldr	r3, [r7, #16]
+ 1788 0012 1B8B     		ldrh	r3, [r3, #24]
+ 1789 0014 002B     		cmp	r3, #0
+ 1790 0016 01D0     		beq	.L106
+1245:../MQXLITE/kernel/lwsem.c ****     {
+1246:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_until, MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+1247:../MQXLITE/kernel/lwsem.c ****         return (MQX_CANNOT_CALL_FUNCTION_FROM_ISR);
+ 1791              		.loc 1 1247 0
+ 1792 0018 0D23     		mov	r3, #13
+ 1793 001a 4BE0     		b	.L107
+ 1794              	.L106:
+1248:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1249:../MQXLITE/kernel/lwsem.c **** #endif
+1250:../MQXLITE/kernel/lwsem.c **** #if MQX_CHECK_VALIDITY
+1251:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1795              		.loc 1 1251 0
+ 1796 001c 7B68     		ldr	r3, [r7, #4]
+ 1797 001e 5A69     		ldr	r2, [r3, #20]
+ 1798 0020 274B     		ldr	r3, .L115+4
+ 1799 0022 9A42     		cmp	r2, r3
+ 1800 0024 01D0     		beq	.L108
+1252:../MQXLITE/kernel/lwsem.c ****     {
+1253:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_until, MQX_INVALID_LWSEM);
+1254:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1801              		.loc 1 1254 0
+ 1802 0026 1F23     		mov	r3, #31
+ 1803 0028 44E0     		b	.L107
+ 1804              	.L108:
+1255:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1256:../MQXLITE/kernel/lwsem.c **** #endif
+1257:../MQXLITE/kernel/lwsem.c **** 
+1258:../MQXLITE/kernel/lwsem.c ****     _INT_DISABLE();
+ 1805              		.loc 1 1258 0
+ 1806 002a 3B69     		ldr	r3, [r7, #16]
+ 1807 002c DB69     		ldr	r3, [r3, #28]
+ 1808 002e 9B6C     		ldr	r3, [r3, #72]
+ 1809 0030 002B     		cmp	r3, #0
+ 1810 0032 00D1     		bne	.L109
+ 1811              		.loc 1 1258 0 is_stmt 0
+ 1812              	@ 1258 "../MQXLITE/kernel/lwsem.c" 1
+ 1813 0034 72B6     		cpsid i
+ 1814              	@ 0 "" 2
+ 1815              		.code	16
+ 1816              	.L109:
+ 1817              		.loc 1 1258 0
+ 1818 0036 3B69     		ldr	r3, [r7, #16]
+ 1819 0038 DB69     		ldr	r3, [r3, #28]
+ 1820 003a 9A6C     		ldr	r2, [r3, #72]
+ 1821 003c 0132     		add	r2, r2, #1
+ 1822 003e 9A64     		str	r2, [r3, #72]
+1259:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALUE <= 0)
+ 1823              		.loc 1 1259 0 is_stmt 1
+ 1824 0040 7B68     		ldr	r3, [r7, #4]
+ 1825 0042 9B69     		ldr	r3, [r3, #24]
+ 1826 0044 002B     		cmp	r3, #0
+ 1827 0046 10DC     		bgt	.L110
+1260:../MQXLITE/kernel/lwsem.c ****     {
+1261:../MQXLITE/kernel/lwsem.c ****         td_ptr = kernel_data->ACTIVE_PTR;
+ 1828              		.loc 1 1261 0
+ 1829 0048 3B69     		ldr	r3, [r7, #16]
+ 1830 004a DB69     		ldr	r3, [r3, #28]
+ 1831 004c FB60     		str	r3, [r7, #12]
+1262:../MQXLITE/kernel/lwsem.c ****         td_ptr->TIMEOUT = *ticks;
+ 1832              		.loc 1 1262 0
+ 1833 004e FB68     		ldr	r3, [r7, #12]
+ 1834 0050 3A68     		ldr	r2, [r7]
+ 1835 0052 3833     		add	r3, r3, #56
+ 1836 0054 13CA     		ldmia	r2!, {r0, r1, r4}
+ 1837 0056 13C3     		stmia	r3!, {r0, r1, r4}
+1263:../MQXLITE/kernel/lwsem.c ****         result = _lwsem_wait_timed_internal(sem_ptr, td_ptr);
+ 1838              		.loc 1 1263 0
+ 1839 0058 7A68     		ldr	r2, [r7, #4]
+ 1840 005a FB68     		ldr	r3, [r7, #12]
+ 1841 005c 101C     		mov	r0, r2
+ 1842 005e 191C     		mov	r1, r3
+ 1843 0060 FFF7FEFF 		bl	_lwsem_wait_timed_internal
+ 1844 0064 031C     		mov	r3, r0
+ 1845 0066 7B61     		str	r3, [r7, #20]
+ 1846 0068 06E0     		b	.L111
+ 1847              	.L110:
+1264:../MQXLITE/kernel/lwsem.c ****     }
+1265:../MQXLITE/kernel/lwsem.c ****     else
+1266:../MQXLITE/kernel/lwsem.c ****     {
+1267:../MQXLITE/kernel/lwsem.c ****         --sem_ptr->VALUE;
+ 1848              		.loc 1 1267 0
+ 1849 006a 7B68     		ldr	r3, [r7, #4]
+ 1850 006c 9B69     		ldr	r3, [r3, #24]
+ 1851 006e 5A1E     		sub	r2, r3, #1
+ 1852 0070 7B68     		ldr	r3, [r7, #4]
+ 1853 0072 9A61     		str	r2, [r3, #24]
+1268:../MQXLITE/kernel/lwsem.c ****         result = MQX_OK;
+ 1854              		.loc 1 1268 0
+ 1855 0074 0023     		mov	r3, #0
+ 1856 0076 7B61     		str	r3, [r7, #20]
+ 1857              	.L111:
+1269:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1270:../MQXLITE/kernel/lwsem.c **** 
+1271:../MQXLITE/kernel/lwsem.c ****     /* We must check for component destruction */
+1272:../MQXLITE/kernel/lwsem.c ****     if (sem_ptr->VALID != LWSEM_VALID)
+ 1858              		.loc 1 1272 0
+ 1859 0078 7B68     		ldr	r3, [r7, #4]
+ 1860 007a 5A69     		ldr	r2, [r3, #20]
+ 1861 007c 104B     		ldr	r3, .L115+4
+ 1862 007e 9A42     		cmp	r2, r3
+ 1863 0080 03D0     		beq	.L112
+1273:../MQXLITE/kernel/lwsem.c ****     {
+1274:../MQXLITE/kernel/lwsem.c ****         _int_enable();
+ 1864              		.loc 1 1274 0
+ 1865 0082 FFF7FEFF 		bl	_int_enable
+1275:../MQXLITE/kernel/lwsem.c ****         /* The semaphore has been deleted */
+1276:../MQXLITE/kernel/lwsem.c ****         _KLOGX2(KLOG_lwsem_wait_until, MQX_INVALID_LWSEM);
+1277:../MQXLITE/kernel/lwsem.c ****         return (MQX_INVALID_LWSEM);
+ 1866              		.loc 1 1277 0
+ 1867 0086 1F23     		mov	r3, #31
+ 1868 0088 14E0     		b	.L107
+ 1869              	.L112:
+1278:../MQXLITE/kernel/lwsem.c ****     } /* Endif */
+1279:../MQXLITE/kernel/lwsem.c **** 
+1280:../MQXLITE/kernel/lwsem.c ****     _INT_ENABLE();
+ 1870              		.loc 1 1280 0
+ 1871 008a 3B69     		ldr	r3, [r7, #16]
+ 1872 008c DB69     		ldr	r3, [r3, #28]
+ 1873 008e 9B6C     		ldr	r3, [r3, #72]
+ 1874 0090 002B     		cmp	r3, #0
+ 1875 0092 0ED0     		beq	.L113
+ 1876              		.loc 1 1280 0 is_stmt 0
+ 1877 0094 3B69     		ldr	r3, [r7, #16]
+ 1878 0096 DB69     		ldr	r3, [r3, #28]
+ 1879 0098 9A6C     		ldr	r2, [r3, #72]
+ 1880 009a 013A     		sub	r2, r2, #1
+ 1881 009c 9A64     		str	r2, [r3, #72]
+ 1882 009e 9B6C     		ldr	r3, [r3, #72]
+ 1883 00a0 002B     		cmp	r3, #0
+ 1884 00a2 06D1     		bne	.L113
+ 1885              		.loc 1 1280 0
+ 1886 00a4 3B69     		ldr	r3, [r7, #16]
+ 1887 00a6 1B8B     		ldrh	r3, [r3, #24]
+ 1888 00a8 002B     		cmp	r3, #0
+ 1889 00aa 01D0     		beq	.L114
+ 1890              		.loc 1 1280 0
+ 1891              	@ 1280 "../MQXLITE/kernel/lwsem.c" 1
+ 1892 00ac 62B6     		cpsie i
+ 1893              	@ 0 "" 2
+ 1894              		.code	16
+ 1895 00ae 00E0     		b	.L113
+ 1896              	.L114:
+ 1897              		.loc 1 1280 0
+ 1898              	@ 1280 "../MQXLITE/kernel/lwsem.c" 1
+ 1899 00b0 62B6     		cpsie i
+ 1900              	@ 0 "" 2
+ 1901              		.code	16
+ 1902              	.L113:
+1281:../MQXLITE/kernel/lwsem.c **** 
+1282:../MQXLITE/kernel/lwsem.c ****     _KLOGX2(KLOG_lwsem_wait_until, result);
+1283:../MQXLITE/kernel/lwsem.c **** 
+1284:../MQXLITE/kernel/lwsem.c ****     return (result);
+ 1903              		.loc 1 1284 0 is_stmt 1
+ 1904 00b2 7B69     		ldr	r3, [r7, #20]
+ 1905              	.L107:
+1285:../MQXLITE/kernel/lwsem.c **** 
+1286:../MQXLITE/kernel/lwsem.c **** }
+ 1906              		.loc 1 1286 0
+ 1907 00b4 181C     		mov	r0, r3
+ 1908 00b6 BD46     		mov	sp, r7
+ 1909 00b8 07B0     		add	sp, sp, #28
+ 1910              		@ sp needed for prologue
+ 1911 00ba 90BD     		pop	{r4, r7, pc}
+ 1912              	.L116:
+ 1913              		.align	2
+ 1914              	.L115:
+ 1915 00bc 00000000 		.word	_mqx_kernel_data
+ 1916 00c0 6D73776C 		.word	1819767661
+ 1917              		.cfi_endproc
+ 1918              	.LFE12:
+ 1920              		.text
+ 1921              	.Letext0:
+ 1922              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 1923              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 1924              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 1925              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 1926              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 1927              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+ 1928              		.file 8 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psp_ticks.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 lwsem.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:18     .text._lwsem_create_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:23     .text._lwsem_create_internal:00000000 _lwsem_create_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:157    .text._lwsem_create_internal:000000c0 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:163    .text._lwsem_create:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:168    .text._lwsem_create:00000000 _lwsem_create
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:204    .text._lwsem_create_hidden:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:209    .text._lwsem_create_hidden:00000000 _lwsem_create_hidden
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:245    .text._lwsem_destroy_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:250    .text._lwsem_destroy_internal:00000000 _lwsem_destroy_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:471    .text._lwsem_destroy_internal:00000150 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:478    .text._lwsem_destroy:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:483    .text._lwsem_destroy:00000000 _lwsem_destroy
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:515    .text._lwsem_poll:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:520    .text._lwsem_poll:00000000 _lwsem_poll
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:633    .text._lwsem_poll:00000080 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:639    .text._lwsem_post:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:644    .text._lwsem_post:00000000 _lwsem_post
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:869    .text._lwsem_post:00000148 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:876    .text._lwsem_test:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:881    .text._lwsem_test:00000000 _lwsem_test
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1022   .text._lwsem_test:000000bc $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1028   .text._lwsem_wait:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1033   .text._lwsem_wait:00000000 _lwsem_wait
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1227   .text._lwsem_wait:00000108 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1234   .text._lwsem_wait_timed_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1239   .text._lwsem_wait_timed_internal:00000000 _lwsem_wait_timed_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1341   .text._lwsem_wait_timed_internal:00000090 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1346   .text._lwsem_wait_for:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1351   .text._lwsem_wait_for:00000000 _lwsem_wait_for
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1507   .text._lwsem_wait_for:000000cc $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1513   .text._lwsem_wait_ticks:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1518   .text._lwsem_wait_ticks:00000000 _lwsem_wait_ticks
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1752   .text._lwsem_wait_ticks:0000014c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1759   .text._lwsem_wait_until:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1764   .text._lwsem_wait_until:00000000 _lwsem_wait_until
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclEQAgL.s:1915   .text._lwsem_wait_until:000000bc $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_int_disable
+_int_enable
+_mqx_kernel_data
+_sched_check_scheduler_internal
+_queue_test
+_sched_execute_scheduler_internal
+_time_delay_internal
+_psp_add_ticks

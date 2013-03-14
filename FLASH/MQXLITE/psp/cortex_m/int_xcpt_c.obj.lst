@@ -1,0 +1,344 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"int_xcpt.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._int_exception_isr,"ax",%progbits
+  18              		.align	2
+  19              		.global	_int_exception_isr
+  20              		.code	16
+  21              		.thumb_func
+  23              	_int_exception_isr:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/int_xcpt.c"
+   1:../MQXLITE/psp/cortex_m/int_xcpt.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/psp/cortex_m/int_xcpt.c **** * 
+   3:../MQXLITE/psp/cortex_m/int_xcpt.c **** * Copyright (c) 2010 Freescale Semiconductor;
+   4:../MQXLITE/psp/cortex_m/int_xcpt.c **** * All Rights Reserved                       
+   5:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+   6:../MQXLITE/psp/cortex_m/int_xcpt.c **** *************************************************************************** 
+   7:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+   8:../MQXLITE/psp/cortex_m/int_xcpt.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR 
+   9:../MQXLITE/psp/cortex_m/int_xcpt.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+  10:../MQXLITE/psp/cortex_m/int_xcpt.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  
+  11:../MQXLITE/psp/cortex_m/int_xcpt.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+  12:../MQXLITE/psp/cortex_m/int_xcpt.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+  13:../MQXLITE/psp/cortex_m/int_xcpt.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+  14:../MQXLITE/psp/cortex_m/int_xcpt.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+  15:../MQXLITE/psp/cortex_m/int_xcpt.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  16:../MQXLITE/psp/cortex_m/int_xcpt.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
+  17:../MQXLITE/psp/cortex_m/int_xcpt.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+  18:../MQXLITE/psp/cortex_m/int_xcpt.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+  20:../MQXLITE/psp/cortex_m/int_xcpt.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+  22:../MQXLITE/psp/cortex_m/int_xcpt.c **** * $FileName: int_xcpt.c$
+  23:../MQXLITE/psp/cortex_m/int_xcpt.c **** * $Version : 3.8.5.0$
+  24:../MQXLITE/psp/cortex_m/int_xcpt.c **** * $Date    : Aug-30-2011$
+  25:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+  26:../MQXLITE/psp/cortex_m/int_xcpt.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+  28:../MQXLITE/psp/cortex_m/int_xcpt.c **** *   This file contains the isr that handles exceptions.
+  29:../MQXLITE/psp/cortex_m/int_xcpt.c **** *
+  30:../MQXLITE/psp/cortex_m/int_xcpt.c **** *END************************************************************************/
+  31:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  32:../MQXLITE/psp/cortex_m/int_xcpt.c **** #include "mqx_inc.h"
+  33:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  34:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  35:../MQXLITE/psp/cortex_m/int_xcpt.c **** #if MQX_USE_INTERRUPTS
+  36:../MQXLITE/psp/cortex_m/int_xcpt.c **** /*!
+  37:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \brief To provide support for exception handlers, applications can use this ISR
+  38:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * to replace the default ISR. The ISR is specific to the PSP.
+  39:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * 
+  40:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * An application calls _int_install_exception_isr() to install _int_exception_isr().
+  41:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \n The function _int_exception_isr() does the following:
+  42:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \n - If an exception occurs when a task is running and a task exception ISR 
+  43:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * exists, MQX runs the ISR; if a task exception ISR does not exist, MQX aborts 
+  44:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * the task by calling _task_abort().
+  45:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \n - If an exception occurs when an ISR is running and an ISR exception ISR 
+  46:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * exists, MQX aborts the running ISR and runs the ISR’s exception ISR.
+  47:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \n - The function walks the interrupt stack looking for information about the 
+  48:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * ISR or task that was running before the exception occurred. If the function 
+  49:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * determines that the interrupt stack contains incorrect information, it calls 
+  50:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * _mqx_fatal_error() with error code MQX_CORRUPT_INTERRUPT_STACK.
+  51:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * 
+  52:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \param[in] parameter Parameter passed to the default ISR (the vector number).
+  53:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * 
+  54:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \warning See description.
+  55:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * 
+  56:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \see _int_install_exception_isr
+  57:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \see _mqx_fatal_error
+  58:../MQXLITE/psp/cortex_m/int_xcpt.c ****  * \see _task_abort     
+  59:../MQXLITE/psp/cortex_m/int_xcpt.c ****  */   
+  60:../MQXLITE/psp/cortex_m/int_xcpt.c **** void _int_exception_isr
+  61:../MQXLITE/psp/cortex_m/int_xcpt.c ****    (
+  62:../MQXLITE/psp/cortex_m/int_xcpt.c ****       pointer parameter
+  63:../MQXLITE/psp/cortex_m/int_xcpt.c ****    )
+  64:../MQXLITE/psp/cortex_m/int_xcpt.c **** { /* Body */
+  26              		.loc 1 64 0
+  27              		.cfi_startproc
+  28 0000 B0B5     		push	{r4, r5, r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 16
+  31              		.cfi_offset 4, -16
+  32              		.cfi_offset 5, -12
+  33              		.cfi_offset 7, -8
+  34              		.cfi_offset 14, -4
+  35 0002 8AB0     		sub	sp, sp, #40
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 56
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  41 0006 7860     		str	r0, [r7, #4]
+  65:../MQXLITE/psp/cortex_m/int_xcpt.c ****     KERNEL_DATA_STRUCT_PTR         kernel_data;
+  66:../MQXLITE/psp/cortex_m/int_xcpt.c ****     TD_STRUCT_PTR                  td_ptr;
+  67:../MQXLITE/psp/cortex_m/int_xcpt.c ****     PSP_INT_CONTEXT_STRUCT_PTR     exception_frame_ptr;
+  68:../MQXLITE/psp/cortex_m/int_xcpt.c ****     PSP_INT_CONTEXT_STRUCT_PTR     isr_frame_ptr;
+  69:../MQXLITE/psp/cortex_m/int_xcpt.c ****     INTERRUPT_TABLE_STRUCT_PTR     table_ptr;
+  70:../MQXLITE/psp/cortex_m/int_xcpt.c ****     INT_EXCEPTION_FPTR             exception_handler;
+  71:../MQXLITE/psp/cortex_m/int_xcpt.c ****     uint_32                        isr_vector;
+  72:../MQXLITE/psp/cortex_m/int_xcpt.c **** /*    uint_32                        exception_vector; */
+  73:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  74:../MQXLITE/psp/cortex_m/int_xcpt.c ****     _GET_KERNEL_DATA(kernel_data);
+  42              		.loc 1 74 0
+  43 0008 304B     		ldr	r3, .L9
+  44 000a 1B68     		ldr	r3, [r3]
+  45 000c 7B62     		str	r3, [r7, #36]
+  75:../MQXLITE/psp/cortex_m/int_xcpt.c ****     td_ptr = kernel_data->ACTIVE_PTR;
+  46              		.loc 1 75 0
+  47 000e 7B6A     		ldr	r3, [r7, #36]
+  48 0010 DB69     		ldr	r3, [r3, #28]
+  49 0012 3B62     		str	r3, [r7, #32]
+  76:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  77:../MQXLITE/psp/cortex_m/int_xcpt.c ****     /* Stop all interrupts */
+  78:../MQXLITE/psp/cortex_m/int_xcpt.c ****     _PSP_SET_DISABLE_SR(kernel_data->DISABLE_SR);
+  50              		.loc 1 78 0
+  51              	@ 78 "../MQXLITE/psp/cortex_m/int_xcpt.c" 1
+  52 0014 72B6     		cpsid i
+  53              	@ 0 "" 2
+  79:../MQXLITE/psp/cortex_m/int_xcpt.c ****     /*_int_disable(); */
+  80:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  81:../MQXLITE/psp/cortex_m/int_xcpt.c ****     if ( kernel_data->IN_ISR > 1 ) {
+  54              		.loc 1 81 0
+  55              		.code	16
+  56 0016 7B6A     		ldr	r3, [r7, #36]
+  57 0018 1B8B     		ldrh	r3, [r3, #24]
+  58 001a 012B     		cmp	r3, #1
+  59 001c 42D9     		bls	.L2
+  82:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* We have entered this function from an exception that happened
+  83:../MQXLITE/psp/cortex_m/int_xcpt.c ****          * while an isr was running.
+  84:../MQXLITE/psp/cortex_m/int_xcpt.c ****          */
+  85:../MQXLITE/psp/cortex_m/int_xcpt.c ****     
+  86:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* Get our current exception frame */
+  87:../MQXLITE/psp/cortex_m/int_xcpt.c ****         exception_frame_ptr = kernel_data->INTERRUPT_CONTEXT_PTR;
+  60              		.loc 1 87 0
+  61 001e 7B6A     		ldr	r3, [r7, #36]
+  62 0020 5B6B     		ldr	r3, [r3, #52]
+  63 0022 FB61     		str	r3, [r7, #28]
+  88:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  89:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* the current context contains a pointer to the next one */
+  90:../MQXLITE/psp/cortex_m/int_xcpt.c ****         isr_frame_ptr = (PSP_INT_CONTEXT_STRUCT_PTR)exception_frame_ptr->PREV_CONTEXT;
+  64              		.loc 1 90 0
+  65 0024 FB69     		ldr	r3, [r7, #28]
+  66 0026 1B68     		ldr	r3, [r3]
+  67 0028 BB61     		str	r3, [r7, #24]
+  91:../MQXLITE/psp/cortex_m/int_xcpt.c ****         if (isr_frame_ptr == NULL) {
+  68              		.loc 1 91 0
+  69 002a BB69     		ldr	r3, [r7, #24]
+  70 002c 002B     		cmp	r3, #0
+  71 002e 02D1     		bne	.L3
+  92:../MQXLITE/psp/cortex_m/int_xcpt.c ****             /* This is not allowable */
+  93:../MQXLITE/psp/cortex_m/int_xcpt.c ****             _mqx_fatal_error(MQX_CORRUPT_INTERRUPT_STACK);
+  72              		.loc 1 93 0
+  73 0030 2020     		mov	r0, #32
+  74 0032 FFF7FEFF 		bl	_mqx_fatal_error
+  75              	.L3:
+  94:../MQXLITE/psp/cortex_m/int_xcpt.c ****         }
+  95:../MQXLITE/psp/cortex_m/int_xcpt.c ****         
+  96:../MQXLITE/psp/cortex_m/int_xcpt.c ****         isr_vector =  isr_frame_ptr->EXCEPTION_NUMBER;
+  76              		.loc 1 96 0
+  77 0036 BB69     		ldr	r3, [r7, #24]
+  78 0038 5B68     		ldr	r3, [r3, #4]
+  79 003a 7B61     		str	r3, [r7, #20]
+  97:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+  98:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* Call the isr exception handler for the ISR that WAS running */
+  99:../MQXLITE/psp/cortex_m/int_xcpt.c ****         table_ptr = kernel_data->INTERRUPT_TABLE_PTR;
+  80              		.loc 1 99 0
+  81 003c 7B6A     		ldr	r3, [r7, #36]
+  82 003e 9B6B     		ldr	r3, [r3, #56]
+  83 0040 3B61     		str	r3, [r7, #16]
+ 100:../MQXLITE/psp/cortex_m/int_xcpt.c **** #if MQX_CHECK_ERRORS
+ 101:../MQXLITE/psp/cortex_m/int_xcpt.c ****         if ((table_ptr != NULL) &&
+  84              		.loc 1 101 0
+  85 0042 3B69     		ldr	r3, [r7, #16]
+  86 0044 002B     		cmp	r3, #0
+  87 0046 1FD0     		beq	.L4
+ 102:../MQXLITE/psp/cortex_m/int_xcpt.c ****             (isr_vector >= kernel_data->FIRST_USER_ISR_VECTOR) &&
+  88              		.loc 1 102 0
+  89 0048 7B6A     		ldr	r3, [r7, #36]
+  90 004a DA6A     		ldr	r2, [r3, #44]
+ 101:../MQXLITE/psp/cortex_m/int_xcpt.c ****         if ((table_ptr != NULL) &&
+  91              		.loc 1 101 0
+  92 004c 7B69     		ldr	r3, [r7, #20]
+  93 004e 9A42     		cmp	r2, r3
+  94 0050 1AD8     		bhi	.L4
+ 103:../MQXLITE/psp/cortex_m/int_xcpt.c ****             (isr_vector <= kernel_data->LAST_USER_ISR_VECTOR))
+  95              		.loc 1 103 0
+  96 0052 7B6A     		ldr	r3, [r7, #36]
+  97 0054 1A6B     		ldr	r2, [r3, #48]
+ 102:../MQXLITE/psp/cortex_m/int_xcpt.c ****             (isr_vector >= kernel_data->FIRST_USER_ISR_VECTOR) &&
+  98              		.loc 1 102 0
+  99 0056 7B69     		ldr	r3, [r7, #20]
+ 100 0058 9A42     		cmp	r2, r3
+ 101 005a 15D3     		bcc	.L4
+ 104:../MQXLITE/psp/cortex_m/int_xcpt.c ****         {
+ 105:../MQXLITE/psp/cortex_m/int_xcpt.c **** #endif
+ 106:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* Call the exception handler for the isr on isr_vector,
+ 107:../MQXLITE/psp/cortex_m/int_xcpt.c ****          * passing the isr_vector, the exception_vector, the isr_data and
+ 108:../MQXLITE/psp/cortex_m/int_xcpt.c ****          * the basic frame pointer for the exception
+ 109:../MQXLITE/psp/cortex_m/int_xcpt.c ****          */
+ 110:../MQXLITE/psp/cortex_m/int_xcpt.c ****         exception_handler = _int_get_exception_handler(isr_vector);
+ 102              		.loc 1 110 0
+ 103 005c 7B69     		ldr	r3, [r7, #20]
+ 104 005e 181C     		mov	r0, r3
+ 105 0060 FFF7FEFF 		bl	_int_get_exception_handler
+ 106 0064 031C     		mov	r3, r0
+ 107 0066 FB60     		str	r3, [r7, #12]
+ 111:../MQXLITE/psp/cortex_m/int_xcpt.c ****    
+ 112:../MQXLITE/psp/cortex_m/int_xcpt.c ****         if (exception_handler) {
+ 108              		.loc 1 112 0
+ 109 0068 FB68     		ldr	r3, [r7, #12]
+ 110 006a 002B     		cmp	r3, #0
+ 111 006c 0FD0     		beq	.L6
+ 113:../MQXLITE/psp/cortex_m/int_xcpt.c ****             (*exception_handler)(isr_vector, (_mqx_uint)parameter, _int_get_isr_data(isr_vector)/*t
+ 112              		.loc 1 113 0
+ 113 006e 7D68     		ldr	r5, [r7, #4]
+ 114 0070 7B69     		ldr	r3, [r7, #20]
+ 115 0072 181C     		mov	r0, r3
+ 116 0074 FFF7FEFF 		bl	_int_get_isr_data
+ 117 0078 021C     		mov	r2, r0
+ 118 007a 7969     		ldr	r1, [r7, #20]
+ 119 007c FB69     		ldr	r3, [r7, #28]
+ 120 007e FC68     		ldr	r4, [r7, #12]
+ 121 0080 081C     		mov	r0, r1
+ 122 0082 291C     		mov	r1, r5
+ 123 0084 A047     		blx	r4
+ 112:../MQXLITE/psp/cortex_m/int_xcpt.c ****         if (exception_handler) {
+ 124              		.loc 1 112 0
+ 125 0086 02E0     		b	.L6
+ 126              	.L4:
+ 114:../MQXLITE/psp/cortex_m/int_xcpt.c ****         }
+ 115:../MQXLITE/psp/cortex_m/int_xcpt.c ****     
+ 116:../MQXLITE/psp/cortex_m/int_xcpt.c **** #if MQX_CHECK_ERRORS
+ 117:../MQXLITE/psp/cortex_m/int_xcpt.c ****         } else {
+ 118:../MQXLITE/psp/cortex_m/int_xcpt.c ****             /* In this case, the exception occured in this handler */
+ 119:../MQXLITE/psp/cortex_m/int_xcpt.c ****             _mqx_fatal_error(MQX_INVALID_VECTORED_INTERRUPT);
+ 127              		.loc 1 119 0
+ 128 0088 1420     		mov	r0, #20
+ 129 008a FFF7FEFF 		bl	_mqx_fatal_error
+ 130              	.L6:
+ 120:../MQXLITE/psp/cortex_m/int_xcpt.c ****         }
+ 121:../MQXLITE/psp/cortex_m/int_xcpt.c **** #endif
+ 122:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+ 123:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* Indicate we have popped 1 interrupt stack frame (the exception frame) */
+ 124:../MQXLITE/psp/cortex_m/int_xcpt.c ****         --kernel_data->IN_ISR;
+ 131              		.loc 1 124 0
+ 132 008e 7B6A     		ldr	r3, [r7, #36]
+ 133 0090 1B8B     		ldrh	r3, [r3, #24]
+ 134 0092 013B     		sub	r3, r3, #1
+ 135 0094 9AB2     		uxth	r2, r3
+ 136 0096 7B6A     		ldr	r3, [r7, #36]
+ 137 0098 1A83     		strh	r2, [r3, #24]
+ 125:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+ 126:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* Reset the stack to point to the interrupt frame */
+ 127:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* And off we go. Will never return */
+ 128:../MQXLITE/psp/cortex_m/int_xcpt.c ****         _psp_exception_return( (pointer)isr_frame_ptr );
+ 138              		.loc 1 128 0
+ 139 009a BB69     		ldr	r3, [r7, #24]
+ 140 009c 181C     		mov	r0, r3
+ 141 009e FFF7FEFF 		bl	_psp_exception_return
+ 142 00a2 0FE0     		b	.L1
+ 143              	.L2:
+ 129:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+ 130:../MQXLITE/psp/cortex_m/int_xcpt.c ****     } else {
+ 131:../MQXLITE/psp/cortex_m/int_xcpt.c ****         /* We have entered this function from an exception that happened
+ 132:../MQXLITE/psp/cortex_m/int_xcpt.c ****          * while a task was running.
+ 133:../MQXLITE/psp/cortex_m/int_xcpt.c ****          */
+ 134:../MQXLITE/psp/cortex_m/int_xcpt.c **** 
+ 135:../MQXLITE/psp/cortex_m/int_xcpt.c ****         if (td_ptr->EXCEPTION_HANDLER_PTR != NULL ) {
+ 144              		.loc 1 135 0
+ 145 00a4 3B6A     		ldr	r3, [r7, #32]
+ 146 00a6 9B6E     		ldr	r3, [r3, #104]
+ 147 00a8 002B     		cmp	r3, #0
+ 148 00aa 08D0     		beq	.L8
+ 136:../MQXLITE/psp/cortex_m/int_xcpt.c ****             (*td_ptr->EXCEPTION_HANDLER_PTR)((_mqx_uint)parameter, 
+ 149              		.loc 1 136 0
+ 150 00ac 3B6A     		ldr	r3, [r7, #32]
+ 151 00ae 9A6E     		ldr	r2, [r3, #104]
+ 152 00b0 7968     		ldr	r1, [r7, #4]
+ 137:../MQXLITE/psp/cortex_m/int_xcpt.c ****             td_ptr->STACK_PTR);
+ 153              		.loc 1 137 0
+ 154 00b2 3B6A     		ldr	r3, [r7, #32]
+ 136:../MQXLITE/psp/cortex_m/int_xcpt.c ****             (*td_ptr->EXCEPTION_HANDLER_PTR)((_mqx_uint)parameter, 
+ 155              		.loc 1 136 0
+ 156 00b4 5B69     		ldr	r3, [r3, #20]
+ 157 00b6 081C     		mov	r0, r1
+ 158 00b8 191C     		mov	r1, r3
+ 159 00ba 9047     		blx	r2
+ 160 00bc 02E0     		b	.L1
+ 161              	.L8:
+ 138:../MQXLITE/psp/cortex_m/int_xcpt.c ****         } else {
+ 139:../MQXLITE/psp/cortex_m/int_xcpt.c ****             /* Abort the current task */
+ 140:../MQXLITE/psp/cortex_m/int_xcpt.c ****             _task_abort(MQX_NULL_TASK_ID);
+ 162              		.loc 1 140 0
+ 163 00be 0020     		mov	r0, #0
+ 164 00c0 FFF7FEFF 		bl	_task_abort
+ 165              	.L1:
+ 141:../MQXLITE/psp/cortex_m/int_xcpt.c ****         }
+ 142:../MQXLITE/psp/cortex_m/int_xcpt.c ****    }
+ 143:../MQXLITE/psp/cortex_m/int_xcpt.c **** }
+ 166              		.loc 1 143 0
+ 167 00c4 BD46     		mov	sp, r7
+ 168 00c6 0AB0     		add	sp, sp, #40
+ 169              		@ sp needed for prologue
+ 170 00c8 B0BD     		pop	{r4, r5, r7, pc}
+ 171              	.L10:
+ 172 00ca C046     		.align	2
+ 173              	.L9:
+ 174 00cc 00000000 		.word	_mqx_kernel_data
+ 175              		.cfi_endproc
+ 176              	.LFE0:
+ 178              		.text
+ 179              	.Letext0:
+ 180              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 181              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 182              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 183              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 184              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 185              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 int_xcpt.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccuuG5ev.s:18     .text._int_exception_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccuuG5ev.s:23     .text._int_exception_isr:00000000 _int_exception_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccuuG5ev.s:174    .text._int_exception_isr:000000cc $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mqx_fatal_error
+_int_get_exception_handler
+_int_get_isr_data
+_psp_exception_return
+_task_abort
+_mqx_kernel_data

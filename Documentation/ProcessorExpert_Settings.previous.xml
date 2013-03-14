@@ -389,7 +389,7 @@ PE_DEBUGHALT();
           </enumgroup>
           <enumgroup name="Counter restart" v="On-match">
             <Period_device v="SYST_RVR" />
-            <Period v="138 &amp;#181;s" />
+            <Period v="5 ms" />
             <boolgroup name="Interrupt" v="Enabled">
               <Interrupt v="INT_SysTick" />
               <Interrupt_priority v="medium priority" />
@@ -475,11 +475,11 @@ PE_DEBUGHALT();
             <Properties>
               <Name v="Task_Default" />
               <Entry_point_function v="Task_Default" />
-              <Stack_size v="1024" />
-              <Priority v="11" />
+              <Stack_size v="2048" />
+              <Priority v="9" />
               <Creation_parameter v="0" />
               <group name="Attributes">
-                <MQX_AUTO_START_TASK v="Disabled" />
+                <MQX_AUTO_START_TASK v="Enabled" />
                 <MQX_FLOATING_POINT_TASK v="Disabled" />
               </group>
             </Properties>

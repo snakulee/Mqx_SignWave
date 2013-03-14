@@ -1,0 +1,179 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"int_kisr.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._int_install_kernel_isr,"ax",%progbits
+  18              		.align	2
+  19              		.global	_int_install_kernel_isr
+  20              		.code	16
+  21              		.thumb_func
+  23              	_int_install_kernel_isr:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/int_kisr.c"
+   1:../MQXLITE/psp/cortex_m/int_kisr.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/psp/cortex_m/int_kisr.c **** * 
+   3:../MQXLITE/psp/cortex_m/int_kisr.c **** * Copyright (c) 2010 Freescale Semiconductor;
+   4:../MQXLITE/psp/cortex_m/int_kisr.c **** * All Rights Reserved                       
+   5:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+   6:../MQXLITE/psp/cortex_m/int_kisr.c **** *************************************************************************** 
+   7:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+   8:../MQXLITE/psp/cortex_m/int_kisr.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR 
+   9:../MQXLITE/psp/cortex_m/int_kisr.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+  10:../MQXLITE/psp/cortex_m/int_kisr.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  
+  11:../MQXLITE/psp/cortex_m/int_kisr.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+  12:../MQXLITE/psp/cortex_m/int_kisr.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+  13:../MQXLITE/psp/cortex_m/int_kisr.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+  14:../MQXLITE/psp/cortex_m/int_kisr.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+  15:../MQXLITE/psp/cortex_m/int_kisr.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  16:../MQXLITE/psp/cortex_m/int_kisr.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
+  17:../MQXLITE/psp/cortex_m/int_kisr.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+  18:../MQXLITE/psp/cortex_m/int_kisr.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+  20:../MQXLITE/psp/cortex_m/int_kisr.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+  22:../MQXLITE/psp/cortex_m/int_kisr.c **** * $FileName: int_kisr.c$
+  23:../MQXLITE/psp/cortex_m/int_kisr.c **** * $Version : 3.7.4.0$
+  24:../MQXLITE/psp/cortex_m/int_kisr.c **** * $Date    : Feb-7-2011$
+  25:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+  26:../MQXLITE/psp/cortex_m/int_kisr.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+  28:../MQXLITE/psp/cortex_m/int_kisr.c **** *   This file contains the function for installing a kernel level isr. 
+  29:../MQXLITE/psp/cortex_m/int_kisr.c **** *
+  30:../MQXLITE/psp/cortex_m/int_kisr.c **** *END************************************************************************/
+  31:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  32:../MQXLITE/psp/cortex_m/int_kisr.c **** #include "mqx_inc.h"
+  33:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  34:../MQXLITE/psp/cortex_m/int_kisr.c **** /*!
+  35:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \brief Installs the kernel ISR handler. The kernel ISR depends on the PSP.
+  36:../MQXLITE/psp/cortex_m/int_kisr.c ****  * 
+  37:../MQXLITE/psp/cortex_m/int_kisr.c ****  * Some real-time applications need special event handling to occur outside the 
+  38:../MQXLITE/psp/cortex_m/int_kisr.c ****  * scope of MQX. The need might arise that the latency in servicing an interrupt 
+  39:../MQXLITE/psp/cortex_m/int_kisr.c ****  * be less than the MQX interrupt latency. If this is the case, an application can
+  40:../MQXLITE/psp/cortex_m/int_kisr.c ****  * use _int_install_kernel_isr() to bypass MQX and let the interrupt be serviced
+  41:../MQXLITE/psp/cortex_m/int_kisr.c ****  * immediately.
+  42:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \n Because the function returns the previous kernel ISR, applications can 
+  43:../MQXLITE/psp/cortex_m/int_kisr.c ****  * temporarily install an ISR or chain ISRs so that each new one calls the one
+  44:../MQXLITE/psp/cortex_m/int_kisr.c ****  * installed before it.
+  45:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \n A kernel ISR must save the registers that it needs and must service the 
+  46:../MQXLITE/psp/cortex_m/int_kisr.c ****  * hardware interrupt. When the kernel ISR is finished, it must restore the 
+  47:../MQXLITE/psp/cortex_m/int_kisr.c ****  * registers and perform a return-from-interrupt instruction.
+  48:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \n A kernel ISR cannot call MQX functions. However, it can put data in global 
+  49:../MQXLITE/psp/cortex_m/int_kisr.c ****  * data, which a task can access.
+  50:../MQXLITE/psp/cortex_m/int_kisr.c ****  * 
+  51:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \n NOTE
+  52:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \n The function is not available for all PSPs.
+  53:../MQXLITE/psp/cortex_m/int_kisr.c ****  *  
+  54:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \param[in] vector  Vector where the ISR is to be installed.
+  55:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \param[in] isr_ptr Pointer to the ISR to install into the vector table.
+  56:../MQXLITE/psp/cortex_m/int_kisr.c ****  * 
+  57:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \return Pointer to the previous kernel ISR for the vector (Success.).
+  58:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \return NULL     
+  59:../MQXLITE/psp/cortex_m/int_kisr.c ****  * 
+  60:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \see _int_kernel_isr
+  61:../MQXLITE/psp/cortex_m/int_kisr.c ****  * \see _int_get_kernel_isr
+  62:../MQXLITE/psp/cortex_m/int_kisr.c ****  */    
+  63:../MQXLITE/psp/cortex_m/int_kisr.c **** INT_KERNEL_ISR_FPTR _int_install_kernel_isr
+  64:../MQXLITE/psp/cortex_m/int_kisr.c **** (  
+  65:../MQXLITE/psp/cortex_m/int_kisr.c ****     uint_32             vector,
+  66:../MQXLITE/psp/cortex_m/int_kisr.c ****     INT_KERNEL_ISR_FPTR isr_ptr
+  67:../MQXLITE/psp/cortex_m/int_kisr.c **** )
+  68:../MQXLITE/psp/cortex_m/int_kisr.c **** {
+  26              		.loc 1 68 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 82B0     		sub	sp, sp, #8
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 16
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  40 0008 3960     		str	r1, [r7]
+  69:../MQXLITE/psp/cortex_m/int_kisr.c **** #if !MQX_ROM_VECTORS
+  70:../MQXLITE/psp/cortex_m/int_kisr.c ****     
+  71:../MQXLITE/psp/cortex_m/int_kisr.c **** #if MQX_KERNEL_LOGGING
+  72:../MQXLITE/psp/cortex_m/int_kisr.c ****    KERNEL_DATA_STRUCT_PTR kernel_data;
+  73:../MQXLITE/psp/cortex_m/int_kisr.c **** #endif
+  74:../MQXLITE/psp/cortex_m/int_kisr.c ****    INT_KERNEL_ISR_FPTR    old_isr_ptr;
+  75:../MQXLITE/psp/cortex_m/int_kisr.c ****    uint_32                result_code;
+  76:../MQXLITE/psp/cortex_m/int_kisr.c ****    uint_32_ptr            loc_ptr;
+  77:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  78:../MQXLITE/psp/cortex_m/int_kisr.c **** #if MQX_KERNEL_LOGGING
+  79:../MQXLITE/psp/cortex_m/int_kisr.c ****    _GET_KERNEL_DATA(kernel_data);
+  80:../MQXLITE/psp/cortex_m/int_kisr.c **** #endif
+  81:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  82:../MQXLITE/psp/cortex_m/int_kisr.c ****    _KLOGE3(KLOG_int_install_kernel_isr, vector, isr_ptr);
+  83:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  84:../MQXLITE/psp/cortex_m/int_kisr.c **** #if MQX_CHECK_ERRORS
+  85:../MQXLITE/psp/cortex_m/int_kisr.c ****    result_code = MQX_OK;
+  86:../MQXLITE/psp/cortex_m/int_kisr.c ****    old_isr_ptr = NULL;
+  87:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  88:../MQXLITE/psp/cortex_m/int_kisr.c ****    if ( vector >= PSP_MAXIMUM_INTERRUPT_VECTORS ) {
+  89:../MQXLITE/psp/cortex_m/int_kisr.c ****       result_code = MQX_INVALID_VECTORED_INTERRUPT;
+  90:../MQXLITE/psp/cortex_m/int_kisr.c ****    } else {
+  91:../MQXLITE/psp/cortex_m/int_kisr.c **** #endif
+  92:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  93:../MQXLITE/psp/cortex_m/int_kisr.c ****    loc_ptr = (uint_32_ptr)_int_get_vector_table();
+  94:../MQXLITE/psp/cortex_m/int_kisr.c ****    old_isr_ptr = (INT_KERNEL_ISR_FPTR)loc_ptr[vector];
+  95:../MQXLITE/psp/cortex_m/int_kisr.c ****    loc_ptr[vector] = (uint_32)isr_ptr;
+  96:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+  97:../MQXLITE/psp/cortex_m/int_kisr.c **** #if MQX_CHECK_ERRORS
+  98:../MQXLITE/psp/cortex_m/int_kisr.c ****    } /* Endif */
+  99:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+ 100:../MQXLITE/psp/cortex_m/int_kisr.c ****    /* Set result code and return result. */
+ 101:../MQXLITE/psp/cortex_m/int_kisr.c ****    _task_set_error(result_code);
+ 102:../MQXLITE/psp/cortex_m/int_kisr.c **** #endif
+ 103:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+ 104:../MQXLITE/psp/cortex_m/int_kisr.c ****    _KLOGX3(KLOG_int_install_kernel_isr, old_isr_ptr, result_code);
+ 105:../MQXLITE/psp/cortex_m/int_kisr.c ****    return (old_isr_ptr);
+ 106:../MQXLITE/psp/cortex_m/int_kisr.c **** #else
+ 107:../MQXLITE/psp/cortex_m/int_kisr.c ****    
+ 108:../MQXLITE/psp/cortex_m/int_kisr.c **** #if MQX_CHECK_ERRORS
+ 109:../MQXLITE/psp/cortex_m/int_kisr.c ****    /* Set result code and return result. */
+ 110:../MQXLITE/psp/cortex_m/int_kisr.c ****    _task_set_error(MQX_INVALID_CONFIGURATION);
+  41              		.loc 1 110 0
+  42 000a 1620     		mov	r0, #22
+  43 000c FFF7FEFF 		bl	_task_set_error
+ 111:../MQXLITE/psp/cortex_m/int_kisr.c **** #endif
+ 112:../MQXLITE/psp/cortex_m/int_kisr.c **** 
+ 113:../MQXLITE/psp/cortex_m/int_kisr.c ****    return NULL;
+  44              		.loc 1 113 0
+  45 0010 0023     		mov	r3, #0
+ 114:../MQXLITE/psp/cortex_m/int_kisr.c **** #endif
+ 115:../MQXLITE/psp/cortex_m/int_kisr.c **** }
+  46              		.loc 1 115 0
+  47 0012 181C     		mov	r0, r3
+  48 0014 BD46     		mov	sp, r7
+  49 0016 02B0     		add	sp, sp, #8
+  50              		@ sp needed for prologue
+  51 0018 80BD     		pop	{r7, pc}
+  52              		.cfi_endproc
+  53              	.LFE0:
+  55 001a C046     		.text
+  56              	.Letext0:
+  57              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+  58              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 int_kisr.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccqYx74t.s:18     .text._int_install_kernel_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccqYx74t.s:23     .text._int_install_kernel_isr:00000000 _int_install_kernel_isr
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_task_set_error

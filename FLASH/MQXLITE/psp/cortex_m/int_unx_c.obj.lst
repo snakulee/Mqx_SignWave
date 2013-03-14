@@ -1,0 +1,259 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"int_unx.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._int_unexpected_isr,"ax",%progbits
+  18              		.align	2
+  19              		.global	_int_unexpected_isr
+  20              		.code	16
+  21              		.thumb_func
+  23              	_int_unexpected_isr:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/int_unx.c"
+   1:../MQXLITE/psp/cortex_m/int_unx.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/psp/cortex_m/int_unx.c **** *
+   3:../MQXLITE/psp/cortex_m/int_unx.c **** * Copyright (c) 2010 Freescale Semiconductor;
+   4:../MQXLITE/psp/cortex_m/int_unx.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/int_unx.c **** *
+   6:../MQXLITE/psp/cortex_m/int_unx.c **** ***************************************************************************
+   7:../MQXLITE/psp/cortex_m/int_unx.c **** *
+   8:../MQXLITE/psp/cortex_m/int_unx.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/int_unx.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/int_unx.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/int_unx.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/int_unx.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/int_unx.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/int_unx.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/int_unx.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/int_unx.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/int_unx.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/int_unx.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/int_unx.c **** *
+  20:../MQXLITE/psp/cortex_m/int_unx.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/int_unx.c **** *
+  22:../MQXLITE/psp/cortex_m/int_unx.c **** * $FileName: int_unx.c$
+  23:../MQXLITE/psp/cortex_m/int_unx.c **** * $Version : 3.8.8.0$
+  24:../MQXLITE/psp/cortex_m/int_unx.c **** * $Date    : Aug-30-2011$
+  25:../MQXLITE/psp/cortex_m/int_unx.c **** *
+  26:../MQXLITE/psp/cortex_m/int_unx.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/int_unx.c **** *
+  28:../MQXLITE/psp/cortex_m/int_unx.c **** *   This file contains the function for the unexpected
+  29:../MQXLITE/psp/cortex_m/int_unx.c **** *   exception handling function for MQX, which will display on the
+  30:../MQXLITE/psp/cortex_m/int_unx.c **** *   console what exception has occurred.
+  31:../MQXLITE/psp/cortex_m/int_unx.c **** *
+  32:../MQXLITE/psp/cortex_m/int_unx.c **** *   NOTE: the default I/O for the current task is used, since a printf
+  33:../MQXLITE/psp/cortex_m/int_unx.c **** *   is being done from an ISR.
+  34:../MQXLITE/psp/cortex_m/int_unx.c **** *   This default I/O must NOT be an interrupt drive I/O channel.
+  35:../MQXLITE/psp/cortex_m/int_unx.c **** *
+  36:../MQXLITE/psp/cortex_m/int_unx.c **** *END************************************************************************/
+  37:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  38:../MQXLITE/psp/cortex_m/int_unx.c **** #include "mqx_inc.h"
+  39:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  40:../MQXLITE/psp/cortex_m/int_unx.c **** /*!
+  41:../MQXLITE/psp/cortex_m/int_unx.c ****  * \brief An MQX-provided default ISR for unhandled interrupts. The function
+  42:../MQXLITE/psp/cortex_m/int_unx.c ****  * depends on the PSP.
+  43:../MQXLITE/psp/cortex_m/int_unx.c ****  *
+  44:../MQXLITE/psp/cortex_m/int_unx.c ****  * The function changes the state of the active task to UNHANDLED_INT_BLOCKED and
+  45:../MQXLITE/psp/cortex_m/int_unx.c ****  * blocks the task.
+  46:../MQXLITE/psp/cortex_m/int_unx.c ****  * \n The function uses the default I/O channel to display at least:
+  47:../MQXLITE/psp/cortex_m/int_unx.c ****  * \li Vector number that caused the unhandled exception.
+  48:../MQXLITE/psp/cortex_m/int_unx.c ****  * \li Task ID and task descriptor of the active task.
+  49:../MQXLITE/psp/cortex_m/int_unx.c ****  *
+  50:../MQXLITE/psp/cortex_m/int_unx.c ****  * \n Depending on the PSP, more information might be displayed.
+  51:../MQXLITE/psp/cortex_m/int_unx.c ****  *
+  52:../MQXLITE/psp/cortex_m/int_unx.c ****  * \param[in] parameter Parameter passed to the default ISR.
+  53:../MQXLITE/psp/cortex_m/int_unx.c ****  *
+  54:../MQXLITE/psp/cortex_m/int_unx.c ****  * \note
+  55:../MQXLITE/psp/cortex_m/int_unx.c ****  * Since the ISR uses printf() to display information to the default I/O channel,
+  56:../MQXLITE/psp/cortex_m/int_unx.c ****  * default I/O must not be on a channel that uses interrupt-driven I/O or the
+  57:../MQXLITE/psp/cortex_m/int_unx.c ****  * debugger.
+  58:../MQXLITE/psp/cortex_m/int_unx.c ****  *
+  59:../MQXLITE/psp/cortex_m/int_unx.c ****  * \warning Blocks the active task.
+  60:../MQXLITE/psp/cortex_m/int_unx.c ****  *
+  61:../MQXLITE/psp/cortex_m/int_unx.c ****  * \see _int_install_unexpected_isr
+  62:../MQXLITE/psp/cortex_m/int_unx.c ****  */
+  63:../MQXLITE/psp/cortex_m/int_unx.c **** void _int_unexpected_isr
+  64:../MQXLITE/psp/cortex_m/int_unx.c **** (
+  65:../MQXLITE/psp/cortex_m/int_unx.c ****     pointer parameter
+  66:../MQXLITE/psp/cortex_m/int_unx.c **** )
+  67:../MQXLITE/psp/cortex_m/int_unx.c **** { /* Body */
+  26              		.loc 1 67 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 86B0     		sub	sp, sp, #24
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 32
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  68:../MQXLITE/psp/cortex_m/int_unx.c ****     KERNEL_DATA_STRUCT_PTR     kernel_data;
+  69:../MQXLITE/psp/cortex_m/int_unx.c ****     TD_STRUCT_PTR              td_ptr;
+  70:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  71:../MQXLITE/psp/cortex_m/int_unx.c ****     _GET_KERNEL_DATA(kernel_data);
+  40              		.loc 1 71 0
+  41 0008 1E4B     		ldr	r3, .L6
+  42 000a 1B68     		ldr	r3, [r3]
+  43 000c 7B61     		str	r3, [r7, #20]
+  72:../MQXLITE/psp/cortex_m/int_unx.c ****     td_ptr = kernel_data->ACTIVE_PTR;
+  44              		.loc 1 72 0
+  45 000e 7B69     		ldr	r3, [r7, #20]
+  46 0010 DB69     		ldr	r3, [r3, #28]
+  47 0012 3B61     		str	r3, [r7, #16]
+  73:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  74:../MQXLITE/psp/cortex_m/int_unx.c **** #if !MQX_LITE_VERSION_NUMBER
+  75:../MQXLITE/psp/cortex_m/int_unx.c ****     {
+  76:../MQXLITE/psp/cortex_m/int_unx.c ****         uint_32                    psp, msp, i;
+  77:../MQXLITE/psp/cortex_m/int_unx.c ****         printf("\n\r*** UNHANDLED INTERRUPT ***\n\r");
+  78:../MQXLITE/psp/cortex_m/int_unx.c ****         printf("Vector #: 0x%02x Task Id: 0x%0x Td_ptr 0x%x\n\r",
+  79:../MQXLITE/psp/cortex_m/int_unx.c ****         (uint_32)parameter, (uint_32)td_ptr->TASK_ID, (uint_32)td_ptr);
+  80:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  81:../MQXLITE/psp/cortex_m/int_unx.c ****         psp = __get_PSP();
+  82:../MQXLITE/psp/cortex_m/int_unx.c ****         msp = __get_MSP();
+  83:../MQXLITE/psp/cortex_m/int_unx.c ****         printf("PC: 0x%08x LR: 0x%08x PSP: 0x%08x MSP: 0x%08x PSR: 0x%08x\n\r", __get_PC(), __get_L
+  84:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  85:../MQXLITE/psp/cortex_m/int_unx.c ****         printf("\n\r\n\rMemory dump:\n\r");
+  86:../MQXLITE/psp/cortex_m/int_unx.c ****         for (i = 0; i < 32; i += 4) {
+  87:../MQXLITE/psp/cortex_m/int_unx.c ****             printf("0x%08x : 0x%08x 0x%08x 0x%08x 0x%08x\n\r", psp + i * 4, ((uint_32*)psp)[i], ((u
+  88:../MQXLITE/psp/cortex_m/int_unx.c ****         }
+  89:../MQXLITE/psp/cortex_m/int_unx.c **** 
+  90:../MQXLITE/psp/cortex_m/int_unx.c ****         printf("\n\r\n\rMemory dump:\n\r");
+  91:../MQXLITE/psp/cortex_m/int_unx.c ****         for (i = 0; i < 32; i += 4) {
+  92:../MQXLITE/psp/cortex_m/int_unx.c ****             printf("0x%08x : 0x%08x 0x%08x 0x%08x 0x%08x\n\r", msp + i * 4, ((uint_32*)msp)[i], ((u
+  93:../MQXLITE/psp/cortex_m/int_unx.c ****         }
+  94:../MQXLITE/psp/cortex_m/int_unx.c ****     }
+  95:../MQXLITE/psp/cortex_m/int_unx.c **** #endif
+  96:../MQXLITE/psp/cortex_m/int_unx.c ****     _INT_ENABLE();
+  48              		.loc 1 96 0
+  49 0014 7B69     		ldr	r3, [r7, #20]
+  50 0016 DB69     		ldr	r3, [r3, #28]
+  51 0018 9B6C     		ldr	r3, [r3, #72]
+  52 001a 002B     		cmp	r3, #0
+  53 001c 0ED0     		beq	.L2
+  54              		.loc 1 96 0 is_stmt 0
+  55 001e 7B69     		ldr	r3, [r7, #20]
+  56 0020 DB69     		ldr	r3, [r3, #28]
+  57 0022 9A6C     		ldr	r2, [r3, #72]
+  58 0024 013A     		sub	r2, r2, #1
+  59 0026 9A64     		str	r2, [r3, #72]
+  60 0028 9B6C     		ldr	r3, [r3, #72]
+  61 002a 002B     		cmp	r3, #0
+  62 002c 06D1     		bne	.L2
+  63              		.loc 1 96 0
+  64 002e 7B69     		ldr	r3, [r7, #20]
+  65 0030 1B8B     		ldrh	r3, [r3, #24]
+  66 0032 002B     		cmp	r3, #0
+  67 0034 01D0     		beq	.L3
+  68              		.loc 1 96 0
+  69              	@ 96 "../MQXLITE/psp/cortex_m/int_unx.c" 1
+  70 0036 62B6     		cpsie i
+  71              	@ 0 "" 2
+  72              		.code	16
+  73 0038 00E0     		b	.L2
+  74              	.L3:
+  75              		.loc 1 96 0
+  76              	@ 96 "../MQXLITE/psp/cortex_m/int_unx.c" 1
+  77 003a 62B6     		cpsie i
+  78              	@ 0 "" 2
+  79              		.code	16
+  80              	.L2:
+  97:../MQXLITE/psp/cortex_m/int_unx.c ****     if (td_ptr->STATE != UNHANDLED_INT_BLOCKED) {
+  81              		.loc 1 97 0 is_stmt 1
+  82 003c 3B69     		ldr	r3, [r7, #16]
+  83 003e 9B68     		ldr	r3, [r3, #8]
+  84 0040 0B2B     		cmp	r3, #11
+  85 0042 11D0     		beq	.L4
+  98:../MQXLITE/psp/cortex_m/int_unx.c ****     td_ptr->STATE = UNHANDLED_INT_BLOCKED;
+  86              		.loc 1 98 0
+  87 0044 3B69     		ldr	r3, [r7, #16]
+  88 0046 0B22     		mov	r2, #11
+  89 0048 9A60     		str	r2, [r3, #8]
+  99:../MQXLITE/psp/cortex_m/int_unx.c ****     td_ptr->INFO  = (_mqx_uint)parameter;
+  90              		.loc 1 99 0
+  91 004a 7A68     		ldr	r2, [r7, #4]
+  92 004c 3B69     		ldr	r3, [r7, #16]
+  93 004e DA62     		str	r2, [r3, #44]
+  94              	.LBB2:
+ 100:../MQXLITE/psp/cortex_m/int_unx.c **** 
+ 101:../MQXLITE/psp/cortex_m/int_unx.c ****     _QUEUE_UNLINK(td_ptr);
+  95              		.loc 1 101 0
+  96 0050 3B69     		ldr	r3, [r7, #16]
+  97 0052 5B68     		ldr	r3, [r3, #4]
+  98 0054 FB60     		str	r3, [r7, #12]
+  99 0056 3B69     		ldr	r3, [r7, #16]
+ 100 0058 1B68     		ldr	r3, [r3]
+ 101 005a BB60     		str	r3, [r7, #8]
+ 102 005c FB68     		ldr	r3, [r7, #12]
+ 103 005e BA68     		ldr	r2, [r7, #8]
+ 104 0060 1A60     		str	r2, [r3]
+ 105 0062 BB68     		ldr	r3, [r7, #8]
+ 106 0064 FA68     		ldr	r2, [r7, #12]
+ 107 0066 5A60     		str	r2, [r3, #4]
+ 108              	.L4:
+ 109              	.LBE2:
+ 102:../MQXLITE/psp/cortex_m/int_unx.c ****     } /* Endif */
+ 103:../MQXLITE/psp/cortex_m/int_unx.c ****     _INT_DISABLE();
+ 110              		.loc 1 103 0
+ 111 0068 7B69     		ldr	r3, [r7, #20]
+ 112 006a DB69     		ldr	r3, [r3, #28]
+ 113 006c 9B6C     		ldr	r3, [r3, #72]
+ 114 006e 002B     		cmp	r3, #0
+ 115 0070 00D1     		bne	.L5
+ 116              		.loc 1 103 0 is_stmt 0
+ 117              	@ 103 "../MQXLITE/psp/cortex_m/int_unx.c" 1
+ 118 0072 72B6     		cpsid i
+ 119              	@ 0 "" 2
+ 120              		.code	16
+ 121              	.L5:
+ 122              		.loc 1 103 0
+ 123 0074 7B69     		ldr	r3, [r7, #20]
+ 124 0076 DB69     		ldr	r3, [r3, #28]
+ 125 0078 9A6C     		ldr	r2, [r3, #72]
+ 126 007a 0132     		add	r2, r2, #1
+ 127 007c 9A64     		str	r2, [r3, #72]
+ 104:../MQXLITE/psp/cortex_m/int_unx.c **** 
+ 105:../MQXLITE/psp/cortex_m/int_unx.c **** } /* Endbody */
+ 128              		.loc 1 105 0 is_stmt 1
+ 129 007e BD46     		mov	sp, r7
+ 130 0080 06B0     		add	sp, sp, #24
+ 131              		@ sp needed for prologue
+ 132 0082 80BD     		pop	{r7, pc}
+ 133              	.L7:
+ 134              		.align	2
+ 135              	.L6:
+ 136 0084 00000000 		.word	_mqx_kernel_data
+ 137              		.cfi_endproc
+ 138              	.LFE0:
+ 140              		.text
+ 141              	.Letext0:
+ 142              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 143              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 144              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 145              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 146              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 147              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 int_unx.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7ml7zX.s:18     .text._int_unexpected_isr:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7ml7zX.s:23     .text._int_unexpected_isr:00000000 _int_unexpected_isr
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7ml7zX.s:136    .text._int_unexpected_isr:00000084 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mqx_kernel_data

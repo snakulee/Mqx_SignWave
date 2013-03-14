@@ -1,0 +1,69 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"task_template_list.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	MQX_template_list
+  18              		.section	.rodata
+  19              		.align	2
+  20              	.LC0:
+  21 0000 7461736B 		.ascii	"task_default\000"
+  21      5F646566 
+  21      61756C74 
+  21      00
+  22 000d 000000   		.align	2
+  23              	.LC1:
+  24 0010 7461736B 		.ascii	"task_dac\000"
+  24      5F646163 
+  24      00
+  25 0019 000000   		.section	.rodata.MQX_template_list,"a",%progbits
+  26              		.align	2
+  29              	MQX_template_list:
+  30 0000 01000000 		.word	1
+  31 0004 00000000 		.word	Task_Default
+  32 0008 80040000 		.word	1152
+  33 000c 09000000 		.word	9
+  34 0010 00000000 		.word	.LC0
+  35 0014 01000000 		.word	1
+  36 0018 00000000 		.word	0
+  37 001c 02000000 		.word	2
+  38 0020 00000000 		.word	Task_Dac
+  39 0024 80080000 		.word	2176
+  40 0028 0A000000 		.word	10
+  41 002c 10000000 		.word	.LC1
+  42 0030 01000000 		.word	1
+  43 0034 00000000 		.word	0
+  44 0038 00000000 		.word	0
+  45 003c 00000000 		.word	0
+  46 0040 00000000 		.word	0
+  47 0044 00000000 		.word	0
+  48 0048 00000000 		.word	0
+  49 004c 00000000 		.word	0
+  50 0050 00000000 		.word	0
+  51              		.text
+  52              	.Letext0:
+  53              		.file 1 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+  54              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+  55              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+  56              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/IO_Map.h"
+  57              		.file 5 "../Generated_Code/task_template_list.c"
+DEFINED SYMBOLS
+                            *ABS*:00000000 task_template_list.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxc4uaj.s:29     .rodata.MQX_template_list:00000000 MQX_template_list
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxc4uaj.s:19     .rodata:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxc4uaj.s:26     .rodata.MQX_template_list:00000000 $d
+
+UNDEFINED SYMBOLS
+Task_Default
+Task_Dac

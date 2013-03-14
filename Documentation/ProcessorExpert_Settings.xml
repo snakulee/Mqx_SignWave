@@ -476,10 +476,10 @@ PE_DEBUGHALT();
               <Name v="Task_Default" />
               <Entry_point_function v="Task_Default" />
               <Stack_size v="1024" />
-              <Priority v="11" />
+              <Priority v="9" />
               <Creation_parameter v="0" />
               <group name="Attributes">
-                <MQX_AUTO_START_TASK v="Disabled" />
+                <MQX_AUTO_START_TASK v="Enabled" />
                 <MQX_FLOATING_POINT_TASK v="Disabled" />
               </group>
             </Properties>

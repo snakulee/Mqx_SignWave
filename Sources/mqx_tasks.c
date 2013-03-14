@@ -44,12 +44,18 @@
 
 
 #define ADS1015_CONV_REG		0x00U
+#define ADS1015_CONV_REG_LEN	0x02U
+
+
 #define ADS1015_CTRL_REG		0x01U
 #define ADS1015_THRE_LO_REG		0x02U
 #define ADS1015_THRE_HI_REG		0x03U
 #define ADS1015_CTRL_REG_LEN	0x02U
 
 #define PI 3.14159265F
+#define DAC_2V	2482UL
+#define DAC_3V	3724UL
+#define DAC_1V	1241UL
 
 
 LDD_TDeviceData *I2c0_DeviceData = NULL;
@@ -362,7 +368,7 @@ void Task_Default(uint32_t task_init_data)
 			DrvPwmTimerRG_SetOffsetTicks(PWMTimerRG_DeviceData, 1, 1000*(1<<(abs(Color[1]/10)))); // y axis - green LED 
 			DrvPwmTimerB_SetOffsetTicks(PWMTimerB_DeviceData, 0, 1000*(1<<(abs(Color[2]/10)))); // z axis - blue LED
 		}
-		_time_delay_ticks(1);
+		_time_delay_ticks(100);
 	}
 }
 
@@ -382,23 +388,29 @@ void Task_Default(uint32_t task_init_data)
 ** ===================================================================
 */
 void Task_Dac(uint32_t task_init_data)
-{
+{	
 	uint8_t i2c1_buffer[4] = {0};
 	LDD_TError Error = 0;
 
-	float f_sin = 0.0, f_val;
+	#if 0	/* draw sign wave */
+	float f_sin = 0.0, f_val;
+	uint32 u32_tmp, u32_delay=86UL;
+	uint32 u32_sin[91];
 	uint32_t u32_val;
 	uint8 u8_i, u8_j;
-	uint32 u32_tmp, u32_delay=86UL;
-
-	uint32 u32_sin[91];
+	#endif
 	
+
+	int16_t s16_AdcData = 0;
+
 
 	// TI ADS1015 ADC chip
 	
 	I2c1_DeviceData = DrvI2c1_Init(&I2c1_DataState);
 
 	Dac0_DeviceData = DrvDac2V_Init(&Dac0_Data);
+
+
 	#if 1
 
 	i2c1_buffer[0] = ADS1015_CTRL_REG;
@@ -412,20 +424,50 @@ void Task_Dac(uint32_t task_init_data)
 		printf("READ TI ADS1015 control register FAILED.\n");
 	}
 
+	i2c1_buffer[0] &= ~0x01;
+
+	Error = !I2c0_WriteAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LEN, i2c1_buffer);
+	if (!Error)
+	{
+		printf("WRITE TI ADS1015 control register PASS, MSB=0x%02X, LSB=0x%02X.\n", i2c1_buffer[0], i2c1_buffer[1]);
+	}
+	else
+	{
+		printf("WRITE TI ADS1015 control register FAILED.\n");
+	}
+
 	#endif
 
+
+	#if 0		/* draw sign wave */
 	for(u8_i=0U; u8_i<90; u8_i++)
 	{
 		u32_sin[u8_i] = 4096UL*(sin((PI*u8_i)/180));
 	}
 	u32_sin[90] = 4095UL;
 	u8_i = 0U;
+	#endif
+
+	DrvDac2V_SetValue(Dac0_DeviceData, DAC_2V);	// output 2 V
 
   	while(1)
 	{
 
 		/* Write your code here ... */
-		
+
+		Error = !I2c1_ReadAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CONV_REG, ADS1015_CONV_REG_LEN, i2c1_buffer);
+		if (!Error)
+		{
+			s16_AdcData = (int16_t*)i2c1_buffer;
+			s16_AdcData >>= 4;
+			printf("READ TI ADS1015 convert register PASS, MSB=0x%02X, LSB=0x%02X, DAC=%d.\n", i2c1_buffer[0], i2c1_buffer[1], s16_AdcData);
+		}
+		else
+		{
+			printf("READ TI ADS1015 convert register FAILED.\n");
+		}
+
+		#if 0		/* draw sign wave */
 		for(u8_j=0; u8_j<180; u8_j++)
 		{
 			u32_tmp = 0UL;
@@ -438,6 +480,7 @@ void Task_Dac(uint32_t task_init_data)
 			}
 			
 		}
+		#endif
 	}
 }
 

@@ -1,0 +1,3267 @@
+   1              	# 1 "../MQXLITE/psp/cortex_m/core/M0/dispatch.S"
+   1              	/*HEADER**********************************************************************
+   0              	
+   2              	*
+   0              	
+   3              	* Copyright (c) 2010-2011 Freescale Semiconductor
+   4              	* All Rights Reserved
+   5              	*
+   6              	******************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	******************************************************************************
+  21              	*
+  22              	* $FileName: dispatch.S$
+  23              	* $Version : 3.8.25.3$
+  24              	* $Date    : Dec-2-2011$
+  25              	*
+  26              	* Comments:
+  27              	*
+  28              	*   This assembler file contains functions for task scheduling
+  29              	*
+  30              	*END*************************************************************************/
+  31              	
+  32              	#include "asm_mac.h"
+   1              	/**HEADER*********************************************************************
+   2              	*
+   3              	* Copyright (c) 2008 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	* Copyright (c) 2008 Embedded Access Inc.;
+   7              	* All Rights Reserved
+   8              	*
+   9              	******************************************************************************
+  10              	*
+  11              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  12              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  13              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  14              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  15              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  16              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  17              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  18              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  19              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  20              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  21              	* THE POSSIBILITY OF SUCH DAMAGE.
+  22              	*
+  23              	******************************************************************************
+  24              	*
+  25              	* $FileName: asm_mac.h$
+  26              	* $Version : 3.8.1.0$
+  27              	* $Date    : Aug-30-2011$
+  28              	*
+  29              	* Comments:
+  30              	*   This file contains macros used by the CodeWarrior assembler
+  31              	*
+  32              	*END*************************************************************************/
+  33              	
+  34              	#ifndef __asm_mac_h__
+  35              	#define __asm_mac_h__   1
+  36              	
+  37              	#define ASM_PREFIX(x)   x
+  38              	
+  39              	#define ASM_EXTERN(label)       .extern ASM_PREFIX(label)
+  40              	#define ASM_PUBLIC(label)       .global ASM_PREFIX(label)
+  41              	
+  42              	#define ASM_LABEL(label)        label:
+  43              	#define ASM_EQUATE(label,value) .equ label, value
+  44              	
+  45              	#define ASM_ALIGN(value)        .balign value
+  46              	
+  47              	#define ASM_CONST16(value)      .word value
+  48              	#define ASM_CONST32(value)      .long value
+  49              	
+  50              	#define ASM_LABEL_CONST32(label,value) label .long value
+  51              	
+  52              	#define ASM_CODE_SECTION(name)  .section name, "x"
+  53              	#define ASM_DATA_SECTION(name)  TBD /* .section name,16,r */
+  54              	
+  55              	#define ASM_END                 .end
+  56              	
+  57              	#define ASM_COMP_SPECIFIC_DIRECTIVES .syntax unified
+  58              	
+  59              	#define ASM_PUBLIC_BEGIN(name) .thumb_func
+  60              	#define ASM_PUBLIC_FUNC(name)
+  61              	#define ASM_PUBLIC_END(name)
+  62              	
+  33              	
+  34              	#include "mqx_cnfg.h"
+   1              	/*HEADER*********************************************************************
+   2              	*
+   3              	* Copyright (c) 2008-2010 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	* Copyright (c) 2004-2008 Embedded Access Inc.;
+   7              	* All Rights Reserved
+   8              	*
+   9              	* Copyright (c) 1989-2008 ARC International;
+  10              	* All Rights Reserved
+  11              	*
+  12              	***************************************************************************
+  13              	*
+  14              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24              	* THE POSSIBILITY OF SUCH DAMAGE.
+  25              	*
+  26              	**************************************************************************
+  27              	*
+  28              	* $FileName: mqx_cnfg.h$
+  29              	* $Version : 3.8.48.0$
+  30              	* $Date    : Sep-19-2011$
+  31              	*
+  32              	* Comments:
+  33              	*
+  34              	*   This file contains the default configuration definitions for configuring
+  35              	*   the various optional features of MQX. Individual config. Defines can be
+  36              	*   overridden in the "user_config.h" file.
+  37              	*
+  38              	*   By default, MQX is configured as follows:
+  39              	*    MQX_ALLOW_TYPED_MEMORY               1
+  40              	*    MQX_COMPONENT_DESTRUCTION            1
+  41              	*    MQX_DEFAULT_TIME_SLICE_IN_TICKS      0
+  42              	*    MQX_EXIT_ENABLED                     1
+  43              	*    MQX_EXTRA_TASK_STACK_ENABLE          1
+  44              	*    MQX_HAS_TIME_SLICE                   1
+  45              	*    MQX_CHECK_ERRORS                     1
+  46              	*    MQX_CHECK_MEMORY_ALLOCATION_ERRORS   1
+  47              	*    MQX_CHECK_VALIDITY                   1
+  48              	*    MQX_INCLUDE_FLOATING_POINT_IO        0
+  49              	*    MQX_IS_MULTI_PROCESSOR               1
+  50              	*    MQX_KERNEL_LOGGING                   1
+  51              	*    MQX_LWLOG_TIME_STAMP_IN_TICKS        1
+  52              	*    MQX_MEMORY_FREE_LIST_SORTED          1
+  53              	*    MQX_MONITOR_STACK                    1
+  54              	*    MQX_MUTEX_HAS_POLLING                1
+  55              	*    MQX_PROFILING_ENABLE                 0
+  56              	*    MQX_ROM_VECTORS                      0
+  57              	*    MQX_RUN_TIME_ERR_CHECK_ENABLE        0
+  58              	*    MQX_TASK_CREATION_BLOCKS             1
+  59              	*    MQX_TASK_DESTRUCTION                 1
+  60              	*    MQX_TIMER_USES_TICKS_ONLY            0
+  61              	*    MQX_USE_32BIT_MESSAGE_QIDS           0
+  62              	*    MQX_USE_32BIT_TYPES                  0
+  63              	*    MQX_USE_EVENTS                       1
+  64              	*    MQX_USE_IDLE_TASK                    1
+  65              	*    MQX_USE_INLINE_MACROS                1
+  66              	*    MQX_USE_IPC                          1
+  67              	*    MQX_USE_LOGS                         1
+  68              	*    MQX_USE_LWEVENTS                     1
+  69              	*    MQX_USE_LWLOGS                       1
+  70              	*    MQX_USE_LWMEM                        1
+  71              	*    MQX_USE_LWMEM_ALLOCATOR              0
+  72              	*    MQX_USE_LWMSGQ                       1
+  73              	*    MQX_USE_LWTIMER                      1
+  74              	*    MQX_USE_MESSAGES                     1
+  75              	*    MQX_USE_MUTEXES                      1
+  76              	*    MQX_USE_NAME                         1
+  77              	*    MQX_USE_PARTITIONS                   1
+  78              	*    MQX_USE_SEMAPHORES                   1
+  79              	*    MQX_USE_SW_WATCHDOGS                 1
+  80              	*    MQX_USE_TIMER                        1
+  81              	*    MQX_VERIFY_KERNEL_DATA               1
+  82              	*    MQX_ENABLE_USER_MODE                 0
+  83              	*    MQX_ENABLE_LOW_POWER                 0
+  84              	*
+  85              	*END************************************************************************/
+  86              	
+  87              	#ifndef __mqx_cnfg_h__
+  88              	#define __mqx_cnfg_h__
+  89              	
+  90              	/*
+  91              	 * get user configuration constants.
+  92              	 */
+  93              	
+  94              	#include "user_config.h"
+   1              	/** ###################################################################
+   2              	**     THIS COMPONENT MODULE IS GENERATED BY THE TOOL. DO NOT MODIFY IT.
+   3              	**     Filename    : user_config.h
+   4              	**     Project     : ProcessorExpert
+   5              	**     Processor   : MKL25Z128VLK4
+   6              	**     Version     : Component 01.093, Driver 01.00, CPU db: 3.00.000
+   7              	**     Compiler    : GNU C Compiler
+   8              	**     Date/Time   : 2013-02-25, 18:58, # CodeGen: 35
+   9              	**
+  10              	**     Copyright : 1997 - 2012 Freescale, Inc. All Rights Reserved.
+  11              	**     
+  12              	**     http      : www.freescale.com
+  13              	**     mail      : support@freescale.com
+  14              	** ###################################################################*/
+  15              	#ifndef __user_config_h__
+  16              	#define __user_config_h__
+  17              	
+  18              	/* MQX Lite version number */
+  19              	#define MQX_LITE_VERSION               "V1.0.1"
+  20              	#define MQX_LITE_VERSION_NUMBER        0x01000001
+  21              	
+  22              	/* Selected MQX CPU type */
+  23              	#define MQX_CPU              PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M0P, \
+  24              	                                         PSP_CPU_GROUP_KINETIS_KL2X, \
+  25              	                                         0x0F)
+  26              	
+  27              	/* Component settings */
+  28              	#define MQX_USE_SEMAPHORES             1
+  29              	#define MQX_USE_LWEVENTS               0
+  30              	#define MQX_USE_MUTEXES                0
+  31              	#define MQX_USE_LWMSGQ                 0
+  32              	#define MQX_USE_LWTIMER                0
+  33              	#define MQX_KERNEL_LOGGING             0
+  34              	
+  35              	/* Idle task settings */
+  36              	#define MQX_USE_IDLE_TASK              1
+  37              	#define MQX_ENABLE_LOW_POWER           0
+  38              	
+  39              	
+  40              	/* Interrupt settings */
+  41              	#define MQX_ROM_VECTORS                1
+  42              	#define MQX_INTERRUPT_STACK_SIZE       256
+  43              	
+  44              	/* PSP Settings */
+  45              	#define PSP_HAS_FPU                    0
+  46              	#define PSP_MAXIMUM_INTERRUPT_VECTORS  (sizeof(__vect_table)/sizeof(tIsrFunc))
+  47              	
+  95              	
+  96              	#ifdef MQX_LITE_VERSION_NUMBER
+  97              	#include "mqxlite_cnfg.h"
+   1              	/*HEADER*********************************************************************
+   2              	*
+   3              	* Copyright (c) 2008-2010 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	* Copyright (c) 2004-2008 Embedded Access Inc.;
+   7              	* All Rights Reserved
+   8              	*
+   9              	* Copyright (c) 1989-2008 ARC International;
+  10              	* All Rights Reserved
+  11              	*
+  12              	***************************************************************************
+  13              	*
+  14              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24              	* THE POSSIBILITY OF SUCH DAMAGE.
+  25              	*
+  26              	**************************************************************************
+  27              	*
+  28              	* $FileName: mqxlite_cnfg.h$
+  29              	* $Version : 3.8.48.0$
+  30              	* $Date    : Sep-19-2011$
+  31              	*
+  32              	* Comments:
+  33              	*
+  34              	*   This file contains the default configuration definitions for configuring
+  35              	*   the various optional features of MQX. Individual config. Defines can be
+  36              	*   overridden in the "user_config.h" file.
+  37              	*
+  38              	*   By default, MQX is configured as follows:
+  39              	*    MQX_ALLOW_TYPED_MEMORY               1
+  40              	*    MQX_COMPONENT_DESTRUCTION            1
+  41              	*    MQX_DEFAULT_TIME_SLICE_IN_TICKS      0
+  42              	*    MQX_EXIT_ENABLED                     1
+  43              	*    MQX_EXTRA_TASK_STACK_ENABLE          0
+  44              	*    MQX_HAS_TIME_SLICE                   0
+  45              	*    MQX_CHECK_ERRORS                     1
+  46              	*    MQX_CHECK_MEMORY_ALLOCATION_ERRORS   1
+  47              	*    MQX_CHECK_VALIDITY                   1
+  48              	*    MQX_INCLUDE_FLOATING_POINT_IO        0
+  49              	*    MQX_IS_MULTI_PROCESSOR               1
+  50              	*    MQX_KERNEL_LOGGING                   1
+  51              	*    MQX_LWLOG_TIME_STAMP_IN_TICKS        1
+  52              	*    MQX_MEMORY_FREE_LIST_SORTED          1
+  53              	*    MQX_MONITOR_STACK                    1
+  54              	*    MQX_MUTEX_HAS_POLLING                1
+  55              	*    MQX_PROFILING_ENABLE                 0
+  56              	*    MQX_ROM_VECTORS                      0
+  57              	*    MQX_RUN_TIME_ERR_CHECK_ENABLE        0
+  58              	*    MQX_TASK_CREATION_BLOCKS             1
+  59              	*    MQX_TASK_DESTRUCTION                 1
+  60              	*    MQX_TIMER_USES_TICKS_ONLY            0
+  61              	*    MQX_USE_32BIT_MESSAGE_QIDS           0
+  62              	*    MQX_USE_32BIT_TYPES                  0
+  63              	*    MQX_USE_EVENTS                       0
+  64              	*    MQX_USE_IDLE_TASK                    1
+  65              	*    MQX_USE_INLINE_MACROS                1
+  66              	*    MQX_USE_IPC                          0
+  67              	*    MQX_USE_LOGS                         1
+  68              	*    MQX_USE_LWEVENTS                     0
+  69              	*    MQX_USE_LWLOGS                       0
+  70              	*    MQX_USE_LWMEM                        0
+  71              	*    MQX_USE_LWMEM_ALLOCATOR              0
+  72              	*    MQX_USE_LWMSGQ                       1
+  73              	*    MQX_USE_LWTIMER                      1
+  74              	*    MQX_USE_MESSAGES                     1
+  75              	*    MQX_USE_MUTEXES                      1
+  76              	*    MQX_USE_NAME                         1
+  77              	*    MQX_USE_PARTITIONS                   0
+  78              	*    MQX_USE_SEMAPHORES                   0
+  79              	*    MQX_USE_SW_WATCHDOGS                 0
+  80              	*    MQX_USE_TIMER                        1
+  81              	*    MQX_VERIFY_KERNEL_DATA               1
+  82              	*    MQX_ENABLE_USER_MODE                 0
+  83              	*    MQX_ENABLE_LOW_POWER                 0
+  84              	*    MQX_ENABLE_IDLE_LOOP                 0
+  85              	*
+  86              	*END************************************************************************/
+  87              	
+  88              	#ifndef __mqxlite_cnfg_h__
+  89              	#define __mqxlite_cnfg_h__
+  90              	
+  91              	
+  92              	/*
+  93              	 * The main requirement is to define target processor
+  94              	 */
+  95              	#ifndef MQX_CPU
+  96              	#error  You must define target processor in "user_config.h" (MQX_CPU)
+  97              	#endif
+  98              	
+  99              	/*
+ 100              	 * some setting may be forced by source files (before including this file)
+ 101              	 */
+ 102              	#ifdef MQX_FORCE_USE_INLINE_MACROS
+ 103              	#undef  MQX_USE_INLINE_MACROS
+ 104              	#define MQX_USE_INLINE_MACROS  MQX_FORCE_USE_INLINE_MACROS
+ 105              	#endif
+ 106              	
+ 107              	/*
+ 108              	 * When MQX_CHECK_ERRORS is defined as 1,
+ 109              	 * kernel functions will perform error checking on their parameters.
+ 110              	 */
+ 111              	#ifndef MQX_CHECK_ERRORS
+ 112              	#define MQX_CHECK_ERRORS                                1
+ 113              	#endif
+ 114              	
+ 115              	
+ 116              	/*
+ 117              	 * When MQX_CHECK_MEMORY_ALLOCATION_ERRORS is defined as 1,
+ 118              	 * kernel functions will check all memory allocations for errors.
+ 119              	 * The functions will verify that the memory allocation
+ 120              	 * was successful.
+ 121              	 */
+ 122              	#ifndef MQX_CHECK_MEMORY_ALLOCATION_ERRORS
+ 123              	#define MQX_CHECK_MEMORY_ALLOCATION_ERRORS              0
+ 124              	#endif
+ 125              	
+ 126              	
+ 127              	/*
+ 128              	 * When MQX_CHECK_VALIDITY is defined as 1,
+ 129              	 * kernel functions will check the the VALIDITY fields of structures
+ 130              	 * as they are accessed.
+ 131              	 */
+ 132              	#ifndef MQX_CHECK_VALIDITY
+ 133              	#define MQX_CHECK_VALIDITY                              1
+ 134              	#endif
+ 135              	
+ 136              	
+ 137              	/*
+ 138              	 * When MQX_COMPONENT_DESTRUCTION is defined as 1,
+ 139              	 * the kernel will handle the destruction of a kernel component object
+ 140              	 * (such as a semaphore or event)
+ 141              	 */
+ 142              	#ifndef MQX_COMPONENT_DESTRUCTION
+ 143              	#define MQX_COMPONENT_DESTRUCTION                       1
+ 144              	#endif
+ 145              	
+ 146              	
+ 147              	/*
+ 148              	 * Enables message receive calls to set MSGQ_MESSAGE_NOT_AVAILABLE task
+ 149              	 * error code when message is not available.
+ 150              	 */
+ 151              	#ifndef MQXCFG_ENABLE_MSG_TIMEOUT_ERROR
+ 152              	#define MQXCFG_ENABLE_MSG_TIMEOUT_ERROR                 0
+ 153              	#endif
+ 154              	
+ 155              	
+ 156              	/*
+ 157              	 * When MQX_IO_COMPONENT_DESTRUCTION is defined as 1,
+ 158              	 * the kernel will handle the destruction of an IO component object
+ 159              	 */
+ 160              	#ifndef MQX_IO_COMPONENT_DESTRUCTION
+ 161              	#define MQX_IO_COMPONENT_DESTRUCTION                    0
+ 162              	#endif
+ 163              	
+ 164              	
+ 165              	/*
+ 166              	 * When MQX_DEFAULT_TIME_SLICE_IN_TICKS is define as 1,
+ 167              	 * then the default time slice in the task template structure
+ 168              	 * is in units of ticks. Changing this to 0 will change the units
+ 169              	 * to milliseconds. This also affects the time slice field in the
+ 170              	 * task template since this is used to set a task's default time
+ 171              	 * slice.
+ 172              	 */
+ 173              	#ifndef MQX_DEFAULT_TIME_SLICE_IN_TICKS
+ 174              	#define MQX_DEFAULT_TIME_SLICE_IN_TICKS                 0
+ 175              	#endif
+ 176              	
+ 177              	
+ 178              	/*
+ 179              	 * When MQX_EXIT_ENABLED is defined as 1,
+ 180              	 * code is compiled in to allow the application to return from _mqx().
+ 181              	 */
+ 182              	#ifndef MQX_EXIT_ENABLED
+ 183              	#define MQX_EXIT_ENABLED                                1
+ 184              	#endif
+ 185              	
+ 186              	
+ 187              	/*
+ 188              	 * When MQX_EXTRA_TASK_STACK_ENABLE is defined as 1,
+ 189              	 * code is compiled in to reserve extra memory at the top of stack
+ 190              	 * in every task, if desired. Both "OS Changer" and the MetaWare C/C++
+ 191              	 * runtime want additional per-task variables.
+ 192              	 */
+ 193              	#ifndef MQX_EXTRA_TASK_STACK_ENABLE
+ 194              	#define MQX_EXTRA_TASK_STACK_ENABLE                     0
+ 195              	#endif
+ 196              	
+ 197              	
+ 198              	/*
+ 199              	 * When MQX_HAS_TIME_SLICE is defined as 1,
+ 200              	 * then code is compiled in to support time sliced tasks.
+ 201              	 */
+ 202              	#ifndef MQX_HAS_TIME_SLICE
+ 203              	#define MQX_HAS_TIME_SLICE                              0
+ 204              	#endif
+ 205              	
+ 206              	
+ 207              	/*
+ 208              	 * When MQX_INCLUDE_FLOATING_POINT_IO is defined as 1,
+ 209              	 * _io_printf and _io_scanf will include floating point I/O code.
+ 210              	 */
+ 211              	#ifndef MQX_INCLUDE_FLOATING_POINT_IO
+ 212              	#define MQX_INCLUDE_FLOATING_POINT_IO                   0
+ 213              	#endif
+ 214              	
+ 215              	
+ 216              	/*
+ 217              	 * When MQX_IS_MULTI_PROCESSOR is defined as 1,
+ 218              	 * then code is compiled in to support multiple processor MQX systems.
+ 219              	 */
+ 220              	#ifndef MQX_IS_MULTI_PROCESSOR
+ 221              	#define MQX_IS_MULTI_PROCESSOR                          0
+ 222              	#endif
+ 223              	
+ 224              	
+ 225              	/*
+ 226              	 * When MQX_KERNEL_LOGGING is defined as 1,
+ 227              	 * calls to write to the kernel log will be added to some kernel functions at
+ 228              	 * function entry (with parameters) and function exit (with error codes).
+ 229              	 *
+ 230              	 * The MQX functions that have logging compiled in will run slower, however
+ 231              	 * it is only when the logging is enabled for the function that performance
+ 232              	 * will be affected.
+ 233              	 *
+ 234              	 * The logging of specific functions can be controlled using the
+ 235              	 * _klog_control function.
+ 236              	 *
+ 237              	 */
+ 238              	#ifndef MQX_KERNEL_LOGGING
+ 239              	#define MQX_KERNEL_LOGGING                              0
+ 240              	#endif
+ 241              	
+ 242              	
+ 243              	/*
+ 244              	 * When MQX_LWLOG_TIME_STAMP_IN_TICKS is define as 0,
+ 245              	 * then the time stamp in the light weight log component
+ 246              	 * is in seconds, milliseconds, and microseconds. Changing this
+ 247              	 * to 1 will causes the time stamp to be in ticks which is not
+ 248              	 * as readable, but has much less overhead.
+ 249              	 */
+ 250              	#ifndef MQX_LWLOG_TIME_STAMP_IN_TICKS
+ 251              	#define MQX_LWLOG_TIME_STAMP_IN_TICKS                   1
+ 252              	#endif
+ 253              	
+ 254              	
+ 255              	/*
+ 256              	 * When MQX_MEMORY_FREE_LIST_SORTED is defined as 1,
+ 257              	 * then the free memory blocks are stored in order of address
+ 258              	 * to reduce fragmentation. This can increase memory freeing time
+ 259              	 * and code size
+ 260              	 */
+ 261              	#ifndef MQX_MEMORY_FREE_LIST_SORTED
+ 262              	#define MQX_MEMORY_FREE_LIST_SORTED                     1
+ 263              	#endif
+ 264              	
+ 265              	
+ 266              	/*
+ 267              	 * When MQX_MONITOR_STACK is defined as 1,
+ 268              	 * the kernel will fill all stacks with a known value when the stack is
+ 269              	 * initialized.
+ 270              	 * This allows utility software and debuggers to calculate how much of the
+ 271              	 * stack has been used.  This will only have an impact at task creation time.
+ 272              	 */
+ 273              	#ifndef MQX_MONITOR_STACK
+ 274              	#define MQX_MONITOR_STACK                               1
+ 275              	#endif
+ 276              	
+ 277              	
+ 278              	/*
+ 279              	 * When MQX_MUTEX_HAS_POLLING is defined as 1,
+ 280              	 * then extra code will be compiled in to support the
+ 281              	 * mutex options: MUTEX_SPIN_ONLY and MUTEX_LIMITED_SPIN
+ 282              	 */
+ 283              	#ifndef MQX_MUTEX_HAS_POLLING
+ 284              	#define MQX_MUTEX_HAS_POLLING                           1
+ 285              	#endif
+ 286              	
+ 287              	
+ 288              	/*
+ 289              	 * When MQX_PROFILING_ENABLE is defined as 1,
+ 290              	 * code to support an external profiling tool will be compiled into the kernel
+ 291              	 * Profiling will add to the size of the compiled image, and it will run slower
+ 292              	 *
+ 293              	 * Note: You can only use profiling if the toolset being used supports it
+ 294              	 */
+ 295              	#ifndef MQX_PROFILING_ENABLE
+ 296              	#define MQX_PROFILING_ENABLE                            0
+ 297              	#endif
+ 298              	
+ 299              	
+ 300              	/*
+ 301              	 * When MQX_RUN_TIME_ERR_CHECK_ENABLE is defined as 1,
+ 302              	 * code to support an external run-time error checking tool will be compiled
+ 303              	 * into the kernel.  This will add to the size of the compiled image,
+ 304              	 * and will cause MQX to run slower
+ 305              	 *
+ 306              	 * Note: You can only use run time error checking if the toolset being used
+ 307              	 *       supports it
+ 308              	 *
+ 309              	 */
+ 310              	#ifndef MQX_RUN_TIME_ERR_CHECK_ENABLE
+ 311              	#define MQX_RUN_TIME_ERR_CHECK_ENABLE                   0
+ 312              	#endif
+ 313              	
+ 314              	/*
+ 315              	 * When MQX_THREAD_LOCAL_STORAGE_ENABLE is defined as 1,
+ 316              	 * additional space will be reserved on the task's stack for local storage. This may be required by
+ 317              	 * but is not required for CodeWarrior.
+ 318              	 */
+ 319              	#ifndef MQX_THREAD_LOCAL_STORAGE_ENABLE
+ 320              	#define MQX_THREAD_LOCAL_STORAGE_ENABLE                 0
+ 321              	#endif
+ 322              	
+ 323              	/*
+ 324              	 * When MQX_TAD_RESERVED_ENABLE is defined as 1,
+ 325              	 * additional space will be reserved in the task descriptor for TAD. This may be required by some t
+ 326              	 * but is not required for CodeWarrior.
+ 327              	 *
+ 328              	 */
+ 329              	#ifndef MQX_TAD_RESERVED_ENABLE
+ 330              	#define MQX_TAD_RESERVED_ENABLE                         0
+ 331              	#endif
+ 332              	
+ 333              	/*
+ 334              	 * When MQX_TASK_CREATION_BLOCKS is defined as 1,
+ 335              	 * the creating task will be suspended when _task_create is called for a task
+ 336              	 * residing on a different processor.
+ 337              	 *
+ 338              	 * The creator task will be suspended until the target task is created,
+ 339              	 * and an error code is returned.
+ 340              	 */
+ 341              	#ifndef MQX_TASK_CREATION_BLOCKS
+ 342              	#define MQX_TASK_CREATION_BLOCKS                        1
+ 343              	#endif
+ 344              	
+ 345              	
+ 346              	/*
+ 347              	 * When MQX_TASK_DESTRUCTION is defined as 1,
+ 348              	 * the kernel will allow for the destruction of tasks,
+ 349              	 * releasing all resources owned by the task when it is destroyed.
+ 350              	 * (memory, events, semaphores, mutexes etc.)
+ 351              	 */
+ 352              	#ifndef MQX_TASK_DESTRUCTION
+ 353              	#define MQX_TASK_DESTRUCTION                            1
+ 354              	#endif
+ 355              	
+ 356              	
+ 357              	/*
+ 358              	 * When MQX_TIMER_USES_TICKS_ONLY, the timer task will *only* process
+ 359              	 * timer periodic and one-shot requests using ticks for timeout
+ 360              	 * reporting, rather than the MQX2.40 milliseconds/seconds.
+ 361              	 */
+ 362              	#ifndef MQX_TIMER_USES_TICKS_ONLY
+ 363              	#define MQX_TIMER_USES_TICKS_ONLY                       0
+ 364              	#endif
+ 365              	
+ 366              	
+ 367              	/*
+ 368              	 * When MQX_USE_32BIT_MESSAGE_QIDS is defined as 1,
+ 369              	 * the message component datatypes (_queue_numbe & _queue_id) will be uint_32s
+ 370              	 * wide instead of uint_16s.
+ 371              	 * This will allow for more than 256 message queues on a cpu, and
+ 372              	 * more than 256 processors in a multi-processor network.
+ 373              	 */
+ 374              	#ifndef MQX_USE_32BIT_MESSAGE_QIDS
+ 375              	#define MQX_USE_32BIT_MESSAGE_QIDS                      0
+ 376              	#endif
+ 377              	
+ 378              	
+ 379              	/*
+ 380              	 * When MQX_USE_32BIT_TYPES is defined as 1, the kernel will be forced
+ 381              	 * to 32 bit mode regardless of the natural size of the processor. This will
+ 382              	 * reduce the number of warning generated by the compiler when linking 2.4x
+ 383              	 * applications against version 2.5x of MQX.
+ 384              	 *
+ 385              	 * Obsolete in MQX3.x
+ 386              	 */
+ 387              	#ifndef MQX_USE_32BIT_TYPES
+ 388              	#define MQX_USE_32BIT_TYPES                             0
+ 389              	#endif
+ 390              	
+ 391              	/*
+ 392              	 * When MQX_HAS_DYNAMIC_PRIORITIES is defined as 1, MQX includes code to change
+ 393              	 * task priorities dynamically by _task_set_priority() call or by priority inheritance or priority 
+ 394              	 */
+ 395              	#ifndef MQX_HAS_DYNAMIC_PRIORITIES
+ 396              	#define MQX_HAS_DYNAMIC_PRIORITIES                      1
+ 397              	#endif
+ 398              	
+ 399              	/*
+ 400              	 * When MQX_HAS_EXCEPTION_HANDLER is defined as 1, MQX includes code to handle
+ 401              	 * exceptions (see psp/<psp>/int_xcpt.c) and to set/get task exception handler
+ 402              	 * routine by using the _task_set_exception_handler/_task_get_exception_handler)
+ 403              	 */
+ 404              	#ifndef MQX_HAS_EXCEPTION_HANDLER
+ 405              	#define MQX_HAS_EXCEPTION_HANDLER                       1
+ 406              	#endif
+ 407              	
+ 408              	/*
+ 409              	 * When MQX_HAS_EXIT_HANDLER is defined as 1, MQX includes code to execute task
+ 410              	 * exit handler before the task exits. Also the _task_set_exit_handler/_task_get_exit_handler
+ 411              	 * calls are also included.
+ 412              	 */
+ 413              	#ifndef MQX_HAS_EXIT_HANDLER
+ 414              	#define MQX_HAS_EXIT_HANDLER                            1
+ 415              	#endif
+ 416              	
+ 417              	/*
+ 418              	 * When MQX_HAS_HW_TICKS is defined as 1, MQX includes support for hardware ticks and
+ 419              	 * associated calls: _time_get_hwticks, _time_get_hwticks_per_tick and _psp_usecs_to_ticks.
+ 420              	 * Note that hardware ticks also need to be supported by BSP.
+ 421              	 */
+ 422              	#ifndef MQX_HAS_HW_TICKS
+ 423              	#define MQX_HAS_HW_TICKS                                1
+ 424              	#endif
+ 425              	
+ 426              	/*
+ 427              	 * When MQX_HAS_TASK_ENVIRONMENT is defined as 1, MQX includes code to set and get
+ 428              	 * task environment data pointer: _task_set_environment/_task_get_environment.
+ 429              	 */
+ 430              	#ifndef MQX_HAS_TASK_ENVIRONMENT
+ 431              	#define MQX_HAS_TASK_ENVIRONMENT                        0
+ 432              	#endif
+ 433              	
+ 434              	/*
+ 435              	 * When MQX_HAS_TICK is defined as 1, MQX includes support for tick time and all related
+ 436              	 * functionality of delaying tasks, waiting for synchronization objects with timeout etc.
+ 437              	 * Only change this option to 0 if you know what you are doing.
+ 438              	 */
+ 439              	#ifndef MQX_HAS_TICK
+ 440              	#define MQX_HAS_TICK                                    1
+ 441              	#endif
+ 442              	
+ 443              	/*
+ 444              	 * When MQX_KD_HAS_COUNTER is defined as 1, the MQX kernel maintains the counter value
+ 445              	 * which is automatically incremented any time the value is queried by _mqx_get_counter
+ 446              	 * call.
+ 447              	 */
+ 448              	#ifndef MQX_KD_HAS_COUNTER
+ 449              	#define MQX_KD_HAS_COUNTER                              0
+ 450              	#endif
+ 451              	
+ 452              	/*
+ 453              	 * When MQX_TD_HAS_ERROR_CODE is defined as 1, the MQX task descriptors maintain the
+ 454              	 * error code which is accessible with _task_set_error/_task_get_error calls.
+ 455              	 */
+ 456              	#ifndef MQX_TD_HAS_ERROR_CODE
+ 457              	#define MQX_TD_HAS_ERROR_CODE                           1
+ 458              	#endif
+ 459              	
+ 460              	/*
+ 461              	 * When MQX_TD_HAS_PARENT is defined as 1, the MQX task descriptors maintain the task's
+ 462              	 * creator ID which is available through _task_get_creator call.
+ 463              	 */
+ 464              	#ifndef MQX_TD_HAS_PARENT
+ 465              	#define MQX_TD_HAS_PARENT                               1
+ 466              	#endif
+ 467              	
+ 468              	/*
+ 469              	 * When MQX_TD_HAS_STACK_LIMIT is defined as 1, the MQX task descriptors maintain the
+ 470              	 * task limit value which is needed by various stack overflow checking calls like
+ 471              	 * _task_check_stack.
+ 472              	 */
+ 473              	
+ 474              	#ifndef MQX_TD_HAS_STACK_LIMIT
+ 475              	#define MQX_TD_HAS_STACK_LIMIT                          1
+ 476              	#endif
+ 477              	
+ 478              	/*
+ 479              	 * When MQX_TD_HAS_TASK_TEMPLATE_PTR is defined as 1, the MQX task descriptors maintain the
+ 480              	 * pointer to original TASK_TEMPLATE_STRUCT used for task creation. This pointer is used
+ 481              	 * by task restart call (_task_restart()) and by several lookup functions like
+ 482              	 * _task_get_id_from_name().
+ 483              	 */
+ 484              	#ifndef MQX_TD_HAS_TASK_TEMPLATE_PTR
+ 485              	#define MQX_TD_HAS_TASK_TEMPLATE_PTR                    1
+ 486              	#endif
+ 487              	
+ 488              	/*
+ 489              	 * When MQX_TD_HAS_TEMPLATE_INDEX is defined as 1, the MQX task descriptors maintain the
+ 490              	 * original index value coming from the TASK_TEMPLATE_STRUCT. This value is maintained for
+ 491              	 * backward compatibility only and is not used by MQX kernel.
+ 492              	 */
+ 493              	#ifndef MQX_TD_HAS_TEMPLATE_INDEX
+ 494              	#define MQX_TD_HAS_TEMPLATE_INDEX                       1
+ 495              	#endif
+ 496              	
+ 497              	/*
+ 498              	 * When MQX_USE_SMALL_MEM_COPY is defined as 1, a simple/short memory
+ 499              	 * copy function is compiled.
+ 500              	 */
+ 501              	#ifndef MQX_USE_SMALL_MEM_COPY
+ 502              	#define MQX_USE_SMALL_MEM_COPY                          0
+ 503              	#endif
+ 504              	
+ 505              	/*
+ 506              	 * When MQX_USE_SMALL_MEM_ZERO is defined as 1, a simple/short memory
+ 507              	 * zeroing function is compiled.
+ 508              	 */
+ 509              	#ifndef MQX_USE_SMALL_MEM_ZERO
+ 510              	#define MQX_USE_SMALL_MEM_ZERO                          0
+ 511              	#endif
+ 512              	
+ 513              	/*
+ 514              	 * When MQX_USE_SMALL_MEM_COPY is defined as 0 and MQX_USE_BLOCK_MEM_COPY as 1,
+ 515              	 * a stronger _mem_copy speed optimization is enabled.
+ 516              	 */
+ 517              	#ifndef MQX_USE_BLOCK_MEM_COPY
+ 518              	#define MQX_USE_BLOCK_MEM_COPY                          1
+ 519              	#endif
+ 520              	
+ 521              	/*
+ 522              	 * When MQX_USE_SMALL_MEM_ZERO is defined as 0 and MQX_USE_BLOCK_MEM_ZERO as 1,
+ 523              	 * a stronger _mem_zero speed optimization is enabled.
+ 524              	 */
+ 525              	#ifndef MQX_USE_BLOCK_MEM_ZERO
+ 526              	#define MQX_USE_BLOCK_MEM_ZERO                          1
+ 527              	#endif
+ 528              	
+ 529              	
+ 530              	/*
+ 531              	 * When MQX_USE_EVENTS is defined as 1,
+ 532              	 * then mqx will compile in the support code for event component.
+ 533              	 */
+ 534              	#ifndef MQX_USE_EVENTS
+ 535              	#define MQX_USE_EVENTS                                  0
+ 536              	#endif
+ 537              	
+ 538              	
+ 539              	/*
+ 540              	 * When MQX_USE_IDLE_TASK is defined as 1,
+ 541              	 * the kernel will create the idle task which will execute when no other tasks are ready,
+ 542              	 * otherwise, the processor will stop when there are no tasks to run.
+ 543              	 */
+ 544              	#ifndef MQX_USE_IDLE_TASK
+ 545              	#define MQX_USE_IDLE_TASK                               1
+ 546              	#endif
+ 547              	
+ 548              	
+ 549              	/*
+ 550              	 * When MQX_USE_INTERRUPTS is defined as 1, the support for interrupts is
+ 551              	 * enabled in MQX.
+ 552              	 */
+ 553              	#ifndef MQX_USE_INTERRUPTS
+ 554              	#define MQX_USE_INTERRUPTS                              1
+ 555              	#endif
+ 556              	
+ 557              	/*
+ 558              	 * When MQX_USE_IPC is defined as 1,
+ 559              	 * then mqx will compile in the support code for Interprocessor communication.
+ 560              	 */
+ 561              	#ifndef MQX_USE_IPC
+ 562              	#define MQX_USE_IPC                                     0
+ 563              	#endif
+ 564              	
+ 565              	
+ 566              	/*
+ 567              	 * When MQX_USE_INLINE_MACROS is defined as 1,
+ 568              	 * certain internal utility functions called by MQX will
+ 569              	 * be made "inline" rather than by function calls.  This allows the user
+ 570              	 * to optimize for time or code space.  Inlining optimizes for time,
+ 571              	 * not inlining optimizes for space.
+ 572              	 */
+ 573              	#ifndef MQX_USE_INLINE_MACROS
+ 574              	#define MQX_USE_INLINE_MACROS                           1
+ 575              	#endif
+ 576              	
+ 577              	/*
+ 578              	 * When MQX_USE_IO is defined as 1, the MQX implements the I/O subsystem calls
+ 579              	 * needed by I/O drivers. Without the I/O subsystem, no driver can be installed
+ 580              	 * or used and tasks are not able to use stdin/stdout/stderr handles.
+ 581              	 */
+ 582              	
+ 583              	#ifndef MQX_USE_IO
+ 584              	#define MQX_USE_IO                                      0
+ 585              	#endif
+ 586              	
+ 587              	/*
+ 588              	 * When MQX_USE_IO_COMPONENTS is defined as 1, the MQX maintains the list of additional
+ 589              	 * functional components like RTCS, MFS or USB in kernel data. Disable this feature
+ 590              	 * only with MQX-only applications to save some RAM.
+ 591              	 */
+ 592              	
+ 593              	#ifndef MQX_USE_IO_COMPONENTS
+ 594              	#define MQX_USE_IO_COMPONENTS                           0
+ 595              	#endif
+ 596              	
+ 597              	
+ 598              	/*
+ 599              	 * When MQX_USE_LWEVENTS is defined as 1,
+ 600              	 * then mqx will compile in the support code for light weight event component.
+ 601              	 */
+ 602              	#ifndef MQX_USE_LWEVENTS
+ 603              	#define MQX_USE_LWEVENTS                                0
+ 604              	#endif
+ 605              	
+ 606              	
+ 607              	/*
+ 608              	 * When MQX_USE_LOGS is defined as 1,
+ 609              	 * then mqx will compile in the support code for log component.
+ 610              	 */
+ 611              	#ifndef MQX_USE_LOGS
+ 612              	#define MQX_USE_LOGS                                    0
+ 613              	#endif
+ 614              	
+ 615              	
+ 616              	/*
+ 617              	 * When MQX_USE_LWLOGS is defined as 1,
+ 618              	 * then mqx will compile in the support code for light weight log component.
+ 619              	 */
+ 620              	#ifndef MQX_USE_LWLOGS
+ 621              	#define MQX_USE_LWLOGS                                  0
+ 622              	#endif
+ 623              	
+ 624              	/*
+ 625              	 * When MQX_USE_LWMEM_ALLOCATOR is defined as 1,
+ 626              	 * then mqx will use the light weight memory functions
+ 627              	 * to allocate and free memory
+ 628              	 */
+ 629              	#ifndef MQX_USE_LWMEM_ALLOCATOR
+ 630              	#define MQX_USE_LWMEM_ALLOCATOR                         0
+ 631              	#endif
+ 632              	
+ 633              	/*
+ 634              	 * When MQX_USE_LWMEM is defined as 1,
+ 635              	 * then mqx will compile in the support code for light weight memory component.
+ 636              	 */
+ 637              	#ifndef MQX_USE_LWMEM
+ 638              	#define MQX_USE_LWMEM                                   0
+ 639              	#endif
+ 640              	
+ 641              	
+ 642              	/*
+ 643              	 * When MQX_USE_MEM is defined as 1,
+ 644              	 * then mqx will compile in the support code for memory component.
+ 645              	 */
+ 646              	#ifndef MQX_USE_MEM
+ 647              	#define MQX_USE_MEM                                     0
+ 648              	#endif
+ 649              	
+ 650              	/*
+ 651              	 * When MQX_USE_UNCACHED_MEM is defined as 1,
+ 652              	 * then mqx will compile in the support for uncached memory allocation.
+ 653              	 */
+ 654              	#ifndef MQX_USE_UNCACHED_MEM
+ 655              	    #if MQX_USE_LWMEM_ALLOCATOR
+ 656              	        #define MQX_USE_UNCACHED_MEM         0
+ 657              	    #else
+ 658              	        #define MQX_USE_UNCACHED_MEM         1
+ 659              	    #endif
+ 660              	#endif
+ 661              	
+ 662              	/*
+ 663              	 * When MQX_USE_LWMSGQ is defined as 1,
+ 664              	 * then mqx will compile in the support code for light weight message queues.
+ 665              	 */
+ 666              	#ifndef MQX_USE_LWMSGQ
+ 667              	#define MQX_USE_LWMSGQ                                  0
+ 668              	#endif
+ 669              	
+ 670              	
+ 671              	/*
+ 672              	 * When MQX_USE_LWTIMER is defined as 1,
+ 673              	 * then mqx will compile in the support code for light weight timers.
+ 674              	 */
+ 675              	#ifndef MQX_USE_LWTIMER
+ 676              	#define MQX_USE_LWTIMER                                 0
+ 677              	#endif
+ 678              	
+ 679              	
+ 680              	/*
+ 681              	 * When MQX_USE_MESSAGES is defined as 1,
+ 682              	 * then mqx will compile in the support code for messages.
+ 683              	 */
+ 684              	#ifndef MQX_USE_MESSAGES
+ 685              	#define MQX_USE_MESSAGES                                0
+ 686              	#endif
+ 687              	
+ 688              	
+ 689              	/*
+ 690              	 * When MQX_USE_MUTEXES is defined as 1,
+ 691              	 * then mqx will compile in the support code for mutex component.
+ 692              	 */
+ 693              	#ifndef MQX_USE_MUTEXES
+ 694              	#define MQX_USE_MUTEXES                                 0
+ 695              	#endif
+ 696              	
+ 697              	
+ 698              	/*
+ 699              	 * When MQX_USE_NAME is defined as 1,
+ 700              	 * then mqx will compile in the support code for name component.
+ 701              	 */
+ 702              	#ifndef MQX_USE_NAME
+ 703              	#define MQX_USE_NAME                                    1
+ 704              	#endif
+ 705              	
+ 706              	
+ 707              	/*
+ 708              	 * When MQX_USE_PARTITIONS is defined as 1,
+ 709              	 * then mqx will compile in the support code for memory with fixed-size blocks.
+ 710              	 */
+ 711              	#ifndef MQX_USE_PARTITIONS
+ 712              	#define MQX_USE_PARTITIONS                              0
+ 713              	#endif
+ 714              	
+ 715              	
+ 716              	/*
+ 717              	 * When MQX_USE_SEMAPHORES is defined as 1,
+ 718              	 * then mqx will compile in the support code for Semaphores
+ 719              	 */
+ 720              	#ifndef MQX_USE_SEMAPHORES
+ 721              	#define MQX_USE_SEMAPHORES                              0
+ 722              	#endif
+ 723              	
+ 724              	
+ 725              	/*
+ 726              	 * When MQX_USE_SW_WATCHDOGS is defined as 1,
+ 727              	 * then mqx will compile in the support code for software watchdog timers.
+ 728              	 */
+ 729              	#ifndef MQX_USE_SW_WATCHDOGS
+ 730              	#define MQX_USE_SW_WATCHDOGS                            0
+ 731              	#endif
+ 732              	
+ 733              	
+ 734              	/*
+ 735              	 * When MQX_USE_TIMER is defined as 1,
+ 736              	 * then mqx will compile in the support code for timer component.
+ 737              	 */
+ 738              	#ifndef MQX_USE_TIMER
+ 739              	#define MQX_USE_TIMER                                   1
+ 740              	#endif
+ 741              	
+ 742              	
+ 743              	/*
+ 744              	 * When MQX_VERIFY_KERNEL_DATA is defined as 1,
+ 745              	 * then mqx will perform a memory check at startup to
+ 746              	 * verify it can correctly read and write kernel memory.
+ 747              	 */
+ 748              	#ifndef MQX_VERIFY_KERNEL_DATA
+ 749              	#define MQX_VERIFY_KERNEL_DATA                          1
+ 750              	#endif
+ 751              	
+ 752              	
+ 753              	/*
+ 754              	 * When MQX_ALLOW_TYPED_MEMORY is defined as 1,
+ 755              	 * then mqx will include code that allows typed memory blocks
+ 756              	 */
+ 757              	#ifndef MQX_ALLOW_TYPED_MEMORY
+ 758              	#define MQX_ALLOW_TYPED_MEMORY                          0
+ 759              	#endif
+ 760              	
+ 761              	/*
+ 762              	 * Set _mem_alloc_align mode - default is 0.
+ 763              	 * 0 create free mem block before allocated block for alignment.
+ 764              	 * 1 resize previous used block for alignment.
+ 765              	 */
+ 766              	#ifndef MQX_ALLOC_ALLIGN_RESIZE
+ 767              	#define MQX_ALLOC_ALLIGN_RESIZE                         0
+ 768              	#endif
+ 769              	
+ 770              	/*
+ 771              	 * When MQX_ROM_VECTORS is defined as 1, interrupt vector table is not copied
+ 772              	 * into RAM. The ROM-based table is set up correctly to handle all interrupts by
+ 773              	 * the default MQX interrupt dispatcher. The application will still be able to
+ 774              	 * install interrupt service routine by using the _int_install_isr call.
+ 775              	 * However, the _int_install_kernel_isr call can not be used to install the
+ 776              	 * low-level interrupt service routines directly in the vector table.
+ 777              	 */
+ 778              	#ifndef MQX_ROM_VECTORS
+ 779              	#define MQX_ROM_VECTORS                                 1
+ 780              	#endif
+ 781              	
+ 782              	/*
+ 783              	 * When MQX_SPARSE_ISR_TABLE is defined as 1, the MQX interrupt service
+ 784              	 * routine table is allocated as a "array of linked lists" instead of linear array.
+ 785              	 * This option is independent on the MQX_ROM_VECTORS as it deals with the
+ 786              	 * "logical" table managed by the interrupt dispatcher in MQX. With the sparse ISR
+ 787              	 * table, only the ISRs installed by _int_install_isr call consume RAM memory.
+ 788              	 * Interrupt latency increases as MQX needs to walk the list to find user ISR
+ 789              	 * to be invoked.
+ 790              	 */
+ 791              	#ifndef MQX_SPARSE_ISR_TABLE
+ 792              	#define MQX_SPARSE_ISR_TABLE                            0
+ 793              	#endif
+ 794              	
+ 795              	/*
+ 796              	 * When MQX_SPARSE_ISR_TABLE is defined as 1, this option determines the number of bits
+ 797              	 * the vector number is shifted to determine index of ISR linked list root.
+ 798              	 * For example with 256 potential interrupt sources and with shift value
+ 799              	 * of 3, it makes 256>>3=32 lists each with maximum depth of eight ISR entries.
+ 800              	 * Shift value of 8 would yield one big linked list of all ISR entries.
+ 801              	 */
+ 802              	#ifndef MQX_SPARSE_ISR_SHIFT
+ 803              	#define MQX_SPARSE_ISR_SHIFT                            3
+ 804              	#endif
+ 805              	
+ 806              	/*
+ 807              	 * When MQX_FP_CONTEXT_CHECK is defined as 1, MQX support for floating point context
+ 808              	 * checking is enabled. The task which make use of the floating point unit must still
+ 809              	 * be declared with MQX_FLOATING_POINT_TASK flag.
+ 810              	 */
+ 811              	#ifndef MQX_FP_CONTEXT_CHECK
+ 812              	#define MQX_FP_CONTEXT_CHECK                            0
+ 813              	#endif
+ 814              	
+ 815              	/*
+ 816              	 * When MQXCFG_ENABLE_FP is defined as 1, MQX support for floating point context saving is
+ 817              	 * enabled if the PSP supports it. The task which make use of the floating point unit must
+ 818              	 * still be declared with MQX_FLOATING_POINT_TASK flag.
+ 819              	 */
+ 820              	#ifndef MQXCFG_ENABLE_FP
+ 821              	#define MQXCFG_ENABLE_FP                                0
+ 822              	#endif
+ 823              	
+ 824              	/*
+ 825              	 * When MQXCFG_ENABLE_DSP is defined as 1, MQX support for dsp  context saving is
+ 826              	 * enabled if the PSP supports it. The task which make use of thedsp registers must
+ 827              	 * still be declared with MQX_DSP_TASK flag.
+ 828              	 */
+ 829              	#ifndef MQXCFG_ENABLE_DSP
+ 830              	#define MQXCFG_ENABLE_DSP                               0
+ 831              	#endif
+ 832              	
+ 833              	#ifndef MQX_GUERRILLA_INTERRUPTS_EXIST
+ 834              	#define MQX_GUERRILLA_INTERRUPTS_EXIST                  0
+ 835              	#endif
+ 836              	
+ 837              	/*
+ 838              	 * When this option is defined as 1, private MQX implementation of memcpy is used instead
+ 839              	 * the one from standard library.
+ 840              	 */
+ 841              	#ifndef MQXCFG_MEM_COPY
+ 842              	#define MQXCFG_MEM_COPY                                 1
+ 843              	#endif
+ 844              	
+ 845              	/*
+ 846              	 * When this option is defined as 1, support for USER-mode restricted tasks is enabled
+ 847              	 * (ARM/CortexM only)
+ 848              	 */
+ 849              	#ifndef MQX_ENABLE_USER_MODE
+ 850              	#define MQX_ENABLE_USER_MODE                            0
+ 851              	#endif
+ 852              	
+ 853              	/*
+ 854              	 * When this option is defined as 1, and if MQX_ENABLE_USER_MODE is enabled, the
+ 855              	 * default access to global variables is read-write for User tasks
+ 856              	 */
+ 857              	#ifndef MQX_DEFAULT_USER_ACCESS_RW
+ 858              	#define MQX_DEFAULT_USER_ACCESS_RW                      1
+ 859              	#endif
+ 860              	
+ 861              	/*
+ 862              	 * When this option is defined as 1, and if MQX_ENABLE_USER_MODE is enabled, the
+ 863              	 * classic MQX API is available also for User-mode. The use of User-mode API is
+ 864              	 * determined dynamically, based on if the calling task runs in User or Privilege
+ 865              	 * mode.
+ 866              	 */
+ 867              	#ifndef MQX_ENABLE_USER_STDAPI
+ 868              	#define MQX_ENABLE_USER_STDAPI                          1
+ 869              	#endif
+ 870              	
+ 871              	/*
+ 872              	 * When this option is defined as 1, support for various low power modes is enabled
+ 873              	 * (Kinetis platform so far)
+ 874              	 */
+ 875              	#ifndef MQX_ENABLE_LOW_POWER
+ 876              	#define MQX_ENABLE_LOW_POWER                            0
+ 877              	#endif
+ 878              	
+ 879              	/*
+ 880              	 * When this option is defined as 1, Idle loop counting in Idle task are enabled
+ 881              	 */
+ 882              	#ifndef MQX_ENABLE_IDLE_LOOP
+ 883              	#define MQX_ENABLE_IDLE_LOOP                            0
+ 884              	#endif
+ 885              	/*
+ 886              	 * The FILE and MQX_FILE_PTR types are deprecated since MQX 3.6 (replaced by MQX_FILE
+ 887              	 * and MQX_FILE_PTR). The symbols are still available for backward compatibility.
+ 888              	 * When this option is defined as 1 the old symbols are not declared/defined.
+ 889              	 */
+ 890              	#ifndef MQX_SUPPRESS_FILE_DEF
+ 891              	#define MQX_SUPPRESS_FILE_DEF                           0
+ 892              	#endif
+ 893              	
+ 894              	/*
+ 895              	 * The same for <stdio.h> definitions
+ 896              	 */
+ 897              	#ifndef MQX_SUPPRESS_STDIO_MACROS
+ 898              	#define MQX_SUPPRESS_STDIO_MACROS                       0
+ 899              	#endif
+ 900              	
+ 901              	/*
+ 902              	 * The same for <string.h> definitions. By default, the string.h macros are
+ 903              	 * suppressed in IAR EWARM 6.x to avoid conflict between MQX and system C libraries.
+ 904              	 */
+ 905              	#ifndef MQX_SUPPRESS_STRINGH_MACROS
+ 906              	    #if defined(__ICCARM__) /* IAR */
+ 907              	        #if __VER__ >= 6000000
+ 908              	            #define MQX_SUPPRESS_STRINGH_MACROS 1
+ 909              	        #else
+ 910              	            #define MQX_SUPPRESS_STRINGH_MACROS 0
+ 911              	        #endif
+ 912              	    #elif defined(__CC_ARM)
+ 913              	            #define MQX_SUPPRESS_STRINGH_MACROS 1
+ 914              	    #else
+ 915              	        #define MQX_SUPPRESS_STRINGH_MACROS 0
+ 916              	    #endif
+ 917              	#endif
+ 918              	
+ 919              	/*
+ 920              	 * Any MQX component used?
+ 921              	 */
+ 922              	#define MQX_USE_COMPONENTS         \
+ 923              	                    MQX_USE_NAME            || \
+ 924              	                    MQX_USE_SEMAPHORES      || \
+ 925              	                    MQX_USE_EVENTS          || \
+ 926              	                    MQX_USE_MUTEXES         || \
+ 927              	                    MQX_USE_TIMER           || \
+ 928              	                    MQX_USE_LOGS            || \
+ 929              	                    MQX_USE_SW_WATCHDOGS    || \
+ 930              	                    MQX_USE_MESSAGES        || \
+ 931              	                    MQX_USE_PARTITIONS      || \
+ 932              	                    MQX_USE_IPC             || \
+ 933              	                    MQX_IS_MULTI_PROCESSOR  || \
+ 934              	                    MQX_USE_LWLOGS
+ 935              	
+ 936              	/*
+ 937              	 * Check for dependencies.
+ 938              	 */
+ 939              	#if MQX_USE_EVENTS || MQX_USE_SEMAPHORES
+ 940              	#if !MQX_USE_NAME
+ 941              	#error Enable MQX_USE_NAME for Semaphores and Events
+ 942              	#endif
+ 943              	#endif
+ 944              	
+ 945              	#if MQX_USE_IPC
+ 946              	#if !MQX_USE_PARTITIONS
+ 947              	#error enable MQX_USE_PARTITIONS for IPC
+ 948              	#endif
+ 949              	#endif
+ 950              	
+ 951              	#ifdef MQX_CRIPPLED_EVALUATION
+ 952              	
+ 953              	#if MQX_CRIPPLED_EVALUATION
+ 954              	#if MQX_KERNEL_LOGGING && !MQX_EXIT_ENABLED
+ 955              	#error Enable MQX_EXIT_ENABLED for MQX crippled evaluation
+ 956              	#elif !MQX_KERNEL_LOGGING && MQX_EXIT_ENABLED
+ 957              	#error Disable MQX_EXIT_ENABLED for MQX crippled evaluation without MQX Kernel logging
+ 958              	#endif
+ 959              	#endif
+ 960              	
+ 961              	#endif
+ 962              	
+ 963              	#if MQX_KERNEL_LOGGING && !MQX_USE_LWLOGS
+ 964              	#error Set MQX_USE_LWLOGS to 1 when using MQX_KERNEL_LOGGING
+ 965              	#endif
+ 966              	
+ 967              	/*#if !MQX_USE_LWMEM_ALLOCATOR && !MQX_USE_MEM */
+ 968              	/*#error Set MQX_USE_MEM to 1 when not using MQX_USE_LWMEM_ALLOCATOR */
+ 969              	/*#endif */
+ 970              	
+ 971              	#if MQX_USE_LWMEM_ALLOCATOR && !MQX_USE_LWMEM
+ 972              	#error Set MQX_USE_LWMEM to 1 when using MQX_USE_LWMEM_ALLOCATOR
+ 973              	#endif
+ 974              	
+ 975              	#if MQX_USE_LWMEM_ALLOCATOR && MQX_USE_UNCACHED_MEM
+ 976              	#error Set MQX_USE_UNCACHED_MEM to 0 when using MQX_USE_LWMEM_ALLOCATOR
+ 977              	#endif
+ 978              	
+ 979              	#if MQX_SPARSE_ISR_TABLE && (MQX_SPARSE_ISR_SHIFT < 1 || MQX_SPARSE_ISR_SHIFT > 7)
+ 980              	#error MQX_SPARSE_ISR_SHIFT out of range <1, 7>
+ 981              	#endif
+ 982              	
+ 983              	#if MQX_ENABLE_USER_MODE && !MQX_USE_LWMEM_ALLOCATOR
+ 984              	#error Set MQX_USE_LWMEM_ALLOCATOR to 1 when using MQX_ENABLE_USER_MODE
+ 985              	#endif
+ 986              	
+ 987              	/* Default PSP configuration */
+ 988              	#ifndef PSP_KERNEL_DATA_VERIFY_ENABLE
+ 989              	#define PSP_KERNEL_DATA_VERIFY_ENABLE                   0
+ 990              	#endif /* PSP_KERNEL_DATA_VERIFY_ENABLE */
+  98              	
+  35              	#include "types.inc"
+   1              	/*HEADER**********************************************************************
+   2              	*
+   3              	* Copyright (c) 2010-2011 Freescale Semiconductor
+   4              	* All Rights Reserved
+   5              	*
+   6              	******************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	******************************************************************************
+  21              	*
+  22              	* $FileName: types.inc$
+  23              	* $Version : 3.8.8.0$
+  24              	* $Date    : Aug-30-2011$
+  25              	*
+  26              	* Comments:
+  27              	*   This file contains the assembler offsets calculated by the
+  28              	*   program KRNL_OFF.C.  These offsets are to be included in
+  29              	*   any assembler program that wishes to access kernel data
+  30              	*   structures.
+  31              	*
+  32              	*END*************************************************************************/
+  33              	
+  34              	#include <asm_mac.h>
+  35              	
+  36              	/*
+  37              	 * 'PSP_BLOCKED_STACK_STRUCT' size = 64 , 0x40
+  38              	 */
+  39              	ASM_EQUATE(PSPB_ST_PC,                          60)     // 0x3C
+  40              	
+  41              	/*
+  42              	 * 'PSP_BLOCKED_FP_STRUCT'
+  43              	 */
+  44              	ASM_EQUATE(FP_FPCR_OFFSET,                       0)     // 0x00
+  45              	ASM_EQUATE(FP_FPSR_OFFSET,                       4)     // 0x04
+  46              	ASM_EQUATE(FP_FPIAR_OFFSET,                      8)     // 0x08
+  47              	ASM_EQUATE(FP_TID_OFFSET,                        12)    // 0x0C
+  48              	ASM_EQUATE(FP_FPR0_OFFSET,                       16)    // 0x10
+  49              	ASM_EQUATE(FP_FPR1_OFFSET,                       24)    // 0x18
+  50              	ASM_EQUATE(FP_FPR2_OFFSET,                       32)    // 0x20
+  51              	ASM_EQUATE(FP_FPR3_OFFSET,                       40)    // 0x28
+  52              	ASM_EQUATE(FP_FPR4_OFFSET,                       48)    // 0x30
+  53              	ASM_EQUATE(FP_FPR5_OFFSET,                       56)    // 0x38
+  54              	ASM_EQUATE(FP_FPR6_OFFSET,                       64)    // 0x40
+  55              	ASM_EQUATE(FP_FPR7_OFFSET,                       72)    // 0x48
+  56              	
+  57              	
+  58              	/*
+  59              	 * 'TD_STRUCT' size = 216 , 0xd8
+  60              	 */
+  61              	ASM_EQUATE(TD_TD_NEXT,                              0)
+  62              	ASM_EQUATE(TD_TD_PREV,                              4)
+  63              	ASM_EQUATE(TD_STATE,                                8)
+  64              	ASM_EQUATE(TD_TASK_ID,                             12)
+  65              	ASM_EQUATE(TD_STACK_BASE,                          16)
+  66              	ASM_EQUATE(TD_STACK_PTR,                           20)
+  67              	ASM_EQUATE(TD_STACK_LIMIT,                         24)
+  68              	ASM_EQUATE(TD_MY_QUEUE,                            28)
+  69              	ASM_EQUATE(TD_HOME_QUEUE,                          32)
+  70              	ASM_EQUATE(TD_TASK_SR,                             36)
+  71              	ASM_EQUATE(TD_RESERVED_1,                          38)
+  72              	ASM_EQUATE(TD_FLAGS,                               40)
+  73              	ASM_EQUATE(TD_FLOAT_CONTEXT_PTR,                   52)
+  74              	
+  75              	/*
+  76              	 * 'READY_Q_STRUCT' size = 16 , 0x10
+  77              	 */
+  78              	ASM_EQUATE(RQ_STRUCT_SIZE,                         16)
+  79              	ASM_EQUATE(RQ_HEAD_READY_Q,                         0)
+  80              	ASM_EQUATE(RQ_TAIL_READY_Q,                         4)
+  81              	ASM_EQUATE(RQ_NEXT_Q,                               8)
+  82              	ASM_EQUATE(RQ_ENABLE_SR,                           12)
+  83              	ASM_EQUATE(RQ_PRIORITY,                            14)
+  84              	
+  85              	/*
+  86              	 * 'INTERRUPT_TABLE_STRUCT' size = 12 , 0xc
+  87              	 */
+  88              	ASM_EQUATE(IT_STRUCT_SIZE,                         12)
+  89              	ASM_EQUATE(IT_APP_ISR,                              0)
+  90              	ASM_EQUATE(IT_APP_ISR_EXCEPTION_HANDLER,            4)
+  91              	ASM_EQUATE(IT_APP_ISR_DATA,                         8)
+  92              	
+  93              	ASM_EQUATE(HASH_ISR_ITM_SIZE,                      20)
+  94              	ASM_EQUATE(HASH_ISR_NUM,                           0)
+  95              	ASM_EQUATE(HASH_ISR_ADDR,                          4)
+  96              	ASM_EQUATE(HASH_ISR_EXCEPT_HNDL,                   8)
+  97              	ASM_EQUATE(HASH_ISR_DATA,                          12)
+  98              	ASM_EQUATE(HASH_ISR_NEXT,                          16)
+  99              	
+ 100              	/*
+ 101              	 * 'KERNEL_DATA_STRUCT' size = 1156 , 0x484
+ 102              	 */
+ 103              	ASM_EQUATE(KD_ADDRESSING_CAPABILITY,                0)  //  0x0
+ 104              	ASM_EQUATE(KD_ENDIANESS,                            4)  //  0x4
+ 105              	ASM_EQUATE(KD_CPU_TYPE,                             8)  //  0x8
+ 106              	ASM_EQUATE(KD_PSP_CFG_MEMORY_ALIGNMENT,            10)  //  0xa
+ 107              	ASM_EQUATE(KD_PSP_CFG_STACK_ALIGNMENT,             12)  //  0xc
+ 108              	ASM_EQUATE(KD_PSP_CFG_MEM_STOREBLOCK_ALIGNMENT,    14)  //  0xe
+ 109              	ASM_EQUATE(KD_CONFIG1,                             16)  //  0x10
+ 110              	ASM_EQUATE(KD_CONFIG2,                             18)  //  0x12
+ 111              	ASM_EQUATE(KD_FLAGS,                               20)  //  0x14
+ 112              	ASM_EQUATE(KD_DISABLE_SR,                          22)  //  0x16
+ 113              	ASM_EQUATE(KD_IN_ISR,                              24)  //  0x18
+ 114              	ASM_EQUATE(KD_ACTIVE_SR,                           26)  //  0x1a
+ 115              	ASM_EQUATE(KD_ACTIVE_PTR,                          28)  //  0x1c
+ 116              	ASM_EQUATE(KD_READY_Q_LIST,                        32)  //  0x20
+ 117              	ASM_EQUATE(KD_CURRENT_READY_Q,                     36)  //  0x24
+ 118              	ASM_EQUATE(KD_DEFAULT_ISR,                         40)  //  0x28
+ 119              	ASM_EQUATE(KD_FIRST_USER_ISR_VECTOR,               44)  //  0x2c
+ 120              	ASM_EQUATE(KD_LAST_USER_ISR_VECTOR,                48)  //  0x30
+ 121              	ASM_EQUATE(KD_INTERRUPT_CONTEXT_PTR,               52)  //  0x34
+ 122              	ASM_EQUATE(KD_INTERRUPT_TABLE_PTR,                 56)  //  0x38
+ 123              	ASM_EQUATE(KD_INTERRUPT_STACK_PTR,                 60)  //  0x3c
+ 124              	
+ 125              	ASM_EQUATE(KD_LOG_CONTROL,                         64)  //  0x40
+ 126              	ASM_EQUATE(LOG_OLD_TD,                             68)  //  0x44
+ 127              	ASM_EQUATE(KD_FP_ACTIVE_PTR,                       72)  //  0x48
+ 128              	ASM_EQUATE(KD_DSP_ACTIVE_PTR,                      76)  //  0x4c
+ 129              	ASM_EQUATE(KD_SYSTEM_TD,                           80)  //  0x50
+ 130              	
+  36              	#include "psp_prv.inc"
+   1              	/*HEADER***********************************************************************
+   2              	*
+   3              	* Copyright (c) 2010-2012 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	*******************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	*******************************************************************************
+  21              	*
+  22              	* $FileName: psp_prv.inc$
+  23              	* $Version : 3.8.12.0$
+  24              	* $Date    : Sep-19-2011$
+  25              	*
+  26              	* Comments:
+  27              	*   This assembler header file contains private declarations for
+  28              	*   use with the mqx assembler files
+  29              	*
+  30              	*END***************************************************************************/
+  31              	
+  32              	#include "asm_mac.h"
+  33              	#include "mqx_cnfg.h"
+  34              	
+  35              	/*****************************************************************************
+  36              	 *                         EXTERNAL REFERENCES
+  37              	 *****************************************************************************/
+  38              	
+  39              	#if MQX_KERNEL_LOGGING
+  40              	        ASM_EXTERN(_klog_block_internal)
+  41              	        ASM_EXTERN(_klog_execute_scheduler_internal)
+  42              	        ASM_EXTERN(_klog_yield_internal)
+  43              	        ASM_EXTERN(_klog_context_switch_internal)
+  44              	        ASM_EXTERN(_klog_isr_start_internal)
+  45              	        ASM_EXTERN(_klog_isr_end_internal)
+  46              	#endif
+  47              	        ASM_EXTERN(_mqx_kernel_data)
+  48              	        ASM_EXTERN(_mqx_system_stack)
+  49              	
+  50              	        ASM_EXTERN(_psp_irq_sp)
+  51              	        ASM_EXTERN(_psp_fiq_sp)
+  52              	        ASM_EXTERN(_psp_undef_sp)
+  53              	        ASM_EXTERN(_psp_abort_sp)
+  54              	
+  55              	/*****************************************************************************
+  56              	 *                       CONSTANT DECLARATIONS
+  57              	 *
+  58              	 * The following are the bits in the CONFIG field of the kernel data structure
+  59              	 * to set for the psp options.
+  60              	 * NOTE: These must agree with values in mqx_prv.h or mqxlite_prv.h
+  61              	 *
+  62              	 *****************************************************************************/
+  63              	
+  64              	ASM_EQUATE(PSP_CNFG_MQX_KERNEL_LOGGING, 0x8000)
+  65              	ASM_EQUATE(PSP_CNFG_FP_REGISTERS_EXIST, 0x4000)
+  66              	
+  67              	#ifndef MQX_FP_REGISTERS_EXIST
+  68              	#define MQX_FP_REGISTERS_EXIST 0
+  69              	#endif
+  70              	
+  71              	#if MQX_KERNEL_LOGGING == 1
+  72              	#if MQX_FP_REGISTERS_EXIST == 1
+  73              	ASM_EQUATE(PSP_CNFG, (PSP_CNFG_MQX_KERNEL_LOGGING | PSP_CNFG_FP_REGISTERS_EXIST))
+  74              	#else
+  75              	ASM_EQUATE(PSP_CNFG, PSP_CNFG_MQX_KERNEL_LOGGING)
+  76              	#endif
+  77              	#else
+  78              	#if MQX_FP_REGISTERS_EXIST == 1
+  79              	ASM_EQUATE(PSP_CNFG, PSP_CNFG_FP_REGISTERS_EXIST)
+  80              	#else
+  81              	ASM_EQUATE(PSP_CNFG, 0)
+  82              	#endif
+  83              	#endif
+  84              	
+  85              	
+  86              	/*
+  87              	 * Task FLAGS bits
+  88              	 * These must match definitions in mqx_prv.h
+  89              	 */
+  90              	
+  91              	ASM_EQUATE(FP_TASK_MASK, 0x0002)
+  92              	ASM_EQUATE(FP_CONTEXT_SAVED_MASK, 0x0200)
+  93              	ASM_EQUATE(FP_CONTEXT_CLEAR_MASK, 0xfdff)
+  94              	ASM_EQUATE(PREEMPTION_DISABLED, 0x1000)
+  95              	
+  96              	/*****************************************************************************
+  97              	 *                      MACRO DECLARATIONS
+  98              	 *****************************************************************************/
+  99              	#ifdef __IASMARM__ /* IAR */
+ 100              	
+ 101              	/* This macro returns the address of the kernel data in the specified register */
+ 102              	GET_KERNEL_DATA MACRO reg
+ 103              	        ldr reg, =ASM_PREFIX(_mqx_kernel_data)
+ 104              	        ldr reg, [reg, #0]
+ 105              	        ENDM
+ 106              	
+ 107              	SET_FUNCTION_ALIGNMENT MACRO
+ 108              	                ALIGNROM 2
+ 109              	        ENDM
+ 110              	
+ 111              	/* This macro calls the kernel logging function, if logging enabled */
+ 112              	KLOG    MACRO KDATA, KLOG_FUNCTION
+ 113              	#if MQX_KERNEL_LOGGING
+ 114              	        LOCAL klog_end
+ 115              	        push {r0, r2, r3}
+ 116              	        ldr r2, [KDATA, #KD_LOG_CONTROL]
+ 117              	        cmp r2, #1
+ 118              	        beq klog_end
+ 119              	                
+ 120              	        push {lr}
+ 121              	        bl KLOG_FUNCTION
+ 122              	        pop {r2}
+ 123              	        mov lr, r2
+ 124              	klog_end:
+ 125              	        pop {r0, r2, r3}
+ 126              	#endif
+ 127              	        ENDM
+ 128              	
+ 129              	/* This macro stores active task registers in the following order (from higher addresses to lower a
+ 130              	   xPSR, PC, LR, R12, R3, R2, R1, R0, R11, R10, R9, R8, R7, R6, R5, R4 */
+ 131              	STORE_ALL_REGISTERS MACRO
+ 132              	        push {r0-r7} //r0-r4 will be later overwritten
+ 133              	        mov r0, r8
+ 134              	        mov r1, r9
+ 135              	        mov r2, r10
+ 136              	        mov r3, r11
+ 137              	        push {r0-r3}
+ 138              	        push {r4-r7}
+ 139              	        mrs r1, PSP //PSP must be kept in r1
+ 140              	        //get APSR and orr it with 0x01000000 (thumb bit set)
+ 141              	        mrs r5, APSR 
+ 142              	        ldr r6, =0x01000000
+ 143              	        orrs r5, r5, r6
+ 144              	        mov r2, r12
+ 145              	        mov r3, lr
+ 146              	        mov r4, lr //pc
+ 147              	        mov r0, r1
+ 148              	        adds r0, r0, #48
+ 149              	        stm r0!, {r2-r5}
+ 150              	        ENDM
+ 151              	 
+ 152              	#elif defined __CC_ARM /* Keil */
+ 153              	
+ 154              	/* This macro returns the address of the kernel data in the specified register */
+ 155              	        MACRO
+ 156              	        GET_KERNEL_DATA $reg
+ 157              	        ldr $reg, =ASM_PREFIX(_mqx_kernel_data)
+ 158              	        ldr $reg, [$reg, #0]
+ 159              	        MEND
+ 160              	
+ 161              	        MACRO
+ 162              	        SET_FUNCTION_ALIGNMENT
+ 163              	        ALIGN 2
+ 164              	        MEND
+ 165              	
+ 166              	        MACRO
+ 167              	        KLOG $KDATA, $KLOG_FUNCTION
+ 168              	#if MQX_KERNEL_LOGGING
+ 169              	        push {r0, r2, r3}
+ 170              	        ldr r2, [$KDATA, #KD_LOG_CONTROL]
+ 171              	        cmp r2, #1
+ 172              	        beq %FT1
+ 173              	
+ 174              	        push {lr}
+ 175              	        bl $KLOG_FUNCTION
+ 176              	        pop {r2}
+ 177              	        mov lr, r2
+ 178              	1
+ 179              	        pop {r0, r2, r3}
+ 180              	#endif
+ 181              	        MEND
+ 182              	
+ 183              	/* This macro stores active task registers in the following order (from higher addresses to lower a
+ 184              	   xPSR, PC, LR, R12, R3, R2, R1, R0, R11, R10, R9, R8, R7, R6, R5, R4 */
+ 185              	        MACRO
+ 186              	        STORE_ALL_REGISTERS
+ 187              	        push {r0-r7} //r0-r4 will be later overwritten
+ 188              	        mov r0, r8
+ 189              	        mov r1, r9
+ 190              	        mov r2, r10
+ 191              	        mov r3, r11
+ 192              	        push {r0-r3}
+ 193              	        push {r4-r7}
+ 194              	        mrs r1, PSP //PSP must be kept in r1
+ 195              	        //get APSR and orr it with 0x01000000 (thumb bit set)
+ 196              	        mrs r5, APSR 
+ 197              	        ldr r6, =0x01000000
+ 198              	        orrs r5, r5, r6
+ 199              	        mov r2, r12
+ 200              	        mov r3, lr
+ 201              	        mov r4, lr //pc
+ 202              	        mov r0, r1
+ 203              	        adds r0, r0, #48
+ 204              	        stm r0!, {r2-r5}
+ 205              	        MEND
+ 206              	
+ 207              	#else  /* CW */
+ 208              	
+ 209              	/* This macro returns the address of the kernel data in the specified register */
+ 210              	.macro GET_KERNEL_DATA reg
+ 211              	        ldr \reg, =ASM_PREFIX(_mqx_kernel_data)
+ 212              	        ldr \reg, [\reg, #0]
+ 213              	        .endm
+ 214              	
+ 215              	.macro SET_FUNCTION_ALIGNMENT
+ 216              	        .align 2
+ 217              	        .endm
+ 218              	
+ 219              	/* This macro calls the kernel logging function, if logging enabled */
+ 220              	.macro KLOG KDATA,KLOG_FUNCTION
+ 221              	        .if MQX_KERNEL_LOGGING
+ 222              	        push {r0, r2, r3}
+ 223              	        ldr r2, [\KDATA, #KD_LOG_CONTROL]
+ 224              	        cmp r2, #1
+ 225              	        beq klog_end\@
+ 226              	
+ 227              	        push {lr}
+ 228              	        bl \KLOG_FUNCTION
+ 229              	        pop {r2}
+ 230              	        mov lr, r2
+ 231              	klog_end\@:
+ 232              	        pop {r0, r2, r3}
+ 233              	        .endif
+ 234              	        .endm
+ 235              	
+ 236              	/* This macro stores active task registers in the following order (from higher addresses to lower a
+ 237              	   xPSR, PC, LR, R12, R3, R2, R1, R0, R11, R10, R9, R8, R7, R6, R5, R4 */
+ 238              	STORE_ALL_REGISTERS: .macro
+ 239              	        push {r0-r7} //r0-r4 will be later overwritten
+ 240              	        mov r0, r8
+ 241              	        mov r1, r9
+ 242              	        mov r2, r10
+ 243              	        mov r3, r11
+ 244              	        push {r0-r3}
+ 245              	        push {r4-r7}
+ 246              	        mrs r1, PSP //PSP must be kept in r1
+ 247              	        //get APSR and orr it with 0x01000000 (thumb bit set)
+ 248              	        mrs r5, APSR 
+ 249              	        ldr r6, =0x01000000
+ 250              	        orrs r5, r5, r6
+ 251              	        mov r2, r12
+ 252              	        mov r3, lr
+ 253              	        mov r4, lr //pc
+ 254              	        mov r0, r1
+ 255              	        adds r0, r0, #48
+ 256              	        stm r0!, {r2-r5}
+ 257              	        .endm
+ 258              	
+  37              	
+  38              	#define __ASM__
+  39              	
+  40              	#ifdef __CWARM__
+  41              	#include "kinetis.h"
+  42              	#else
+  43              	#include "psp_cpu.h"
+   1              	/**HEADER**********************************************************************
+   2              	*
+   3              	* Copyright (c) 2010 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	*******************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	*******************************************************************************
+  21              	*
+  22              	* $FileName: psp_cpu.h$
+  23              	* $Version : 3.8.7.0$
+  24              	* $Date    : Sep-7-2011$
+  25              	*
+  26              	* Comments:
+  27              	*
+  28              	*   This file provides a generic header file for use by the mqx kernel
+  29              	*   for including processor specific information
+  30              	*
+  31              	*END**************************************************************************/
+  32              	
+  33              	#ifndef __psp_cpu_h__
+  34              	    #define __psp_cpu_h__
+  35              	
+  36              	#include "psp_cpudef.h"
+   1              	/**HEADER*********************************************************************
+   2              	*
+   3              	* Copyright (c) 2010 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	******************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	******************************************************************************
+  21              	*
+  22              	* $FileName: psp_cpudef.h$
+  23              	* $Version : 3.8.11.0$
+  24              	* $Date    : Sep-8-2011$
+  25              	*
+  26              	* Comments:
+  27              	*   Processor and platform identifiers defined here
+  28              	*
+  29              	*END*************************************************************************/
+  30              	
+  31              	#ifndef __psp_cpudef_h__
+  32              	    #define __psp_cpudef_h__
+  33              	
+  34              	#include "mqx_cpudef.h"
+   1              	/*HEADER*********************************************************************
+   2              	*
+   3              	* Copyright (c) 2008 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	***************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	**************************************************************************
+  21              	*
+  22              	* $FileName: mqx_cpudef.h$
+  23              	* $Version : 3.7.3.0$
+  24              	* $Date    : Feb-28-2011$
+  25              	*
+  26              	* Comments:
+  27              	*
+  28              	*
+  29              	*END************************************************************************/
+  30              	
+  31              	#ifndef __mqx_cpudef_h__
+  32              	#define __mqx_cpudef_h__
+  33              	
+  34              	/* generating macros */
+  35              	#define PSP_CPU_ARCH_MASK           (0x0f)
+  36              	#define PSP_CPU_ARCH_SHIFT          (12)
+  37              	#define PSP_CPU_GROUP_MASK          (0xff)
+  38              	#define PSP_CPU_GROUP_SHIFT         (4)
+  39              	#define PSP_CPU_VAR_MASK            (0x0f)
+  40              	#define PSP_CPU_VAR_SHIFT           (0)
+  41              	
+  42              	
+  43              	#define PSP_CPU_ARCH(arch)          ((arch & PSP_CPU_ARCH_MASK)  << PSP_CPU_ARCH_SHIFT)
+  44              	#define PSP_CPU_GROUP(grp)          ((grp & PSP_CPU_GROUP_MASK)  << PSP_CPU_GROUP_SHIFT)
+  45              	#define PSP_CPU_VAR(var)            ((var & PSP_CPU_VAR_MASK)    << PSP_CPU_VAR_SHIFT)
+  46              	
+  47              	#define PSP_GET_CPU_ARCH(num)       ((num >> PSP_CPU_ARCH_SHIFT)  & PSP_CPU_ARCH_MASK)
+  48              	#define PSP_GET_CPU_GROUP(num)      ((num >> PSP_CPU_GROUP_SHIFT) & PSP_CPU_GROUP_MASK)
+  49              	#define PSP_GET_CPU_VAR(num)        ((num >> PSP_CPU_VAR_SHIFT)   & PSP_CPU_VAR_MASK)
+  50              	
+  51              	#define PSP_CPU_NUM(arch, grp, var) (PSP_CPU_ARCH(arch) | PSP_CPU_GROUP(grp) | PSP_CPU_VAR(var))
+  52              	
+  53              	/* architecture defines */
+  54              	#define PSP_CPU_ARCH_COLDFIRE           (1)
+  55              	#define PSP_CPU_ARCH_ARM_CORTEX_M4      (2)
+  56              	#define PSP_CPU_ARCH_PPC                (3)
+  57              	#define PSP_CPU_ARCH_ARM_CORTEX_M0P     (4)
+  58              	#define PSP_CPU_ARCH_ARM_CORTEX_A5      (5)
+  59              	#define PSP_CPU_ARCH_ARM_CORTEX_A8      (6)
+  60              	#define PSP_CPU_ARCH_ARM_OTHER          (10)
+  61              	
+  62              	#define PSP_MQX_CPU_IS_PPC              ((PSP_GET_CPU_ARCH(MQX_CPU) == PSP_CPU_ARCH_PPC))
+  63              	#define PSP_MQX_CPU_IS_COLDFIRE         ((PSP_GET_CPU_ARCH(MQX_CPU) == PSP_CPU_ARCH_COLDFIRE))
+  64              	#define PSP_MQX_CPU_IS_ARM_CORTEX_M0P   ((PSP_GET_CPU_ARCH(MQX_CPU) == PSP_CPU_ARCH_ARM_CORTEX_M0P)
+  65              	#define PSP_MQX_CPU_IS_ARM_CORTEX_M4    ((PSP_GET_CPU_ARCH(MQX_CPU) == PSP_CPU_ARCH_ARM_CORTEX_M4))
+  66              	#define PSP_MQX_CPU_IS_ARM_CORTEX_A5    ((PSP_GET_CPU_ARCH(MQX_CPU) == PSP_CPU_ARCH_ARM_CORTEX_A5))
+  67              	
+  68              	#define PSP_MQX_CPU_IS_ARM              ( PSP_MQX_CPU_IS_ARM_CORTEX_M0P || \
+  69              	                                          PSP_MQX_CPU_IS_ARM_CORTEX_M4  || \
+  35              	
+  36              	/* CPU groups for Kinetis K-Series */
+  37              	#define PSP_CPU_GROUP_KINETIS_K1X       (0x01)
+  38              	#define PSP_CPU_GROUP_KINETIS_K2X       (0x02)
+  39              	#define PSP_CPU_GROUP_KINETIS_K3X       (0x03)
+  40              	#define PSP_CPU_GROUP_KINETIS_K4X       (0x04)
+  41              	#define PSP_CPU_GROUP_KINETIS_K5X       (0x05)
+  42              	#define PSP_CPU_GROUP_KINETIS_K6X       (0x06)
+  43              	#define PSP_CPU_GROUP_KINETIS_K7X       (0x07)
+  44              	
+  45              	/* CPU groups for Kinetis GP L-Series */
+  46              	#define PSP_CPU_GROUP_KINETIS_KL0X      (0x20)
+  47              	#define PSP_CPU_GROUP_KINETIS_KL1X      (0x21)
+  48              	#define PSP_CPU_GROUP_KINETIS_KL2X      (0x22)
+  49              	#define PSP_CPU_GROUP_KINETIS_KL3X      (0x23)
+  50              	#define PSP_CPU_GROUP_KINETIS_KL4X      (0x24)
+  51              	
+  52              	/* Specific CPU identification macros */
+  53              	/* Kinetis GP K-Series K10 family with Cortex M4 core */
+  54              	#define PSP_CPU_MK10DX128Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K1X,
+  55              	#define PSP_CPU_MK10DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K1X,
+  56              	#define PSP_CPU_MK10DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K1X,
+  57              	#define PSP_CPU_MK10F12         (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K1X,
+  58              	#define PSP_CPU_MK1X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K1X,
+  59              	/* Kinetis GP K-Series K20 family with Cortex M4 core */
+  60              	#define PSP_CPU_MK20DX128Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K2X,
+  61              	#define PSP_CPU_MK20DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K2X,
+  62              	#define PSP_CPU_MK20DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K2X,
+  63              	#define PSP_CPU_MK20F12         (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K2X,
+  64              	#define PSP_CPU_MK2X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K2X,
+  65              	/* Kinetis GP K-Series K30 family with Cortex M4 core */
+  66              	#define PSP_CPU_MK30DX128Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K3X,
+  67              	#define PSP_CPU_MK30DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K3X,
+  68              	#define PSP_CPU_MK30DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K3X,
+  69              	#define PSP_CPU_MK3X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K3X,
+  70              	/* Kinetis GP K-Series 40 family with Cortex M4 core */
+  71              	#define PSP_CPU_MK40DX128Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K4X,
+  72              	#define PSP_CPU_MK40DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K4X,
+  73              	#define PSP_CPU_MK40DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K4X,
+  74              	#define PSP_CPU_MK4X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K4X,
+  75              	/* Kinetis GP K-Series K50 family with Cortex M4 core */
+  76              	#define PSP_CPU_MK53DN256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  77              	#define PSP_CPU_MK53DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  78              	#define PSP_CPU_MK53DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  79              	#define PSP_CPU_MK50DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  80              	#define PSP_CPU_MK50DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  81              	#define PSP_CPU_MK51DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  82              	#define PSP_CPU_MK51DN256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  83              	#define PSP_CPU_MK51DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  84              	#define PSP_CPU_MK52DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  85              	#define PSP_CPU_MK5X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K5X,
+  86              	/* Kinetis GP K-Series K60 family with Cortex M4 core */
+  87              	#define PSP_CPU_MK60DN256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K6X,
+  88              	#define PSP_CPU_MK60DX256Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K6X,
+  89              	#define PSP_CPU_MK60DN512Z      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K6X,
+  90              	#define PSP_CPU_MK60DF120M      (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K6X,
+  91              	#define PSP_CPU_MK6X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K6X,
+  92              	/* Kinetis GP K-Series K70 family with Cortex M4 core */
+  93              	#define PSP_CPU_MK70DP256       (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K7X,
+  94              	#define PSP_CPU_MK70F120M       (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K7X,
+  95              	#define PSP_CPU_MK70F150M       (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K7X,
+  96              	#define PSP_CPU_MK7X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M4, PSP_CPU_GROUP_KINETIS_K7X,
+  97              	
+  98              	/* Kinetis GP L-Series family with Cortex M0+ core */
+  99              	#define PSP_CPU_KL0X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M0P, PSP_CPU_GROUP_KINETIS_KL0
+ 100              	#define PSP_CPU_KL1X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M0P, PSP_CPU_GROUP_KINETIS_KL1
+ 101              	#define PSP_CPU_KL2X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M0P, PSP_CPU_GROUP_KINETIS_KL2
+ 102              	#define PSP_CPU_KL3X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M0P, PSP_CPU_GROUP_KINETIS_KL3
+ 103              	#define PSP_CPU_KL4X            (PSP_CPU_NUM(PSP_CPU_ARCH_ARM_CORTEX_M0P, PSP_CPU_GROUP_KINETIS_KL4
+ 104              	
+ 105              	
+ 106              	/* CPU id check support macros */
+ 107              	/* Kinetis GP K-Series family */
+ 108              	#define PSP_MQX_CPU_IS_KINETIS_K1X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K1X))
+ 109              	#define PSP_MQX_CPU_IS_KINETIS_K2X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K2X))
+ 110              	#define PSP_MQX_CPU_IS_KINETIS_K3X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K3X))
+ 111              	#define PSP_MQX_CPU_IS_KINETIS_K4X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K4X))
+ 112              	#define PSP_MQX_CPU_IS_KINETIS_K5X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K5X))
+ 113              	#define PSP_MQX_CPU_IS_KINETIS_K6X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K6X))
+ 114              	#define PSP_MQX_CPU_IS_KINETIS_K7X  ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_K7X))
+ 115              	
+ 116              	/* Kinetis GP L-Series family */
+ 117              	#define PSP_MQX_CPU_IS_KINETIS_KL0X ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_KL0X))
+ 118              	#define PSP_MQX_CPU_IS_KINETIS_KL1X ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_KL1X))
+ 119              	#define PSP_MQX_CPU_IS_KINETIS_KL2X ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_KL2X))
+ 120              	#define PSP_MQX_CPU_IS_KINETIS_KL3X ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_KL3X))
+ 121              	#define PSP_MQX_CPU_IS_KINETIS_KL4X ((PSP_GET_CPU_GROUP(MQX_CPU) == PSP_CPU_GROUP_KINETIS_KL4X))
+ 122              	
+ 123              	/* Kinetis GP K-Series family */
+ 124              	#define PSP_MQX_CPU_IS_KINETIS_K    (PSP_MQX_CPU_IS_KINETIS_K1X | \
+ 125              	                                     PSP_MQX_CPU_IS_KINETIS_K2X | \
+ 126              	                                     PSP_MQX_CPU_IS_KINETIS_K3X | \
+ 127              	                                     PSP_MQX_CPU_IS_KINETIS_K4X | \
+ 128              	                                     PSP_MQX_CPU_IS_KINETIS_K5X | \
+ 129              	                                     PSP_MQX_CPU_IS_KINETIS_K6X | \
+ 130              	                                     PSP_MQX_CPU_IS_KINETIS_K7X )
+ 131              	/* Kinetis GP L-Series family */
+ 132              	#define PSP_MQX_CPU_IS_KINETIS_L    (PSP_MQX_CPU_IS_KINETIS_KL0X | \
+ 133              	                                     PSP_MQX_CPU_IS_KINETIS_KL1X | \
+ 134              	                                     PSP_MQX_CPU_IS_KINETIS_KL2X | \
+ 135              	                                     PSP_MQX_CPU_IS_KINETIS_KL3X | \
+ 136              	                                     PSP_MQX_CPU_IS_KINETIS_KL4X )
+ 137              	
+ 138              	
+ 139              	/********************************************************************************************
+ 140              	 * Backward compatibility with older versions
+ 141              	 ********************************************************************************************/
+ 142              	#define PSP_CPU_GROUP_KINETIS_K10   PSP_CPU_GROUP_KINETIS_K1X
+ 143              	#define PSP_CPU_GROUP_KINETIS_K20   PSP_CPU_GROUP_KINETIS_K2X
+ 144              	#define PSP_CPU_GROUP_KINETIS_K30   PSP_CPU_GROUP_KINETIS_K3X
+ 145              	#define PSP_CPU_GROUP_KINETIS_K40   PSP_CPU_GROUP_KINETIS_K4X
+ 146              	#define PSP_CPU_GROUP_KINETIS_K50   PSP_CPU_GROUP_KINETIS_K5X
+ 147              	#define PSP_CPU_GROUP_KINETIS_K60   PSP_CPU_GROUP_KINETIS_K6X
+ 148              	#define PSP_CPU_GROUP_KINETIS_K70   PSP_CPU_GROUP_KINETIS_K7X
+ 149              	
+ 150              	#define PSP_MQX_CPU_IS_KINETIS_K10  PSP_MQX_CPU_IS_KINETIS_K1X
+ 151              	#define PSP_MQX_CPU_IS_KINETIS_K20  PSP_MQX_CPU_IS_KINETIS_K2X
+ 152              	#define PSP_MQX_CPU_IS_KINETIS_K30  PSP_MQX_CPU_IS_KINETIS_K3X
+ 153              	#define PSP_MQX_CPU_IS_KINETIS_K40  PSP_MQX_CPU_IS_KINETIS_K4X
+ 154              	#define PSP_MQX_CPU_IS_KINETIS_K50  PSP_MQX_CPU_IS_KINETIS_K5X
+ 155              	#define PSP_MQX_CPU_IS_KINETIS_K60  PSP_MQX_CPU_IS_KINETIS_K6X
+ 156              	#define PSP_MQX_CPU_IS_KINETIS_K70  PSP_MQX_CPU_IS_KINETIS_K7X
+ 157              	
+ 158              	#define PSP_MQX_CPU_IS_KINETIS      PSP_MQX_CPU_IS_KINETIS_K
+ 159              	
+ 160              	/* K40 */
+ 161              	#define PSP_CPU_K40N256         PSP_CPU_MK40DX256Z
+ 162              	#define PSP_CPU_K40N512         PSP_CPU_MK40DN512Z
+ 163              	#define PSP_CPU_MK40X256        PSP_CPU_MK40DX256Z
+ 164              	/* K53 */
+ 165              	#define PSP_CPU_K53N512         PSP_CPU_MK53DN512Z
+ 166              	#define PSP_CPU_MK53N512        PSP_CPU_MK53DN512Z
+ 167              	/* K60 */
+ 168              	#define PSP_CPU_K60N512         PSP_CPU_MK60DN512Z
+ 169              	#define PSP_CPU_MK60N512        PSP_CPU_MK60DN512Z
+ 170              	
+  37              	
+  38              	/*
+  39              	** The main requirement is to define target processor
+  40              	*/
+  41              	
+  42              	#include <kinetis.h>
+   1              	/**HEADER***********************************************************************
+   2              	*
+   3              	* Copyright (c) 2010 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	********************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	********************************************************************************
+  21              	*
+  22              	* $FileName: kinetis.h$
+  23              	* $Version : 3.8.18.0$
+  24              	* $Date    : Dec-7-2011$
+  25              	*
+  26              	* Comments:
+  27              	*
+  28              	*   This file contains the type definitions for the Kinetis microcontrollers.
+  29              	*
+  30              	*END***************************************************************************/
+  31              	
+  32              	#ifndef __kinetis_h__
+  33              	#define __kinetis_h__
+  34              	
+  35              	#ifndef __ASM__
+  36              	
+  37              	/* Include header file for specific Kinetis platform */
+  38              	#include "IO_Map.h"
+  39              	
+  40              	#endif /* __ASM__ */
+  41              	
+  42              	#ifdef __cplusplus
+  43              	extern "C" {
+  44              	#endif
+  45              	
+  46              	
+  47              	/*
+  48              	*******************************************************************************
+  49              	**
+  50              	**                  CONSTANT DEFINITIONS
+  51              	**
+  52              	*******************************************************************************
+  53              	*/
+  54              	
+  55              	/* Cache and MMU definition values */
+  56              	#ifndef PSP_HAS_MMU
+  57              	#define PSP_HAS_MMU                             0
+  58              	#endif
+  59              	
+  60              	#ifndef PSP_HAS_CODE_CACHE
+  61              	#define PSP_HAS_CODE_CACHE                      0
+  62              	#endif
+  63              	
+  64              	#ifndef PSP_HAS_DATA_CACHE
+  65              	#define PSP_HAS_DATA_CACHE                      0
+  66              	#endif
+  67              	
+  68              	#ifndef PSP_HAS_FPU
+  69              	#define PSP_HAS_FPU                             0
+  70              	#endif
+  71              	
+  72              	#define PSP_CACHE_LINE_SIZE                     (0x10)
+  73              	
+  43              	#include <cortex.h>
+   1              	/**HEADER*********************************************************************
+   2              	*
+   3              	* Copyright (c) 2010 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	******************************************************************************
+   7              	*
+   8              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18              	* THE POSSIBILITY OF SUCH DAMAGE.
+  19              	*
+  20              	******************************************************************************
+  21              	*
+  22              	* $FileName: cortex.h$
+  23              	* $Version : 3.8.13.0$
+  24              	* $Date    : Dec-7-2011$
+  25              	*
+  26              	* Comments:
+  27              	*
+  28              	*   This file contains the type definitions for the ARM Cortex processors.
+  29              	*
+  30              	*END************************************************************************/
+  31              	
+  32              	#ifndef __cortex_h__
+  33              	#define __cortex_h__
+  34              	
+  35              	/*==========================================================================*/
+  36              	/*
+  37              	**                   MQX REQUIRED DEFINITIONS
+  38              	**
+  39              	** Other MQX kernel and component functions require these definitions to exist.
+  40              	*/
+  41              	
+  42              	/* Indicate which endian this PSP is */
+  43              	#if defined(__ARM__) || defined(__GHS__)
+  44              	    #ifdef __BIG_ENDIAN
+  45              	        #define PSP_ENDIAN          MQX_BIG_ENDIAN
+  46              	    #else
+  47              	        #define PSP_ENDIAN          MQX_LITTLE_ENDIAN
+  48              	    #endif
+  49              	#elif defined(__MET__)
+  50              	    #ifdef _BE
+  51              	        #define PSP_ENDIAN          MQX_BIG_ENDIAN
+  52              	    #else
+  53              	        #define PSP_ENDIAN          MQX_LITTLE_ENDIAN
+  54              	    #endif
+  55              	#elif defined(__GNUC__)
+  56              	    #ifdef BYTES_BIG_ENDIAN
+  57              	        #define PSP_ENDIAN          MQX_BIG_ENDIAN
+  58              	    #else
+  59              	        #define PSP_ENDIAN          MQX_LITTLE_ENDIAN
+  60              	    #endif
+  61              	#else
+  62              	    #define PSP_ENDIAN              MQX_LITTLE_ENDIAN
+  63              	#endif
+  64              	
+  65              	/*
+  66              	** Memory alignment requirements.
+  67              	** The alignment indicates how memory is to be aligned for all memory
+  68              	** accesses.   This is to avoid mis-aligned transfers of data, thus
+  69              	** optimizing memory accesses.
+  70              	*/
+  71              	#define PSP_MEMORY_ALIGNMENT        (PSP_CACHE_LINE_SIZE-1)
+  72              	#define PSP_MEMORY_ALIGNMENT_MASK   (~PSP_MEMORY_ALIGNMENT)
+  73              	
+  74              	/*
+  75              	** Stack alignment requirements.
+  76              	** The alignment indicates how the stack is to be initially aligned.
+  77              	** This is to avoid mis-aligned types on the stack
+  78              	*/
+  79              	#define PSP_STACK_ALIGNMENT         PSP_MEMORY_ALIGNMENT
+  80              	#define PSP_STACK_ALIGNMENT_MASK    PSP_MEMORY_ALIGNMENT_MASK
+  81              	
+  82              	/*
+  83              	** Indicate the direction of the stack
+  84              	*/
+  85              	#define PSP_STACK_GROWS_TO_LOWER_MEM                (1)
+  86              	
+  87              	/*
+  88              	** Indicate addressing capability of the CPU
+  89              	** This is the memory width. i.e., the number of bits addressed
+  90              	** by each memory location.
+  91              	*/
+  92              	#define PSP_MEMORY_ADDRESSING_CAPABILITY            (8)
+  93              	
+  94              	/*
+  95              	** Indicate alignment restrictions on memory accesses
+  96              	** For an n-bit memory access,
+  97              	**
+  98              	** if n <  PSP_MEMORY_ACCESSING_CAPABILITY,
+  99              	**         n-bit accesses must be n-bit-aligned
+ 100              	**
+ 101              	** if n >= PSP_MEMORY_ACCESSING_CAPABILITY,
+ 102              	**         n-bit accesses must be PSP_MEMORY_ACCESSING_CAPABILITY-bit-aligned
+ 103              	*/
+ 104              	#define PSP_MEMORY_ACCESSING_CAPABILITY             (32)
+ 105              	
+ 106              	/*
+ 107              	** Define padding need to make the STOREBLOCK_STRUCT aligned properly
+ 108              	*/
+ 109              	#define PSP_MEM_STOREBLOCK_ALIGNMENT                (2)
+ 110              	
+ 111              	/*
+ 112              	**   MINIMUM STACK SIZE FOR A TASK
+ 113              	*/
+ 114              	
+ 115              	/*
+ 116              	** Memory overhead on users stack before switching over to the interrupt stack.
+ 117              	
+ 118              	*/
+ 119              	#if PSP_MQX_CPU_IS_ARM_CORTEX_M4
+ 120              	    #define PSP_STACK_INTERRUPT_OVERHEAD            (116)
+ 121              	#else /* PSP_MQX_CPU_IS_ARM_CORTEX_M0 is assumed */
+ 122              	    #define PSP_STACK_INTERRUPT_OVERHEAD            (64)
+ 123              	#endif
+ 124              	
+ 125              	/* This much extra stack is required for the logging of mqx functions */
+ 126              	#if MQX_KERNEL_LOGGING
+ 127              	    #define PSP_STACK_KLOG_OVERHEAD                 (128)
+ 128              	#else
+ 129              	    #define PSP_STACK_KLOG_OVERHEAD                 (0)
+ 130              	#endif
+ 131              	
+ 132              	/* Minimum stack size for all tasks. */
+ 133              	#define PSP_MINSTACKSIZE                      \
+ 134              	            (sizeof(PSP_STACK_START_STRUCT) + \
+ 135              	            PSP_STACK_INTERRUPT_OVERHEAD    + \
+ 136              	            PSP_STACK_KLOG_OVERHEAD)
+ 137              	
+ 138              	/* Minimum stack size for the Idle Task
+ 139              	**   Idle task written in C uses at most 8 bytes of stack:
+ 140              	**     1 Link Instruction, 1 local variable (pointer)
+ 141              	*/
+ 142              	#define PSP_IDLE_STACK_SIZE                         (PSP_MINSTACKSIZE + 8)
+ 143              	
+ 144              	/* Motorola addresses do not need to be normalized
+ 145              	** (ie as for example the Intel chips in real mode do require this)
+ 146              	*/
+ 147              	#define _PSP_NORMALIZE_MEMORY(x)                    (x)
+ 148              	
+  44              	
+  45              	#ifndef PSP_CACHE_SPLIT
+  46              	    #define PSP_CACHE_SPLIT         0
+  47              	#endif
+  44              	#endif /* __CWARM__ */
+  45              	
+  46              	#include "mqxlite_prv.h"
+   1              	/*HEADER**********************************************************************
+   2              	*
+   3              	* Copyright (c) 2008 Freescale Semiconductor;
+   4              	* All Rights Reserved
+   5              	*
+   6              	* Copyright (c) 2004-2008 Embedded Access Inc.;
+   7              	* All Rights Reserved
+   8              	*
+   9              	* Copyright (c) 1989-2008 ARC International;
+  10              	* All Rights Reserved
+  11              	*
+  12              	******************************************************************************
+  13              	*
+  14              	* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15              	* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16              	* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17              	* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18              	* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19              	* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20              	* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21              	* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22              	* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23              	* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24              	* THE POSSIBILITY OF SUCH DAMAGE.
+  25              	*
+  26              	******************************************************************************
+  27              	*
+  28              	* $FileName: mqx_prv.h$
+  29              	* $Version : 3.8.52.1$
+  30              	* $Date    : Feb-27-2012$
+  31              	*
+  32              	* Comments:
+  33              	*
+  34              	*   This file contains information private to the mqxlite kernel.
+  35              	*
+  36              	*END*************************************************************************/
+  37              	
+  38              	
+  39              	#ifndef __mqxlite_prv_h__
+  40              	#define __mqxlite_prv_h__
+  41              	
+  42              	
+  43              	/*--------------------------------------------------------------------------*/
+  44              	/*
+  45              	 *                        KERNEL CONFIGURATION
+  46              	 *
+  47              	 * Each mqx kernel configuration item has an associated bit that is written
+  48              	 * into the configuration field of the kernel data structure at run time,
+  49              	 * so that the compiled configuration of the kernel is available to software
+  50              	 * and the debuggers.
+  51              	 */
+  52              	
+  53              	#define MQX_CNFG1_INCLUDE_FLOATING_POINT_IO            (0x0001)
+  54              	#define MQX_CNFG1_USE_INLINE_MACROS                    (0x0002)
+  55              	#define MQX_CNFG1_KERNEL_LOGGING                       (0x0004)
+  56              	#define MQX_CNFG1_MONITOR_STACK                        (0x0008)
+  57              	#define MQX_CNFG1_TASK_CREATION_BLOCKS                 (0x0010)
+  58              	#define MQX_CNFG1_TASK_DESTRUCTION                     (0x0020)
+  59              	#define MQX_CNFG1_COMPONENT_DESTRUCTION                (0x0040)
+  60              	#define MQX_CNFG1_CHECK_ERRORS                         (0x0080)
+  61              	#define MQX_CNFG1_CHECK_VALIDITY                       (0x0100)
+  62              	#define MQX_CNFG1_CHECK_MEMORY_ALLOCATION_ERRORS       (0x0200)
+  63              	#define MQX_CNFG1_USE_32BIT_MESSAGE_QIDS               (0x0400)
+  64              	#define MQX_CNFG1_MEMORY_FREE_LIST_SORTED              (0x0800)
+  65              	#define MQX_CNFG1_DEFAULT_TIME_SLICE_IN_TICKS          (0x1000)
+  66              	#define MQX_CNFG1_LWLOG_TIME_STAMP_IN_TICKS            (0x2000)
+  67              	#define MQX_CNFG1_PROFILING_ENABLE                     (0x4000)
+  68              	#define MQX_CNFG1_RUN_TIME_ERR_CHECK_ENABLE            (0x8000)
+  69              	
+  70              	#define MQX_CNFG2_USE_32BIT_TYPES                      (0x0001)
+  71              	#define MQX_CNFG2_TIMER_USES_TICKS_ONLY                (0x0002)
+  72              	#define MQX_CNFG2_EXIT_ENABLED                         (0x0004)
+  73              	#define MQX_CNFG2_USE_IDLE_TASK                        (0x0008)
+  74              	#define MQX_CNFG2_IS_MULTI_PROCESSOR                   (0x0010)
+  75              	#define MQX_CNFG2_HAS_TIME_SLICE                       (0x0020)
+  76              	#define MQX_CNFG2_MUTEX_HAS_POLLING                    (0x0040)
+  77              	#define MQX_CNFG2_USE_LWMEM_ALLOCATOR                  (0x0080)
+  78              	#define MQX_CNFG2_USE_TYPED_MEMORY                     (0x0100)
+  79              	
+  80              	
+  81              	#ifndef __ASM__
+  82              	
+  83              	/* Compute value for kernel to write to CONFIG fields */
+  84              	#define MQX_CNFG1 ( \
+  85              	   (MQX_INCLUDE_FLOATING_POINT_IO ? MQX_CNFG1_INCLUDE_FLOATING_POINT_IO : 0) | \
+  86              	   (MQX_USE_INLINE_MACROS ? MQX_CNFG1_USE_INLINE_MACROS : 0) | \
+  87              	   (MQX_KERNEL_LOGGING ? MQX_CNFG1_KERNEL_LOGGING : 0) | \
+  88              	   (MQX_MONITOR_STACK ? MQX_CNFG1_MONITOR_STACK : 0) | \
+  89              	   (MQX_TASK_CREATION_BLOCKS ? MQX_CNFG1_TASK_CREATION_BLOCKS : 0) | \
+  90              	   (MQX_TASK_DESTRUCTION ? MQX_CNFG1_TASK_DESTRUCTION : 0) | \
+  91              	   (MQX_COMPONENT_DESTRUCTION ? MQX_CNFG1_COMPONENT_DESTRUCTION : 0) | \
+  92              	   (MQX_CHECK_ERRORS ? MQX_CNFG1_CHECK_ERRORS : 0) | \
+  93              	   (MQX_CHECK_VALIDITY ? MQX_CNFG1_CHECK_VALIDITY : 0) | \
+  94              	   (MQX_CHECK_MEMORY_ALLOCATION_ERRORS ? MQX_CNFG1_CHECK_MEMORY_ALLOCATION_ERRORS : 0) | \
+  95              	   (MQX_USE_32BIT_MESSAGE_QIDS ? MQX_CNFG1_USE_32BIT_MESSAGE_QIDS : 0) | \
+  96              	   (MQX_MEMORY_FREE_LIST_SORTED ? MQX_CNFG1_MEMORY_FREE_LIST_SORTED : 0) | \
+  97              	   (MQX_DEFAULT_TIME_SLICE_IN_TICKS ? MQX_CNFG1_DEFAULT_TIME_SLICE_IN_TICKS : 0) | \
+  98              	   (MQX_LWLOG_TIME_STAMP_IN_TICKS ? MQX_CNFG1_LWLOG_TIME_STAMP_IN_TICKS : 0) | \
+  99              	   (MQX_PROFILING_ENABLE ? MQX_CNFG1_PROFILING_ENABLE : 0) | \
+ 100              	   (MQX_RUN_TIME_ERR_CHECK_ENABLE ? MQX_CNFG1_RUN_TIME_ERR_CHECK_ENABLE : 0) \
+ 101              	   )
+ 102              	
+ 103              	#define MQX_CNFG2 ( \
+ 104              	   (MQX_USE_32BIT_TYPES ? MQX_CNFG2_USE_32BIT_TYPES : 0) | \
+ 105              	   (MQX_TIMER_USES_TICKS_ONLY ? MQX_CNFG2_TIMER_USES_TICKS_ONLY : 0) | \
+ 106              	   (MQX_EXIT_ENABLED ? MQX_CNFG2_EXIT_ENABLED : 0) | \
+ 107              	   (MQX_USE_IDLE_TASK ? MQX_CNFG2_USE_IDLE_TASK : 0) | \
+ 108              	   (MQX_IS_MULTI_PROCESSOR ? MQX_CNFG2_IS_MULTI_PROCESSOR : 0) | \
+ 109              	   (MQX_HAS_TIME_SLICE ? MQX_CNFG2_HAS_TIME_SLICE : 0) | \
+ 110              	   (MQX_MUTEX_HAS_POLLING ? MQX_CNFG2_MUTEX_HAS_POLLING : 0) | \
+ 111              	   (MQX_USE_LWMEM_ALLOCATOR ? MQX_CNFG2_USE_LWMEM_ALLOCATOR : 0) | \
+ 112              	   (MQX_ALLOW_TYPED_MEMORY ? MQX_CNFG2_USE_TYPED_MEMORY : 0) \
+ 113              	   )
+ 114              	
+ 115              	#endif /* __ASM__ */
+ 116              	
+ 117              	/*--------------------------------------------------------------------------*/
+ 118              	/*
+ 119              	 *                            INTERNAL TASK FLAGS
+ 120              	 *
+ 121              	 * These bits are set in the task descriptor FLAGS field.
+ 122              	 * Note that the bits from the task template ATTRIBUTES field are also copied
+ 123              	 * to the task descriptor FLAGS field.
+ 124              	 */
+ 125              	
+ 126              	/* This bit indicates that the task is running at a boosted priority level */
+ 127              	#define TASK_PRIORITY_BOOSTED             (0x8000)
+ 128              	
+ 129              	/* This bit indicates that the task has kernel logging enabled */
+ 130              	#define TASK_LOGGING_ENABLED              (0x4000)
+ 131              	
+ 132              	/* This bit indicates that the watchdog is active for this task */
+ 133              	#define TASK_WATCHDOG_STARTED             (0x2000)
+ 134              	
+ 135              	/* This bit indicates that preemption has been disabled for this task */
+ 136              	#define TASK_PREEMPTION_DISABLED          (0x1000)
+ 137              	
+ 138              	/* This bit indicates that the watchdog is currently running for this task */
+ 139              	#define TASK_WATCHDOG_RUNNING             (0x800)
+ 140              	
+ 141              	/* This bit indicates that the task has a MMU context associated with it */
+ 142              	#define TASK_MMU_CONTEXT_EXISTS           (0x0400)
+ 143              	
+ 144              	/*
+ 145              	 * This bit indicates that the floating point registers have been saved
+ 146              	 * on the stack of the blocked task
+ 147              	 */
+ 148              	#define TASK_FLOATING_POINT_CONTEXT_SAVED (0x0200)
+ 149              	
+ 150              	/*
+ 151              	 * This bit indicates that the DSP registers have been saved
+ 152              	 * on the stack of the blocked task
+ 153              	 */
+ 154              	#define TASK_DSP_CONTEXT_SAVED            (0x0100)
+ 155              	
+ 156              	/*
+ 157              	 * This bit indicates that the task is waiting on a LWEvent and wants
+ 158              	 * all bits to be set
+ 159              	 */
+ 160              	#define TASK_LWEVENT_ALL_BITS_WANTED      (0x0080)
+ 161              	
+ 162              	/*
+ 163              	 * This bit indicates that the PSP context switch/ISR code has saved the
+ 164              	 * scratch registers on the task's stack
+ 165              	 */
+ 166              	
+ 167              	#define PSP_SCRATCH_REGISTERS_SAVED       (0x040)
+ 168              	
+ 169              	/*
+ 170              	 * This bit indicates that the tasks TD and stack were provided by the
+ 171              	 * application
+ 172              	 */
+ 173              	#define TASK_STACK_PREALLOCATED           (0x020)
+ 174              	
+ 175              	/*
+ 176              	 * This bit indicates that the task runs in restricted USER mode
+ 177              	 */
+ 178              	#define TASK_USER_MODE                    (0x10000)
+ 179              	
+  47              	#undef __ASM__
+  48              	
+  49              	ASM_EQUATE(SVC_MQX_FN, 0xaa)
+  50              	
+  51              	 ASM_EXTERN(_mqx_kernel_data)
+  52              	 ASM_EXTERN(_klog_isr_start_internal)
+  53              	 ASM_EXTERN(_klog_isr_end_internal)
+  54              	 ASM_EXTERN(_mqx_api_call_handler)
+  55              	
+  56              	 ASM_CODE_SECTION(KERNEL)
+  57              	 SET_FUNCTION_ALIGNMENT
+  58              	 ASM_COMP_SPECIFIC_DIRECTIVES
+  59              	
+  60              	 ASM_PUBLIC(_sched_start_internal)
+  61              	 ASM_PUBLIC(_sched_run_internal)
+  62              	 ASM_PUBLIC(_sched_check_scheduler_internal)
+  63              	 ASM_PUBLIC(_sched_execute_scheduler_internal)
+  64              	
+  65              	 ASM_PUBLIC(_task_block)
+  66              	 ASM_PUBLIC(_int_kernel_isr)
+  67              	
+  68              	 ASM_PUBLIC(_mqx_api_call)
+  69              	
+  70              	 ASM_PUBLIC(_mem_test_and_set)
+  71              	 ASM_PUBLIC(__get_PSP)
+  72              	 ASM_PUBLIC(__get_MSP)
+  73              	 ASM_PUBLIC(__get_PSR)
+  74              	 ASM_PUBLIC(__set_MSP)
+  75              	 ASM_PUBLIC(__get_CONTROL)
+  76              	
+  77              	 ASM_PUBLIC(_psp_exception_return)
+  78              	
+  79              	
+  80              	/*FUNCTION*-------------------------------------------------------------------
+  81              	 *
+  82              	 * Function Name    : _sched_start_internal
+  83              	 * Returned Value   : none
+  84              	 * Comments         : start MQX scheduler
+  85              	 *
+  86              	 *END*----------------------------------------------------------------------*/
+  87              	
+  88              	 ASM_PUBLIC_BEGIN(_sched_start_internal)
+  89              	 ASM_PUBLIC_FUNC(_sched_start_internal)
+  90              	ASM_LABEL(_sched_start_internal)
+  91 0000 87480068 	                GET_KERNEL_DATA r0
+  92 0004 26E0     	                b sched_internal
+  93              	ASM_PUBLIC_END(_sched_start_internal)
+  94              	
+  95              	//-------------------------------------------------------------------------------
+  96              	
+  97              	 ASM_PUBLIC_BEGIN(_sched_run_internal)
+  98              	 ASM_PUBLIC_FUNC(_sched_run_internal)
+  99              	ASM_LABEL(_sched_run_internal)
+ 100 0006 86480068 	                GET_KERNEL_DATA r0
+ 101 000a 23E0     	                b sched_internal
+ 102              	 ASM_PUBLIC_END(_sched_run_internal)
+ 103              	
+ 104              	//-------------------------------------------------------------------------------
+ 105              	
+ 106              	 ASM_PUBLIC_BEGIN(_sched_check_scheduler_internal)
+ 107              	 ASM_PUBLIC_FUNC(_sched_check_scheduler_internal)
+ 108              	ASM_LABEL(_sched_check_scheduler_internal)
+ 109 000c 84480068 	                GET_KERNEL_DATA r0
+ 110              	
+ 111 0010 018B     	                ldrh r1, [r0, #KD_IN_ISR]
+ 112 0012 0029     	                cmp r1, #0
+ 113 0014 05D1     	                bne _sched_check_scheduler_internal_end
+ 114              	
+ 115 0016 416A     	                ldr r1, [r0, #KD_CURRENT_READY_Q]
+ 116 0018 C269     	                ldr r2, [r0, #KD_ACTIVE_PTR]
+ 117 001a D369     	                ldr r3, [r2, #TD_MY_QUEUE]
+ 118 001c 9942     	                cmp r1, r3
+ 119              	
+ 120              	                // current task is still the active task
+ 121 001e 00D0     	                beq _sched_check_scheduler_internal_end
+ 122              	
+ 123              	#if MQX_ENABLE_USER_MODE
+ 124              	                cpsid i
+ 125              	                push {r0}
+ 126              	                mrs r0, IPSR
+ 127              	                cmp r0, #0xb
+ 128              	                pop {r0}
+ 129              	                bne _sched_check_scheduler_internal2
+ 130              	                push {lr}
+ 131              	                //bl _set_pend_sv
+ 132              	                cpsie i
+ 133              	                pop {pc}
+ 134              	ASM_LABEL(_sched_check_scheduler_internal2)
+ 135              	#endif
+ 136 0020 FEE7     	                b _sched_execute_scheduler_internal
+ 137              	
+ 138              	ASM_LABEL(_sched_check_scheduler_internal_end)
+ 139 0022 7047     	                bx lr
+ 140              	ASM_PUBLIC_END(_sched_check_scheduler_internal)
+ 141              	
+ 142              	/*FUNCTION*-------------------------------------------------------------------
+ 143              	 *
+ 144              	 * Function Name    : _sched_execute_scheduler_internal
+ 145              	 * Returned Value   : none
+ 146              	 * Comments         :
+ 147              	 *
+ 148              	 *END*----------------------------------------------------------------------*/
+ 149              	
+ 150              	 ASM_PUBLIC_BEGIN(_sched_execute_scheduler_internal)
+ 151              	 ASM_PUBLIC_FUNC(_sched_execute_scheduler_internal)
+ 152              	ASM_LABEL(_sched_execute_scheduler_internal)
+ 153              	#if MQX_ENABLE_USER_MODE
+ 154              	                cpsid i
+ 155              	                push {r0}
+ 156              	                mrs r0, IPSR
+ 157              	                cmp r0, #0xb
+ 158              	                pop {r0}
+ 159              	                bne _sched_execute_scheduler_internal2
+ 160              	                push {lr}
+ 161              	                //bl _set_pend_sv
+ 162              	                cpsie i
+ 163              	                pop {pc}
+ 164              	ASM_LABEL(_sched_execute_scheduler_internal2)
+ 165              	                cpsie i
+ 166              	#endif
+ 167              	
+ 168              	                //disable interrupts
+ 169 0024 72B6     	                cpsid i
+ 170              	
+ 171              	                // store active task registers
+ 172 0026 FFB44046 	                STORE_ALL_REGISTERS
+ 172      49465246 
+ 172      5B460FB4 
+ 172      F0B4EFF3 
+ 172      0981EFF3 
+ 173              	
+ 174 004c 74480068 	                GET_KERNEL_DATA r0
+ 175 0050 C369     	                ldr r3, [r0, #KD_ACTIVE_PTR]        // get active task descriptor
+ 176 0052 5961     	                str r1, [r3, #TD_STACK_PTR]         // store task SP to task descriptor td
+ 177              	
+ 178              	#if MQX_KERNEL_LOGGING
+ 179              	                KLOG r0, ASM_PREFIX(_klog_execute_scheduler_internal)  // kernel log this function
+ 180              	#endif
+ 181              	
+ 182              	ASM_LABEL(sched_internal)
+ 183 0054 416A     	                ldr r1, [r0, #KD_CURRENT_READY_Q]   // get current ready q
+ 184              	ASM_LABEL(find_noempty_que)
+ 185 0056 0A68     	                ldr r2, [r1, #0]                    // address of first td
+ 186 0058 8A42     	                cmp r2, r1                          // ready_q structure itself?
+ 187 005a 07D1     	                bne switch_task
+ 188 005c 8968     	                ldr r1, [r1, #RQ_NEXT_Q]            // try next queue
+ 189 005e 0900     	                movs r1, r1
+ 190 0060 F9D1     	                bne find_noempty_que
+ 191              	
+ 192              	                // r1 is 0 -> empty
+ 193              	ASM_LABEL(no_one_to_run)
+ 194              	                // wait for interrupt
+ 195 0062 62B6     	                cpsie i
+ 196 0064 30BF     	                wfi
+ 197 0066 72B6     	                cpsid i
+ 198              	
+ 199              	                // TODO check r0, must be kernel data
+ 200 0068 016A     	                ldr r1, [r0, #KD_READY_Q_LIST]      // get first que from ready list
+ 201 006a F4E7     	                b find_noempty_que
+ 202              	
+ 203              	ASM_LABEL(switch_task)
+ 204              	                // update kernel structures
+ 205 006c 4162     	                str r1, [r0, #KD_CURRENT_READY_Q]   // store addr for active que
+ 206 006e C261     	                str r2, [r0, #KD_ACTIVE_PTR]        // active task descriptor
+ 207              	
+ 208 0070 938C     	                ldrh r3, [r2, #TD_TASK_SR]
+ 209 0072 4383     	                strh r3, [r0, #KD_ACTIVE_SR]        // restore priority mask for enabled interrupt 
+ 210              	
+ 211              	#if MQX_ENABLE_USER_MODE
+ 212              	                ldr r1, [r2, #TD_FLAGS]
+ 213              	#endif
+ 214              	
+ 215              	#if MQX_KERNEL_LOGGING
+ 216              	                KLOG r0, ASM_PREFIX(_klog_context_switch_internal)  // do kernel logging
+ 217              	#endif
+ 218              	
+ 219              	                // activate task, restore registers stacked in the following order (from higher add
+ 220              	                // xPSR, PC, LR, R12, R3, R2, R1, R0, R11, R10, R9, R8, R7, R6, R5, R4
+ 221 0074 5069     	                ldr r0, [r2, #TD_STACK_PTR]         // get task SP
+ 222 0076 0146     	                mov r1, r0
+ 223 0078 2031     	                adds r1, r1, #32
+ 224 007a 8C46     	                mov r12, r1
+ 225              	                //load r4-r10
+ 226 007c FEC8     	                ldm r0!, {r1-r7}
+ 227 007e BA46     	                mov r10, r7
+ 228 0080 B146     	                mov r9, r6
+ 229 0082 A846     	                mov r8, r5
+ 230 0084 2746     	                mov r7, r4
+ 231 0086 1E46     	                mov r6, r3
+ 232 0088 1546     	                mov r5, r2
+ 233 008a 0C46     	                mov r4, r1
+ 234              	                //load r11
+ 235 008c 02C8     	                ldm r0!, {r1}
+ 236 008e 8B46     	                mov r11, r1
+ 237              	                //check if we are returning from the ISR or not
+ 238 0090 EFF31481 	                mrs r1, CONTROL
+ 239 0094 0029     	                cmp r1, #0
+ 240 0096 04D1     	                bne rest_of_stack_frame_restore
+ 241              	ASM_LABEL(return_from_interrupt)
+ 242              	                // in ISR - rest of stack frame will be loaded automatickly by HW when returning fr
+ 243 0098 6146     	                mov r1, r12
+ 244 009a 81F30988 	                msr PSP, r1
+ 245 009e 62B6     	                cpsie i
+ 246              	                //load lr from the main stack
+ 247 00a0 00BD     	                pop {pc}
+ 248              	
+ 249              	ASM_LABEL(rest_of_stack_frame_restore)
+ 250              	                //not in ISR, restore xPSR, PC, LR, R12, R3-R0
+ 251 00a2 6146     	                mov r1, r12
+ 252 00a4 2031     	                adds r1, r1, #32
+ 253 00a6 81F30988 	                msr PSP, r1
+ 254 00aa 1030     	                adds r0, r0, #16
+ 255              	                //restore R12, LR, PC
+ 256 00ac 0EC8     	                ldm r0!, {r1-r3}
+ 257 00ae 8C46     	                mov r12, r1
+ 258 00b0 9646     	                mov lr, r2
+ 259              	                //restore xPSR
+ 260 00b2 02C8     	                ldm r0!, {r1}
+ 261 00b4 2038     	                subs r0, r0, #32 //use subs instruction that updates flags before restoring PSR reg
+ 262              	#ifdef __IASMARM__ /* IAR */
+ 263              	                msr APSR, r1
+ 264              	#else
+ 265 00b6 81F30088 	                msr APSR_nzcvq, r1
+ 266              	#endif
+ 267              	                //store stacked pc value (currently in r3) at the beginning of the stack frame to b
+ 268 00ba 08B4     	                push {r3}
+ 269              	                //restore R3-R0
+ 270 00bc 0FC8     	                ldm r0, {r0-r3}
+ 271              	
+ 272              	#if MQX_ENABLE_USER_MODE
+ 273              	                ldr r4, =TASK_USER_MODE
+ 274              	                tst r1, r4                          // r1 still contain TD_FLAGS, check for user mo
+ 275              	                bne _user_mode
+ 276              	                movs r0, #0                         // privilege mode
+ 277              	                b _load_control
+ 278              	ASM_LABEL(_user_mode)
+ 279              	                movs r0, #1                         // user mode
+ 280              	ASM_LABEL(_load_control)
+ 281              	                msr CONTROL, r0
+ 282              	#endif
+ 283              	
+ 284 00be 62B6     	                cpsie i
+ 285 00c0 00BD     	                pop {pc}
+ 286              	
+ 287              	 ASM_PUBLIC_END(_sched_execute_scheduler_internal)
+ 288              	
+ 289              	
+ 290              	/*FUNCTION*-------------------------------------------------------------------
+ 291              	 *
+ 292              	 * Function Name    : _mqx_api_call
+ 293              	 * Returned Value   : none
+ 294              	 * Comments         :
+ 295              	 *
+ 296              	 *END*----------------------------------------------------------------------*/
+ 297              	
+ 298              	 ASM_PUBLIC_BEGIN(_mqx_api_call)
+ 299              	 ASM_PUBLIC_FUNC(_mqx_api_call)
+ 300              	ASM_LABEL(_mqx_api_call)
+ 301              	
+ 302              	#if MQX_ENABLE_USER_MODE
+ 303              	                push {lr}
+ 304              	                svc SVC_MQX_FN
+ 305              	#endif
+ 306              	ASM_LABEL(_mqx_api_call_end)
+ 307 00c2 FEE7     	                b _mqx_api_call_end
+ 308              	 ASM_PUBLIC_END(_mqx_api_call)
+ 309              	
+ 310              	#if MQX_ENABLE_USER_MODE
+ 311              	ASM_LABEL(_mqx_api_call_handler_epilogue)
+ 312              	                push {r0, r1, r2}
+ 313              	
+ 314              	                // get active task descriptor
+ 315              	                GET_KERNEL_DATA r0
+ 316              	                ldr r0, [r0, #KD_ACTIVE_PTR]
+ 317              	
+ 318              	                // set task flag to privilege mode
+ 319              	                ldr r1, [r0, #TD_FLAGS]
+ 320              	
+ 321              	                ldr r2, =0x10   // #MQX_USER_TASK
+ 322              	                tst r1, r2
+ 323              	                beq _mqx_api_call_handler_epilogue_end
+ 324              	
+ 325              	                ldr r2, =TASK_USER_MODE
+ 326              	                orrs r1, r1, r2
+ 327              	                str r1, [r0, #TD_FLAGS]
+ 328              	
+ 329              	                // user mode, proc stack
+ 330              	                movs r0, #3
+ 331              	                msr CONTROL, r0
+ 332              	
+ 333              	ASM_LABEL(_mqx_api_call_handler_epilogue_end)
+ 334              	                pop {r0, r1, r2, pc}
+ 335              	
+ 336              	ASM_LABEL(_mqx_api_call_handler_prologue)
+ 337              	                mrs r1, PSP
+ 338              	
+ 339              	                // modify stack - return adress from svc
+ 340              	                ldr r0, =_mqx_api_call_handler
+ 341              	                //bic r0, r0, #1
+ 342              	                str r0, [r1, #24]                                        // set stacked PC to reque
+ 343              	
+ 344              	                // modify stack - return address from mqx api
+ 345              	                ldr r0, =_mqx_api_call_handler_epilogue
+ 346              	                //bic r0, r0, #1
+ 347              	                str r0, [r1, #20]                                        // set stacked LR to _mqx_
+ 348              	
+ 349              	                // get active task descriptor
+ 350              	                GET_KERNEL_DATA r0
+ 351              	                ldr r0, [r0, #KD_ACTIVE_PTR]
+ 352              	
+ 353              	                // set task flag to privilege mode
+ 354              	                ldr r1, [r0, #TD_FLAGS]
+ 355              	                ldr r2, =TASK_USER_MODE
+ 356              	                bics r1, r1, r2
+ 357              	                str r1, [r0, #TD_FLAGS]
+ 358              	
+ 359              	                // privilege mode
+ 360              	                movs r0, #0
+ 361              	                msr CONTROL, r0
+ 362              	
+ 363              	                cpsie i
+ 364              	
+ 365              	                bx lr
+ 366              	
+ 367              	#endif
+ 368              	
+ 369              	/*FUNCTION*-------------------------------------------------------------------
+ 370              	 *
+ 371              	 * Function Name    : _task_block
+ 372              	 * Returned Value   : none
+ 373              	 * Comments         : task block function - block actual task - switch to another
+ 374              	 *
+ 375              	 *END*----------------------------------------------------------------------*/
+ 376              	
+ 377              	 ASM_PUBLIC_BEGIN(_task_block)
+ 378              	 ASM_PUBLIC_FUNC(_task_block)
+ 379              	ASM_LABEL(_task_block)
+ 380              	
+ 381              	                //disable interrupts
+ 382 00c4 72B6     	                cpsid i
+ 383              	
+ 384              	                // store active task registers
+ 385 00c6 FFB44046 	                STORE_ALL_REGISTERS
+ 385      49465246 
+ 385      5B460FB4 
+ 385      F0B4EFF3 
+ 385      0981EFF3 
+ 386              	
+ 387 00ec 4C480068 	                GET_KERNEL_DATA r0
+ 388 00f0 C369     	                ldr r3, [r0, #KD_ACTIVE_PTR]        // get active task descriptor
+ 389 00f2 5961     	                str r1, [r3, #TD_STACK_PTR]         // store task SP to task descriptor td
+ 390              	
+ 391              	
+ 392              	                // set task block bit
+ 393 00f4 9A68     	                ldr r2, [r3, #TD_STATE]
+ 394 00f6 0121     	                movs r1, #1                        // TODO change from number to define
+ 395 00f8 0A43     	                orrs r2, r2, r1
+ 396 00fa 9A60     	                str r2, [r3, #TD_STATE]
+ 397              	
+ 398              	#if MQX_KERNEL_LOGGING
+ 399              	                KLOG r0, ASM_PREFIX(_klog_block_internal)        // kernel log this function
+ 400              	#endif // MQX_KERNEL_LOGGING
+ 401              	                // remove active task from ready queue
+ 402 00fc 5A68     	                ldr r2, [r3, #TD_TD_PREV]           // get ptr to ready_q structure
+ 403 00fe 1968     	                ldr r1, [r3, #TD_TD_NEXT]
+ 404 0100 1160     	                str r1, [r2, #RQ_HEAD_READY_Q]
+ 405 0102 4A60     	                str r2, [r1, #TD_TD_PREV]
+ 406              	
+ 407 0104 A6E7     	                b sched_internal   // Search for the next task in the ready queue.
+ 408              	
+ 409              	
+ 410              	 ASM_PUBLIC_END(_task_block)
+ 411              	
+ 412              	
+ 413              	/*FUNCTION*-------------------------------------------------------------------
+ 414              	 *
+ 415              	 * Function Name    : _int_kernel_isr
+ 416              	 * Returned Value   : none
+ 417              	 * Comments         : MQX kernel interrupt handler
+ 418              	 *
+ 419              	 *END*----------------------------------------------------------------------*/
+ 420              	
+ 421              	// kernel interrupt handler
+ 422              	 ASM_PUBLIC_BEGIN(_int_kernel_isr)
+ 423              	 ASM_PUBLIC_FUNC(_int_kernel_isr)
+ 424              	ASM_LABEL(_int_kernel_isr)
+ 425 0106 72B6     	                cpsid i
+ 426 0108 00B5     	                push {lr}
+ 427              	
+ 428 010a 454B1B68 	                GET_KERNEL_DATA r3              // get the kernel data address
+ 429              	
+ 430              	                // increment in interrupt counter
+ 431 010e 198B     	                ldrh r1, [r3, #KD_IN_ISR]
+ 432 0110 0131     	                adds r1, r1, #1
+ 433 0112 1983     	                strh r1, [r3, #KD_IN_ISR]
+ 434              	
+ 435              	                // create interrupt content
+ 436 0114 4448     	                ldr r0, =0                      // error code (set 0)
+ 437 0116 01B4     	                push {r0}                       // store in stack
+ 438 0118 EFF30581 	                mrs r1, IPSR                    // exception number
+ 439 011c 586B     	                ldr r0, [r3, #KD_INTERRUPT_CONTEXT_PTR] // previous interrupt content
+ 440 011e 03B4     	                push {r0-r1}                    // store in stack
+ 441              	
+ 442 0120 EFF30880 	                mrs r0, MSP                     // get address of interrupt content
+ 443 0124 5863     	                str r0, [r3, #KD_INTERRUPT_CONTEXT_PTR] // store address of actual interrupt conten
+ 444              	
+ 445 0126 0846     	                mov r0, r1
+ 446              	
+ 447              	#if MQX_KERNEL_LOGGING
+ 448              	                ldr r1, [r3, #KD_LOG_CONTROL]
+ 449              	                cmp r1, #0x00000001
+ 450              	                beq _isr_no_logging
+ 451              	
+ 452              	                // prepare parameters for klog function
+ 453              	                push {r0-r3}
+ 454              	                bl ASM_PREFIX(_klog_isr_start_internal)
+ 455              	                pop {r0-r3}
+ 456              	ASM_LABEL(_isr_no_logging)
+ 457              	#endif // MQX_KERNEL_LOGGING
+ 458              	                // get C function address from MQX interrupt table
+ 459              	                // r0 - interrupt number
+ 460              	
+ 461              	                // check if isr is in table range
+ 462 0128 1A6B     	                ldr r2, [r3, #KD_LAST_USER_ISR_VECTOR]
+ 463              	
+ 464              	                // cbz r2, _isr_run_default       // isr not used (cbz not working in CW)
+ 465 012a 002A     	                cmp r2, #0
+ 466 012c 00D1     	                bne _isr_skip_run_default1       // isr not used (this is CW workaround)
+ 467 012e 36E0     	                b _isr_run_default
+ 468              	ASM_LABEL(_isr_skip_run_default1)
+ 469              	
+ 470 0130 9042     	                cmp r0, r2
+ 471 0132 34D8     	                bhi _isr_run_default
+ 472              	
+ 473 0134 DA6A     	                ldr r2, [r3, #KD_FIRST_USER_ISR_VECTOR]
+ 474 0136 811A     	                subs r1, r0, r2                         // r1 = actual exception number in table
+ 475 0138 31DB     	                blt _isr_run_default
+ 476              	
+ 477              	#if MQX_SPARSE_ISR_TABLE
+ 478              	
+ 479              	ASM_LABEL(_int_kernel_isr_vect_ok)
+ 480              	                ldr r2, [r3, #KD_INTERRUPT_TABLE_PTR]   // get the interrupt table pointer
+ 481              	                lsrs r1, r1, #MQX_SPARSE_ISR_SHIFT
+ 482              	                lsls r1, r1, #2
+ 483              	
+ 484              	                ldr r1, [r2, r1]                        // get address of first isr in linked list
+ 485              	
+ 486              	                // cbz r1, _isr_run_default              // isr not used (cbz not working in CW)
+ 487              	                cmp r1, #0
+ 488              	                bne _isr_skip_run_default2              // isr not used (this is CW workaround)
+ 489              	                b _isr_run_default
+ 490              	ASM_LABEL(_isr_skip_run_default2)
+ 491              	
+ 492              	                // r1 - address of first isr in linked list
+ 493              	ASM_LABEL(_isr_search)
+ 494              	                ldr r2, [r1, #HASH_ISR_NUM]             // get isr num
+ 495              	                cmp r2, #0
+ 496              	                beq _isr_search_fail
+ 497              	
+ 498              	                cmp r2, r0                              // compare isr number in record with actual
+ 499              	                beq _isr_search_suc
+ 500              	
+ 501              	                ldr r1, [r1, #HASH_ISR_NEXT]            // next vector in list
+ 502              	                tst r1, r1
+ 503              	                bne _isr_search
+ 504              	
+ 505              	ASM_LABEL(_isr_search_fail)
+ 506              	                b _isr_run_default
+ 507              	
+ 508              	ASM_LABEL(_isr_search_suc)
+ 509              	                ldr r0, [r1, #HASH_ISR_DATA]            // move notifier data into r0 = first param
+ 510              	                ldr r2, [r1, #HASH_ISR_ADDR]            // move interrupt function address to r2
+ 511              	
+ 512              	#else /* MQX_SPARSE_ISR_TABLE */
+ 513              	
+ 514              	ASM_LABEL(_int_kernel_isr_vect_ok)
+ 515              	                // calculate offset in table
+ 516              	                // each table entry is 12 bytes in size
+ 517 013a 0C22     	                movs r2, #12
+ 518 013c 5143     	                muls r1, r2, r1
+ 519              	
+ 520 013e 9A6B     	                ldr r2, [r3, #KD_INTERRUPT_TABLE_PTR]       // pointer to interrupt table begin
+ 521 0140 1144     	                add r1, r1, r2                              // get address of entry in table
+ 522 0142 0A68     	                ldr r2, [r1, #0]
+ 523 0144 8868     	                ldr r0, [r1, #IT_APP_ISR_DATA]              // move notifier data into r0 = first p
+ 524              	#endif /* MQX_SPARSE_ISR_TABLE */
+ 525              	
+ 526              	ASM_LABEL(_isr_execute)
+ 527              	                // r0 = first parameter in C func
+ 528              	                // r2 contain interrupt function address
+ 529              	
+ 530 0146 62B6     	                cpsie i
+ 531 0148 08B4     	                push {r3}
+ 532              	
+ 533 014a 9047     	                blx r2
+ 534              	
+ 535              	ASM_LABEL(_int_kernel_isr_epilog)
+ 536              	
+ 537 014c 08BC     	                pop {r3}
+ 538 014e 72B6     	                cpsid i
+ 539              	
+ 540              	ASM_LABEL(_int_kernel_isr_return_internal)
+ 541              	
+ 542              	#if MQX_KERNEL_LOGGING
+ 543              	                ldr r1, [r3, #KD_LOG_CONTROL]
+ 544              	                cmp r1, #0x00000001
+ 545              	                beq _isr_return_no_logging
+ 546              	
+ 547              	                mrs r0, IPSR                    // exception number
+ 548              	
+ 549              	                // prepare parameters for klog function
+ 550              	                push {r0-r3}
+ 551              	                bl ASM_PREFIX(_klog_isr_end_internal)
+ 552              	                pop {r0-r3}
+ 553              	ASM_LABEL(_isr_return_no_logging)
+ 554              	#endif /* MQX_KERNEL_LOGGING */
+ 555              	
+ 556              	                // remove interrupt content
+ 557 0150 03BC     	                pop {r0-r1}
+ 558 0152 5863     	                str r0, [r3, #KD_INTERRUPT_CONTEXT_PTR] // update pointer to interrupt content
+ 559              	
+ 560 0154 01BC     	                pop {r0}                                // error code
+ 561              	
+ 562              	                // decrement interrupt counter
+ 563 0156 198B     	                ldrh r1, [r3, #KD_IN_ISR]
+ 564 0158 0139     	                subs r1, r1, #1
+ 565 015a 1983     	                strh r1, [r3, #KD_IN_ISR]
+ 566              	
+ 567 015c 0029     	                cmp r1, #0
+ 568 015e 1CD1     	                bne _isr_return_end        // waiting another isr, do not reschedule
+ 569              	
+ 570              	                // check for reschedule
+ 571              	                // check preemtion
+ 572 0160 DA69     	                ldr r2, [r3, #KD_ACTIVE_PTR]    // TD pointer
+ 573 0162 906A     	                ldr r0, [r2, #TD_FLAGS]
+ 574 0164 3149     	                ldr r1, =TASK_PREEMPTION_DISABLED
+ 575 0166 0842     	                tst r0, r1
+ 576 0168 17D1     	                bne _isr_return_end
+ 577              	
+ 578              	                // if a different TD at head of current readyq, then we need to run the scheduler
+ 579              	                // check for reschedule
+ 580 016a 596A     	                ldr r1, [r3, #KD_CURRENT_READY_Q]
+ 581 016c 0968     	                ldr r1, [r1]
+ 582 016e 9142     	                cmp r1, r2
+ 583              	
+ 584 0170 13D0     	                beq _isr_return_end
+ 585              	
+ 586              	                // store rest of stack frame that is not stacked automatically by the HW when enter
+ 587              	                // i.e. R11, R10, R9, R8, R7, R6, R5, R4
+ 588 0172 EFF30981 	                mrs r1, PSP
+ 589 0176 1831     	                adds r1, r1, #24
+ 590 0178 01C9     	                ldm r1!, {r0}
+ 591 017a 0130     	                adds r0, r0, #1
+ 592 017c 0439     	                subs r1, r1, #4
+ 593 017e 01C1     	                stm r1!, {r0}
+ 594 0180 3C39     	                subs r1, r1, #60
+ 595 0182 F0C1     	                stm r1!, {r4-r7}
+ 596 0184 4246     	                mov r2, r8
+ 597 0186 4B46     	                mov r3, r9
+ 598 0188 5446     	                mov r4, r10
+ 599 018a 5D46     	                mov r5, r11
+ 600 018c 3CC1     	                stm r1!, {r2-r5}
+ 601 018e 2039     	                subs r1, r1, #32
+ 602              	
+ 603              	                //store new PSP value into TD
+ 604 0190 23480068 	                GET_KERNEL_DATA r0
+ 605 0194 C369     	                ldr r3, [r0, #KD_ACTIVE_PTR]        // get active task descriptor
+ 606 0196 5961     	                str r1, [r3, #TD_STACK_PTR]         // store task SP to task descriptor td
+ 607              	
+ 608 0198 5CE7     	                b sched_internal
+ 609              	
+ 610              	ASM_LABEL(_isr_return_end)
+ 611 019a 62B6     	                cpsie i
+ 612 019c 00BD     	                pop {pc}
+ 613              	
+ 614              	ASM_LABEL(_isr_run_default)
+ 615              	                // r0 - interrupt number
+ 616              	
+ 617 019e 9A6A     	                ldr r2, [r3, #KD_DEFAULT_ISR]
+ 618              	
+ 619 01a0 D1E7     	                b _isr_execute
+ 620              	 ASM_PUBLIC_END(_int_kernel_isr)
+ 621              	
+ 622              	/*FUNCTION*-------------------------------------------------------------------
+ 623              	 *
+ 624              	 * Function Name    : _psp_exception_return
+ 625              	 * Returned Value   : none
+ 626              	 * Comments         : This functions returns us from an isr exception
+ 627              	 *
+ 628              	 *END*----------------------------------------------------------------------*/
+ 629              	
+ 630              	 ASM_PUBLIC_BEGIN(_psp_exception_return)
+ 631              	 ASM_PUBLIC_FUNC(_psp_exception_return)
+ 632              	ASM_LABEL(_psp_exception_return)
+ 633 01a2 72B6     	                cpsid i
+ 634 01a4 F7B4     	                push {r0, r1, r2, r4-r7}    // store parameter and registers which are used for cop
+ 635              	
+ 636 01a6 1E4B1B68 	                GET_KERNEL_DATA r3
+ 637              	
+ 638              	                // copy actual int context + 4WORDS -> prev int context - (1 + 8)WORDS
+ 639 01aa 5A6B     	                ldr r2, [r3, #KD_INTERRUPT_CONTEXT_PTR]    // get actual int context
+ 640 01ac 1032     	                adds r2, r2, #16               // calculate source address
+ 641              	
+ 642 01ae 1168     	                ldr r1, [r2]
+ 643 01b0 8E46     	                mov lr, r1                     // lr - return from exception... (0xfffffff1)
+ 644 01b2 0432     	                adds r2, r2, #4                // increment r2 by 4
+ 645              	
+ 646              	                // modify return address (PC) in exception stack frame (kernel isr epilog)
+ 647 01b4 1E48     	                ldr r0, =_int_kernel_isr_epilog
+ 648 01b6 0121     	                movs r1, #1
+ 649 01b8 8843     	                bics r0, r0, r1
+ 650 01ba 9061     	                str r0, [r2, #24]
+ 651              	
+ 652 01bc FFCA     	                ldmia r2, {r0-r7}              // read exception stack frame
+ 653 01be B846     	                mov r8, r7
+ 654              	
+ 655 01c0 80BC     	                pop {r7}                       // get prev int context address (function parameter 
+ 656              	
+ 657              	                // destination stack address (4B + 32B - exception stack frame)
+ 658 01c2 043F     	                subs r7, r7, #4    //#36
+ 659 01c4 7FC7     	                stm r7!, {r0-r6} //stmdb??
+ 660 01c6 1C3F     	                subs r7, r7, #28
+ 661 01c8 3846     	                mov r0, r7
+ 662 01ca 4746     	                mov r7, r8
+ 663 01cc 80C0     	                stm r0!, {r7} //stmdb??
+ 664 01ce 0438     	                subs r0, r0, #4
+ 665              	
+ 666              	                // restore modified registers which are not restored by cpu
+ 667 01d0 F6BC     	                pop {r1, r2, r4-r7}
+ 668              	
+ 669 01d2 80F30888 	                msr MSP, r0                    // update MSP (main stack pointer)
+ 670              	
+ 671 01d6 62B6     	                cpsie i
+ 672              	
+ 673 01d8 7047     	                bx lr
+ 674              	 ASM_PUBLIC_END(_psp_exception_return)
+ 675              	
+ 676              	/*******************************************************************************
+ 677              	 * test support
+ 678              	 ******************************************************************************/
+ 679              	
+ 680              	/*FUNCTION*-------------------------------------------------------------------
+ 681              	 *
+ 682              	 * Function Name    : _mem_test_and_set
+ 683              	 * Returned Value   :  previous value of location
+ 684              	 * Comments         :
+ 685              	 *   This function tests a byte location, and if AND 0x80 is 0 (7bit is set !!!), sets it to 0x80.
+ 686              	 *   It returns the previous value of the byte (0 or 0x80).
+ 687              	 *END*----------------------------------------------------------------------*/
+ 688              	
+ 689              	 ASM_PUBLIC_BEGIN(_mem_test_and_set)
+ 690              	 ASM_PUBLIC_FUNC(_mem_test_and_set)
+ 691              	ASM_LABEL(_mem_test_and_set)
+ 692 01da 06B5     	                push {r1, r2, lr}
+ 693              	
+ 694 01dc 0178     	                ldrb r1, [r0]
+ 695 01de 154A     	                ldr r2, =0x80
+ 696 01e0 1142     	                tst r1, r2
+ 697 01e2 03D1     	                bne _mem_test_and_set_0x80
+ 698 01e4 1143     	                orrs r1, r1, r2
+ 699 01e6 0170     	                strb r1, [r0]
+ 700 01e8 4040     	                eors r0, r0
+ 701 01ea 00E0     	                b _mem_test_and_set_pop
+ 702              	ASM_LABEL(_mem_test_and_set_0x80)
+ 703 01ec 8020     	                movs r0, #0x80
+ 704              	
+ 705              	ASM_LABEL(_mem_test_and_set_pop)
+ 706 01ee 06BD     	                pop {r1, r2, pc}
+ 707              	 ASM_PUBLIC_END(_mem_test_and_set)
+ 708              	
+ 709              	/*FUNCTION*-------------------------------------------------------------------
+ 710              	 *
+ 711              	 * Function Name    : __get_PSP
+ 712              	 * Returned Value   : none
+ 713              	 * Comments         : This functions returns PSP register value
+ 714              	 *
+ 715              	 *END*----------------------------------------------------------------------*/
+ 716              	
+ 717              	 ASM_PUBLIC_BEGIN(__get_PSP)
+ 718              	 ASM_PUBLIC_FUNC(__get_PSP)
+ 719              	ASM_LABEL(__get_PSP)
+ 720 01f0 EFF30980 	                mrs r0, PSP
+ 721 01f4 7047     	                bx lr
+ 722              	 ASM_PUBLIC_END(__get_PSP)
+ 723              	
+ 724              	/*FUNCTION*-------------------------------------------------------------------
+ 725              	 *
+ 726              	 * Function Name    : __get_MSP
+ 727              	 * Returned Value   : none
+ 728              	 * Comments         : This functions returns MSP register value
+ 729              	 *
+ 730              	 *END*----------------------------------------------------------------------*/
+ 731              	
+ 732              	 ASM_PUBLIC_BEGIN(__get_MSP)
+ 733              	 ASM_PUBLIC_FUNC(__get_MSP)
+ 734              	ASM_LABEL(__get_MSP)
+ 735 01f6 EFF30880 	                mrs r0, MSP
+ 736 01fa 7047     	                bx lr
+ 737              	 ASM_PUBLIC_END(__get_MSP)
+ 738              	
+ 739              	/*FUNCTION*-------------------------------------------------------------------
+ 740              	 *
+ 741              	 * Function Name    : __set_MSP
+ 742              	 * Returned Value   : none
+ 743              	 * Comments         : This functions set MSP register value
+ 744              	 *
+ 745              	 *END*----------------------------------------------------------------------*/
+ 746              	
+ 747              	 ASM_PUBLIC_BEGIN(__set_MSP)
+ 748              	 ASM_PUBLIC_FUNC(__set_MSP)
+ 749              	ASM_LABEL(__set_MSP)
+ 750 01fc 80F30888 	                msr MSP, r0
+ 751 0200 7047     	                bx lr
+ 752              	 ASM_PUBLIC_END(__set_MSP)
+ 753              	
+ 754              	/*FUNCTION*-------------------------------------------------------------------
+ 755              	 *
+ 756              	 * Function Name    : __get_PSR
+ 757              	 * Returned Value   : none
+ 758              	 * Comments         : This functions returns PSR (procesor status register) value
+ 759              	 *
+ 760              	 *END*----------------------------------------------------------------------*/
+ 761              	
+ 762              	 ASM_PUBLIC_BEGIN(__get_PSR)
+ 763              	 ASM_PUBLIC_FUNC(__get_PSR)
+ 764              	ASM_LABEL(__get_PSR)
+ 765              	        #ifdef __CWARM__
+ 766              	                 mrs r0, XPSR
+ 767              	        #else
+ 768 0202 EFF30380 	                 mrs r0, PSR
+ 769              	        #endif
+ 770 0206 7047     	                 bx lr
+ 771              	 ASM_PUBLIC_END(__get_PSR)
+ 772              	
+ 773              	/* IAR defines following functions internally */
+ 774              	#ifndef __IAR_SYSTEMS_ASM__
+ 775              	
+ 776              	/*FUNCTION*-------------------------------------------------------------------
+ 777              	 *
+ 778              	 * Function Name    : __enable_interrupt
+ 779              	 * Returned Value   : none
+ 780              	 * Comments         :
+ 781              	 *
+ 782              	 *END*----------------------------------------------------------------------*/
+ 783              	
+ 784              	 ASM_PUBLIC_BEGIN(__enable_interrupt)
+ 785              	 ASM_PUBLIC_FUNC(__enable_interrupt)
+ 786              	ASM_LABEL(__enable_interrupt)
+ 787 0208 62B6     	                 cpsie i
+ 788 020a 7047     	                 bx lr
+ 789              	 ASM_PUBLIC_END(__enable_interrupt)
+ 790              	
+ 791              	
+ 792              	/*FUNCTION*-------------------------------------------------------------------
+ 793              	 *
+ 794              	 * Function Name    : __disable_interrupt
+ 795              	 * Returned Value   : none
+ 796              	 * Comments         :
+ 797              	 *
+ 798              	 *END*----------------------------------------------------------------------*/
+ 799              	
+ 800              	 ASM_PUBLIC_BEGIN(__disable_interrupt)
+ 801              	 ASM_PUBLIC_FUNC(__disable_interrupt)
+ 802              	ASM_LABEL(__disable_interrupt)
+ 803 020c 72B6     	                 cpsid i
+ 804 020e 7047     	                 bx lr
+ 805              	 ASM_PUBLIC_END(__disable_interrupt)
+ 806              	
+ 807              	
+ 808              	 ASM_PUBLIC(__get_LR)
+ 809              	 ASM_PUBLIC(__get_PC)
+ 810              	 ASM_PUBLIC(__enable_interrupt)
+ 811              	 ASM_PUBLIC(__disable_interrupt)
+ 812              	
+ 813              	/*FUNCTION*-------------------------------------------------------------------
+ 814              	 *
+ 815              	 * Function Name    : __get_LR
+ 816              	 * Returned Value   : none
+ 817              	 * Comments         : This functions returns LR register value
+ 818              	 *
+ 819              	 *END*----------------------------------------------------------------------*/
+ 820              	
+ 821              	 ASM_PUBLIC_BEGIN(__get_LR)
+ 822              	 ASM_PUBLIC_FUNC(__get_LR)
+ 823              	ASM_LABEL(__get_LR)
+ 824 0210 7046     	                mov r0, lr
+ 825 0212 7047     	                bx lr
+ 826              	 ASM_PUBLIC_END(__get_LR)
+ 827              	
+ 828              	
+ 829              	/*FUNCTION*-------------------------------------------------------------------
+ 830              	 *
+ 831              	 * Function Name    : __get_PC
+ 832              	 * Returned Value   : none
+ 833              	 * Comments         :  This functions returns PC register value
+ 834              	 *
+ 835              	 *END*----------------------------------------------------------------------*/
+ 836              	
+ 837              	 ASM_PUBLIC_BEGIN(__get_PC)
+ 838              	 ASM_PUBLIC_FUNC(__get_PC)
+ 839              	ASM_LABEL(__get_PC)
+ 840 0214 7846     	                mov r0, PC
+ 841 0216 7047     	                bx lr
+ 842              	 ASM_PUBLIC_END(__get_PC)
+ 843              	
+ 844              	/*FUNCTION*-------------------------------------------------------------------
+ 845              	 *
+ 846              	 * Function Name    : __get_CONTROL
+ 847              	 * Returned Value   : none
+ 848              	 * Comments         :
+ 849              	 *
+ 850              	 *END*----------------------------------------------------------------------*/
+ 851              	
+ 852              	 ASM_PUBLIC_BEGIN(__get_CONTROL)
+ 853              	 ASM_PUBLIC_FUNC(__get_CONTROL)
+ 854              	ASM_LABEL(__get_CONTROL)
+ 855 0218 EFF31480 	                mrs r0, CONTROL
+ 856 021c 7047     	                bx lr
+ 857              	 ASM_PUBLIC_END(__get_CONTROL)
+ 858              	
+ 859              	#endif  /*__IAR_SYSTEMS_ASM__*/
+ 860              	
+ 861 021e C046     	 ASM_ALIGN(4)
+ 862 0220 00000000 	 ASM_END
+ 862      00000001 
+ 862      00000000 
+ 862      00100000 
+ 862      4C010000 
+DEFINED SYMBOLS
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:39     *ABS*:0000003c PSPB_ST_PC
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:44     *ABS*:00000000 FP_FPCR_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:45     *ABS*:00000004 FP_FPSR_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:46     *ABS*:00000008 FP_FPIAR_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:47     *ABS*:0000000c FP_TID_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:48     *ABS*:00000010 FP_FPR0_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:49     *ABS*:00000018 FP_FPR1_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:50     *ABS*:00000020 FP_FPR2_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:51     *ABS*:00000028 FP_FPR3_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:52     *ABS*:00000030 FP_FPR4_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:53     *ABS*:00000038 FP_FPR5_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:54     *ABS*:00000040 FP_FPR6_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:55     *ABS*:00000048 FP_FPR7_OFFSET
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:61     *ABS*:00000000 TD_TD_NEXT
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:62     *ABS*:00000004 TD_TD_PREV
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:63     *ABS*:00000008 TD_STATE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:64     *ABS*:0000000c TD_TASK_ID
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:65     *ABS*:00000010 TD_STACK_BASE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:66     *ABS*:00000014 TD_STACK_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:67     *ABS*:00000018 TD_STACK_LIMIT
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:68     *ABS*:0000001c TD_MY_QUEUE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:69     *ABS*:00000020 TD_HOME_QUEUE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:70     *ABS*:00000024 TD_TASK_SR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:71     *ABS*:00000026 TD_RESERVED_1
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:72     *ABS*:00000028 TD_FLAGS
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:73     *ABS*:00000034 TD_FLOAT_CONTEXT_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:78     *ABS*:00000010 RQ_STRUCT_SIZE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:79     *ABS*:00000000 RQ_HEAD_READY_Q
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:80     *ABS*:00000004 RQ_TAIL_READY_Q
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:81     *ABS*:00000008 RQ_NEXT_Q
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:82     *ABS*:0000000c RQ_ENABLE_SR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:83     *ABS*:0000000e RQ_PRIORITY
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:88     *ABS*:0000000c IT_STRUCT_SIZE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:89     *ABS*:00000000 IT_APP_ISR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:90     *ABS*:00000004 IT_APP_ISR_EXCEPTION_HANDLER
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:91     *ABS*:00000008 IT_APP_ISR_DATA
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:93     *ABS*:00000014 HASH_ISR_ITM_SIZE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:94     *ABS*:00000000 HASH_ISR_NUM
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:95     *ABS*:00000004 HASH_ISR_ADDR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:96     *ABS*:00000008 HASH_ISR_EXCEPT_HNDL
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:97     *ABS*:0000000c HASH_ISR_DATA
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:98     *ABS*:00000010 HASH_ISR_NEXT
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:103    *ABS*:00000000 KD_ADDRESSING_CAPABILITY
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:104    *ABS*:00000004 KD_ENDIANESS
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:105    *ABS*:00000008 KD_CPU_TYPE
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:106    *ABS*:0000000a KD_PSP_CFG_MEMORY_ALIGNMENT
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:107    *ABS*:0000000c KD_PSP_CFG_STACK_ALIGNMENT
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:108    *ABS*:0000000e KD_PSP_CFG_MEM_STOREBLOCK_ALIGNMENT
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:109    *ABS*:00000010 KD_CONFIG1
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:110    *ABS*:00000012 KD_CONFIG2
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:111    *ABS*:00000014 KD_FLAGS
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:112    *ABS*:00000016 KD_DISABLE_SR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:113    *ABS*:00000018 KD_IN_ISR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:114    *ABS*:0000001a KD_ACTIVE_SR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:115    *ABS*:0000001c KD_ACTIVE_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:116    *ABS*:00000020 KD_READY_Q_LIST
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:117    *ABS*:00000024 KD_CURRENT_READY_Q
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:118    *ABS*:00000028 KD_DEFAULT_ISR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:119    *ABS*:0000002c KD_FIRST_USER_ISR_VECTOR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:120    *ABS*:00000030 KD_LAST_USER_ISR_VECTOR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:121    *ABS*:00000034 KD_INTERRUPT_CONTEXT_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:122    *ABS*:00000038 KD_INTERRUPT_TABLE_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:123    *ABS*:0000003c KD_INTERRUPT_STACK_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:125    *ABS*:00000040 KD_LOG_CONTROL
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:126    *ABS*:00000044 LOG_OLD_TD
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:127    *ABS*:00000048 KD_FP_ACTIVE_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:128    *ABS*:0000004c KD_DSP_ACTIVE_PTR
+E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/types.inc:129    *ABS*:00000050 KD_SYSTEM_TD
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:64     *ABS*:00008000 PSP_CNFG_MQX_KERNEL_LOGGING
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:65     *ABS*:00004000 PSP_CNFG_FP_REGISTERS_EXIST
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:81     *ABS*:00000000 PSP_CNFG
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:91     *ABS*:00000002 FP_TASK_MASK
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:92     *ABS*:00000200 FP_CONTEXT_SAVED_MASK
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:93     *ABS*:0000fdff FP_CONTEXT_CLEAR_MASK
+../MQXLITE/psp/cortex_m/core/M0/psp_prv.inc:94     *ABS*:00001000 PREEMPTION_DISABLED
+                            *ABS*:00000000 STORE_ALL_REGISTERS
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:49     *ABS*:000000aa SVC_MQX_FN
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:57     KERNEL:00000000 $t
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:90     KERNEL:00000000 _sched_start_internal
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:99     KERNEL:00000006 _sched_run_internal
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:108    KERNEL:0000000c _sched_check_scheduler_internal
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:152    KERNEL:00000024 _sched_execute_scheduler_internal
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:379    KERNEL:000000c4 _task_block
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:424    KERNEL:00000106 _int_kernel_isr
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:300    KERNEL:000000c2 _mqx_api_call
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:691    KERNEL:000001da _mem_test_and_set
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:719    KERNEL:000001f0 __get_PSP
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:734    KERNEL:000001f6 __get_MSP
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:764    KERNEL:00000202 __get_PSR
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:749    KERNEL:000001fc __set_MSP
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:854    KERNEL:00000218 __get_CONTROL
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:632    KERNEL:000001a2 _psp_exception_return
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:182    KERNEL:00000054 sched_internal
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:138    KERNEL:00000022 _sched_check_scheduler_internal_end
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:184    KERNEL:00000056 find_noempty_que
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:203    KERNEL:0000006c switch_task
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:193    KERNEL:00000062 no_one_to_run
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:249    KERNEL:000000a2 rest_of_stack_frame_restore
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:241    KERNEL:00000098 return_from_interrupt
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:306    KERNEL:000000c2 _mqx_api_call_end
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:468    KERNEL:00000130 _isr_skip_run_default1
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:614    KERNEL:0000019e _isr_run_default
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:514    KERNEL:0000013a _int_kernel_isr_vect_ok
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:526    KERNEL:00000146 _isr_execute
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:535    KERNEL:0000014c _int_kernel_isr_epilog
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:540    KERNEL:00000150 _int_kernel_isr_return_internal
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:610    KERNEL:0000019a _isr_return_end
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:702    KERNEL:000001ec _mem_test_and_set_0x80
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:705    KERNEL:000001ee _mem_test_and_set_pop
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:786    KERNEL:00000208 __enable_interrupt
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:802    KERNEL:0000020c __disable_interrupt
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:823    KERNEL:00000210 __get_LR
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:839    KERNEL:00000214 __get_PC
+../MQXLITE/psp/cortex_m/core/M0/dispatch.S:862    KERNEL:00000220 $d
+                   .debug_aranges:0000000c $d
+
+UNDEFINED SYMBOLS
+_mqx_kernel_data

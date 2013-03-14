@@ -1,0 +1,267 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"psp_supp.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._psp_swap2byte,"ax",%progbits
+  18              		.align	2
+  19              		.global	_psp_swap2byte
+  20              		.code	16
+  21              		.thumb_func
+  23              	_psp_swap2byte:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/psp_supp.c"
+   1:../MQXLITE/psp/cortex_m/psp_supp.c **** /**HEADER********************************************************************
+   2:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+   3:../MQXLITE/psp/cortex_m/psp_supp.c **** * Copyright (c) 2010 Freescale Semiconductor
+   4:../MQXLITE/psp/cortex_m/psp_supp.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+   6:../MQXLITE/psp/cortex_m/psp_supp.c **** ***************************************************************************
+   7:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+   8:../MQXLITE/psp/cortex_m/psp_supp.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/psp_supp.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/psp_supp.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/psp_supp.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/psp_supp.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/psp_supp.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/psp_supp.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/psp_supp.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/psp_supp.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/psp_supp.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/psp_supp.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+  20:../MQXLITE/psp/cortex_m/psp_supp.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+  22:../MQXLITE/psp/cortex_m/psp_supp.c **** * $FileName: psp_supp.c$
+  23:../MQXLITE/psp/cortex_m/psp_supp.c **** * $Version : 3.8.10.0$
+  24:../MQXLITE/psp/cortex_m/psp_supp.c **** * $Date    : Aug-30-2011$
+  25:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+  26:../MQXLITE/psp/cortex_m/psp_supp.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/psp_supp.c **** *   This file contains the support functions for byte/word and others
+  28:../MQXLITE/psp/cortex_m/psp_supp.c **** *   manipulations.
+  29:../MQXLITE/psp/cortex_m/psp_supp.c **** *
+  30:../MQXLITE/psp/cortex_m/psp_supp.c **** *END************************************************************************/
+  31:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  32:../MQXLITE/psp/cortex_m/psp_supp.c **** #include "mqx_inc.h"
+  33:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  34:../MQXLITE/psp/cortex_m/psp_supp.c **** #ifdef __CODEWARRIOR__
+  35:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  36:../MQXLITE/psp/cortex_m/psp_supp.c **** asm uint_16 _psp_swap2byte(uint_16 n) {
+  37:../MQXLITE/psp/cortex_m/psp_supp.c ****     rev16 r0, r0
+  38:../MQXLITE/psp/cortex_m/psp_supp.c ****     bx lr
+  39:../MQXLITE/psp/cortex_m/psp_supp.c **** }
+  40:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  41:../MQXLITE/psp/cortex_m/psp_supp.c **** asm uint_32 _psp_swap4byte(uint_32 n) {
+  42:../MQXLITE/psp/cortex_m/psp_supp.c ****     rev r0, r0
+  43:../MQXLITE/psp/cortex_m/psp_supp.c ****     bx lr
+  44:../MQXLITE/psp/cortex_m/psp_supp.c **** }
+  45:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  46:../MQXLITE/psp/cortex_m/psp_supp.c **** asm void __set_BASEPRI(uint_32 basePri) {
+  47:../MQXLITE/psp/cortex_m/psp_supp.c ****     msr basepri, r0
+  48:../MQXLITE/psp/cortex_m/psp_supp.c ****     bx lr
+  49:../MQXLITE/psp/cortex_m/psp_supp.c **** }
+  50:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  51:../MQXLITE/psp/cortex_m/psp_supp.c **** #if 0
+  52:../MQXLITE/psp/cortex_m/psp_supp.c **** /*FUNCTION*-------------------------------------------------------------------
+  53:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+  54:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Function Name    : _psp_swap2byte
+  55:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Returned Value   : uint_16
+  56:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Comments         : Swap 2 bytes
+  57:../MQXLITE/psp/cortex_m/psp_supp.c ****  *   ticks
+  58:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+  59:../MQXLITE/psp/cortex_m/psp_supp.c ****  *END*----------------------------------------------------------------------*/
+  60:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  61:../MQXLITE/psp/cortex_m/psp_supp.c **** uint_16 _psp_swap2byte(uint_16 n)
+  62:../MQXLITE/psp/cortex_m/psp_supp.c **** { /* Body */
+  63:../MQXLITE/psp/cortex_m/psp_supp.c ****     uchar temp[2];
+  64:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  65:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[1] = *((uchar *)&n);
+  66:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[0] = ((uchar *)&n)[1];
+  67:../MQXLITE/psp/cortex_m/psp_supp.c ****     return (*(uint_16 *)temp);
+  68:../MQXLITE/psp/cortex_m/psp_supp.c **** } /* Endbody */
+  69:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  70:../MQXLITE/psp/cortex_m/psp_supp.c **** /*FUNCTION*-------------------------------------------------------------------
+  71:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+  72:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Function Name    : _psp_swap4byte
+  73:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Returned Value   : uint_32
+  74:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Comments         : Swap 4 bytes
+  75:../MQXLITE/psp/cortex_m/psp_supp.c ****  *   ticks
+  76:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+  77:../MQXLITE/psp/cortex_m/psp_supp.c ****  *END*----------------------------------------------------------------------*/
+  78:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  79:../MQXLITE/psp/cortex_m/psp_supp.c **** uint_32 _psp_swap4byte(uint_32 n)
+  80:../MQXLITE/psp/cortex_m/psp_supp.c **** { /* Body */
+  81:../MQXLITE/psp/cortex_m/psp_supp.c ****     uchar temp[4];
+  82:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  83:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[3] = *((uchar *)&n);
+  84:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[2] = ((uchar *)&n)[1];
+  85:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[1] = ((uchar *)&n)[2];
+  86:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[0] = ((uchar *)&n)[3];
+  87:../MQXLITE/psp/cortex_m/psp_supp.c ****     return (*(uint_32 *)temp);
+  88:../MQXLITE/psp/cortex_m/psp_supp.c **** } /* Endbody */
+  89:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  90:../MQXLITE/psp/cortex_m/psp_supp.c **** #endif
+  91:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  92:../MQXLITE/psp/cortex_m/psp_supp.c **** #elif defined(__ICCARM__)
+  93:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  94:../MQXLITE/psp/cortex_m/psp_supp.c **** /* IAR EWARM library contains all needed code */
+  95:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  96:../MQXLITE/psp/cortex_m/psp_supp.c **** #else /* __CODEWARRIOR__, __ICCARM__ */
+  97:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+  98:../MQXLITE/psp/cortex_m/psp_supp.c **** /*FUNCTION*-------------------------------------------------------------------
+  99:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+ 100:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Function Name    : _psp_swap2byte
+ 101:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Returned Value   : uint_16
+ 102:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Comments         : Swap 2 bytes
+ 103:../MQXLITE/psp/cortex_m/psp_supp.c ****  *   ticks
+ 104:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+ 105:../MQXLITE/psp/cortex_m/psp_supp.c ****  *END*----------------------------------------------------------------------*/
+ 106:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+ 107:../MQXLITE/psp/cortex_m/psp_supp.c **** uint_16 _psp_swap2byte(uint_16 n)
+ 108:../MQXLITE/psp/cortex_m/psp_supp.c **** { /* Body */
+  26              		.loc 1 108 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 84B0     		sub	sp, sp, #16
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 24
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 021C     		mov	r2, r0
+  40 0008 BB1D     		add	r3, r7, #6
+  41 000a 1A80     		strh	r2, [r3]
+ 109:../MQXLITE/psp/cortex_m/psp_supp.c ****     uchar temp[2];
+ 110:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+ 111:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[1] = *((uchar *)&n);
+  42              		.loc 1 111 0
+  43 000c BB1D     		add	r3, r7, #6
+  44 000e 1A78     		ldrb	r2, [r3]
+  45 0010 3B1C     		mov	r3, r7
+  46 0012 0C33     		add	r3, r3, #12
+  47 0014 5A70     		strb	r2, [r3, #1]
+ 112:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[0] = ((uchar *)&n)[1];
+  48              		.loc 1 112 0
+  49 0016 BB1D     		add	r3, r7, #6
+  50 0018 5A78     		ldrb	r2, [r3, #1]
+  51 001a 3B1C     		mov	r3, r7
+  52 001c 0C33     		add	r3, r3, #12
+  53 001e 1A70     		strb	r2, [r3]
+ 113:../MQXLITE/psp/cortex_m/psp_supp.c ****     return (*(uint_16 *)temp);
+  54              		.loc 1 113 0
+  55 0020 3B1C     		mov	r3, r7
+  56 0022 0C33     		add	r3, r3, #12
+  57 0024 1B88     		ldrh	r3, [r3]
+ 114:../MQXLITE/psp/cortex_m/psp_supp.c **** } /* Endbody */
+  58              		.loc 1 114 0
+  59 0026 181C     		mov	r0, r3
+  60 0028 BD46     		mov	sp, r7
+  61 002a 04B0     		add	sp, sp, #16
+  62              		@ sp needed for prologue
+  63 002c 80BD     		pop	{r7, pc}
+  64              		.cfi_endproc
+  65              	.LFE0:
+  67 002e C046     		.section	.text._psp_swap4byte,"ax",%progbits
+  68              		.align	2
+  69              		.global	_psp_swap4byte
+  70              		.code	16
+  71              		.thumb_func
+  73              	_psp_swap4byte:
+  74              	.LFB1:
+ 115:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+ 116:../MQXLITE/psp/cortex_m/psp_supp.c **** /*FUNCTION*-------------------------------------------------------------------
+ 117:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+ 118:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Function Name    : _psp_swap4byte
+ 119:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Returned Value   : uint_32
+ 120:../MQXLITE/psp/cortex_m/psp_supp.c ****  * Comments         : Swap 4 bytes
+ 121:../MQXLITE/psp/cortex_m/psp_supp.c ****  *   ticks
+ 122:../MQXLITE/psp/cortex_m/psp_supp.c ****  *
+ 123:../MQXLITE/psp/cortex_m/psp_supp.c ****  *END*----------------------------------------------------------------------*/
+ 124:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+ 125:../MQXLITE/psp/cortex_m/psp_supp.c **** uint_32 _psp_swap4byte(uint_32 n)
+ 126:../MQXLITE/psp/cortex_m/psp_supp.c **** { /* Body */
+  75              		.loc 1 126 0
+  76              		.cfi_startproc
+  77 0000 80B5     		push	{r7, lr}
+  78              	.LCFI3:
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 84B0     		sub	sp, sp, #16
+  83              	.LCFI4:
+  84              		.cfi_def_cfa_offset 24
+  85 0004 00AF     		add	r7, sp, #0
+  86              	.LCFI5:
+  87              		.cfi_def_cfa_register 7
+  88 0006 7860     		str	r0, [r7, #4]
+ 127:../MQXLITE/psp/cortex_m/psp_supp.c ****     uchar temp[4];
+ 128:../MQXLITE/psp/cortex_m/psp_supp.c **** 
+ 129:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[3] = *((uchar *)&n);
+  89              		.loc 1 129 0
+  90 0008 3B1D     		add	r3, r7, #4
+  91 000a 1A78     		ldrb	r2, [r3]
+  92 000c 3B1C     		mov	r3, r7
+  93 000e 0C33     		add	r3, r3, #12
+  94 0010 DA70     		strb	r2, [r3, #3]
+ 130:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[2] = ((uchar *)&n)[1];
+  95              		.loc 1 130 0
+  96 0012 7B1D     		add	r3, r7, #5
+  97 0014 1A78     		ldrb	r2, [r3]
+  98 0016 3B1C     		mov	r3, r7
+  99 0018 0C33     		add	r3, r3, #12
+ 100 001a 9A70     		strb	r2, [r3, #2]
+ 131:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[1] = ((uchar *)&n)[2];
+ 101              		.loc 1 131 0
+ 102 001c BB1D     		add	r3, r7, #6
+ 103 001e 1A78     		ldrb	r2, [r3]
+ 104 0020 3B1C     		mov	r3, r7
+ 105 0022 0C33     		add	r3, r3, #12
+ 106 0024 5A70     		strb	r2, [r3, #1]
+ 132:../MQXLITE/psp/cortex_m/psp_supp.c ****     temp[0] = ((uchar *)&n)[3];
+ 107              		.loc 1 132 0
+ 108 0026 FB1D     		add	r3, r7, #7
+ 109 0028 1A78     		ldrb	r2, [r3]
+ 110 002a 3B1C     		mov	r3, r7
+ 111 002c 0C33     		add	r3, r3, #12
+ 112 002e 1A70     		strb	r2, [r3]
+ 133:../MQXLITE/psp/cortex_m/psp_supp.c ****     return (*(uint_32 *)temp);
+ 113              		.loc 1 133 0
+ 114 0030 3B1C     		mov	r3, r7
+ 115 0032 0C33     		add	r3, r3, #12
+ 116 0034 1B68     		ldr	r3, [r3]
+ 134:../MQXLITE/psp/cortex_m/psp_supp.c **** } /* Endbody */
+ 117              		.loc 1 134 0
+ 118 0036 181C     		mov	r0, r3
+ 119 0038 BD46     		mov	sp, r7
+ 120 003a 04B0     		add	sp, sp, #16
+ 121              		@ sp needed for prologue
+ 122 003c 80BD     		pop	{r7, pc}
+ 123              		.cfi_endproc
+ 124              	.LFE1:
+ 126 003e C046     		.text
+ 127              	.Letext0:
+ 128              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 psp_supp.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:18     .text._psp_swap2byte:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:23     .text._psp_swap2byte:00000000 _psp_swap2byte
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:68     .text._psp_swap4byte:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:73     .text._psp_swap4byte:00000000 _psp_swap4byte
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,233 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"stack_bu.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._psp_build_stack_frame,"ax",%progbits
+  18              		.align	2
+  19              		.global	_psp_build_stack_frame
+  20              		.code	16
+  21              		.thumb_func
+  23              	_psp_build_stack_frame:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/stack_bu.c"
+   1:../MQXLITE/psp/cortex_m/stack_bu.c **** /**HEADER********************************************************************
+   2:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+   3:../MQXLITE/psp/cortex_m/stack_bu.c **** * Copyright (c) 2010 Freescale Semiconductor
+   4:../MQXLITE/psp/cortex_m/stack_bu.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+   6:../MQXLITE/psp/cortex_m/stack_bu.c **** ***************************************************************************
+   7:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+   8:../MQXLITE/psp/cortex_m/stack_bu.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/stack_bu.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/stack_bu.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/stack_bu.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/stack_bu.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/stack_bu.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/stack_bu.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/stack_bu.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/stack_bu.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/stack_bu.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/stack_bu.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  20:../MQXLITE/psp/cortex_m/stack_bu.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  22:../MQXLITE/psp/cortex_m/stack_bu.c **** * $FileName: stack_bu.c$
+  23:../MQXLITE/psp/cortex_m/stack_bu.c **** * $Version : 3.8.11.0$
+  24:../MQXLITE/psp/cortex_m/stack_bu.c **** * $Date    : Dec-20-2011$
+  25:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  26:../MQXLITE/psp/cortex_m/stack_bu.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/stack_bu.c **** *   This file contains the functions for manipulating the user
+  28:../MQXLITE/psp/cortex_m/stack_bu.c **** *	context on the stack.
+  29:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  30:../MQXLITE/psp/cortex_m/stack_bu.c **** *END************************************************************************/
+  31:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  32:../MQXLITE/psp/cortex_m/stack_bu.c **** #include "mqx_inc.h"
+  33:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  34:../MQXLITE/psp/cortex_m/stack_bu.c **** /*FUNCTION*-------------------------------------------------------------------
+  35:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  36:../MQXLITE/psp/cortex_m/stack_bu.c **** * Function Name    : _psp_build_stack_frame
+  37:../MQXLITE/psp/cortex_m/stack_bu.c **** * Returned Value   : none
+  38:../MQXLITE/psp/cortex_m/stack_bu.c **** * Comments         :
+  39:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  40:../MQXLITE/psp/cortex_m/stack_bu.c **** *   This function sets up the stack frame of a new task descriptor.
+  41:../MQXLITE/psp/cortex_m/stack_bu.c **** *
+  42:../MQXLITE/psp/cortex_m/stack_bu.c **** *END*----------------------------------------------------------------------*/
+  43:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  44:../MQXLITE/psp/cortex_m/stack_bu.c **** boolean _psp_build_stack_frame
+  45:../MQXLITE/psp/cortex_m/stack_bu.c ****    (
+  46:../MQXLITE/psp/cortex_m/stack_bu.c ****       /* [IN] the address of the task descriptor */
+  47:../MQXLITE/psp/cortex_m/stack_bu.c ****       TD_STRUCT_PTR    td_ptr,
+  48:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  49:../MQXLITE/psp/cortex_m/stack_bu.c ****       /* [IN] the address of the stack memory block */
+  50:../MQXLITE/psp/cortex_m/stack_bu.c ****       pointer          stack_ptr,
+  51:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  52:../MQXLITE/psp/cortex_m/stack_bu.c ****       /* [IN] the size of the stack */
+  53:../MQXLITE/psp/cortex_m/stack_bu.c ****       _mem_size        stack_size,
+  54:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  55:../MQXLITE/psp/cortex_m/stack_bu.c ****       /* [IN] the task's template */
+  56:../MQXLITE/psp/cortex_m/stack_bu.c ****       TASK_TEMPLATE_STRUCT_PTR template_ptr,
+  57:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  58:../MQXLITE/psp/cortex_m/stack_bu.c ****       /* [IN] the status register to use in creating the task */
+  59:../MQXLITE/psp/cortex_m/stack_bu.c ****       _mqx_uint        status_register,
+  60:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  61:../MQXLITE/psp/cortex_m/stack_bu.c ****       /* [IN] the task creation parameter */
+  62:../MQXLITE/psp/cortex_m/stack_bu.c ****       uint_32          create_parameter
+  63:../MQXLITE/psp/cortex_m/stack_bu.c ****    )
+  64:../MQXLITE/psp/cortex_m/stack_bu.c **** {
+  26              		.loc 1 64 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 88B0     		sub	sp, sp, #32
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 40
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 F860     		str	r0, [r7, #12]
+  40 0008 B960     		str	r1, [r7, #8]
+  41 000a 7A60     		str	r2, [r7, #4]
+  42 000c 3B60     		str	r3, [r7]
+  65:../MQXLITE/psp/cortex_m/stack_bu.c ****    uchar_ptr stack_base_ptr;
+  66:../MQXLITE/psp/cortex_m/stack_bu.c ****    PSP_STACK_START_STRUCT_PTR stack_start_ptr;
+  67:../MQXLITE/psp/cortex_m/stack_bu.c ****    boolean res = TRUE;
+  43              		.loc 1 67 0
+  44 000e 0123     		mov	r3, #1
+  45 0010 FB61     		str	r3, [r7, #28]
+  68:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  69:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_base_ptr  = (uchar_ptr)_GET_STACK_BASE(stack_ptr, stack_size);
+  46              		.loc 1 69 0
+  47 0012 7B68     		ldr	r3, [r7, #4]
+  48 0014 013B     		sub	r3, r3, #1
+  49 0016 BA68     		ldr	r2, [r7, #8]
+  50 0018 D318     		add	r3, r2, r3
+  51 001a 0F22     		mov	r2, #15
+  52 001c 9343     		bic	r3, r2
+  53 001e BB61     		str	r3, [r7, #24]
+  70:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr = (PSP_STACK_START_STRUCT_PTR)(stack_base_ptr - sizeof(PSP_STACK_START_STRUCT));
+  54              		.loc 1 70 0
+  55 0020 BB69     		ldr	r3, [r7, #24]
+  56 0022 583B     		sub	r3, r3, #88
+  57 0024 7B61     		str	r3, [r7, #20]
+  71:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  72:../MQXLITE/psp/cortex_m/stack_bu.c ****    td_ptr->STACK_BASE  = (pointer)stack_base_ptr;
+  58              		.loc 1 72 0
+  59 0026 FB68     		ldr	r3, [r7, #12]
+  60 0028 BA69     		ldr	r2, [r7, #24]
+  61 002a 1A61     		str	r2, [r3, #16]
+  73:../MQXLITE/psp/cortex_m/stack_bu.c ****    td_ptr->STACK_LIMIT = _GET_STACK_LIMIT(stack_ptr, stack_size);
+  62              		.loc 1 73 0
+  63 002c BB68     		ldr	r3, [r7, #8]
+  64 002e 0F33     		add	r3, r3, #15
+  65 0030 0F22     		mov	r2, #15
+  66 0032 9343     		bic	r3, r2
+  67 0034 1A1C     		mov	r2, r3
+  68 0036 FB68     		ldr	r3, [r7, #12]
+  69 0038 9A61     		str	r2, [r3, #24]
+  74:../MQXLITE/psp/cortex_m/stack_bu.c ****    td_ptr->STACK_PTR   = stack_start_ptr;
+  70              		.loc 1 74 0
+  71 003a FB68     		ldr	r3, [r7, #12]
+  72 003c 7A69     		ldr	r2, [r7, #20]
+  73 003e 5A61     		str	r2, [r3, #20]
+  75:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  76:../MQXLITE/psp/cortex_m/stack_bu.c ****    /*
+  77:../MQXLITE/psp/cortex_m/stack_bu.c ****    ** Build the task's initial stack frame. This contains the initialized
+  78:../MQXLITE/psp/cortex_m/stack_bu.c ****    ** registers, and an exception frame which will cause the task to
+  79:../MQXLITE/psp/cortex_m/stack_bu.c ****    ** "return" to the start of the task when it is dispatched.
+  80:../MQXLITE/psp/cortex_m/stack_bu.c ****    */
+  81:../MQXLITE/psp/cortex_m/stack_bu.c ****    _mem_zero(stack_start_ptr, (_mem_size)sizeof(PSP_STACK_START_STRUCT));
+  74              		.loc 1 81 0
+  75 0040 7B69     		ldr	r3, [r7, #20]
+  76 0042 181C     		mov	r0, r3
+  77 0044 5821     		mov	r1, #88
+  78 0046 FFF7FEFF 		bl	_mem_zero
+  82:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.LR = (uint_32)_task_exit_function_internal;
+  79              		.loc 1 82 0
+  80 004a 0C4A     		ldr	r2, .L3
+  81 004c 7B69     		ldr	r3, [r7, #20]
+  82 004e 5A63     		str	r2, [r3, #52]
+  83:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.R0 = (uint_32)create_parameter;
+  83              		.loc 1 83 0
+  84 0050 7B69     		ldr	r3, [r7, #20]
+  85 0052 FA6A     		ldr	r2, [r7, #44]
+  86 0054 1A62     		str	r2, [r3, #32]
+  84:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.PC = (uint_32)(template_ptr->TASK_ADDRESS) | 1;
+  87              		.loc 1 84 0
+  88 0056 3B68     		ldr	r3, [r7]
+  89 0058 5B68     		ldr	r3, [r3, #4]
+  90 005a 0122     		mov	r2, #1
+  91 005c 1A43     		orr	r2, r3
+  92 005e 7B69     		ldr	r3, [r7, #20]
+  93 0060 9A63     		str	r2, [r3, #56]
+  85:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.PSR = 0x01000000;
+  94              		.loc 1 85 0
+  95 0062 7B69     		ldr	r3, [r7, #20]
+  96 0064 8022     		mov	r2, #128
+  97 0066 5204     		lsl	r2, r2, #17
+  98 0068 DA63     		str	r2, [r3, #60]
+  86:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->PARAMETER = create_parameter;
+  99              		.loc 1 86 0
+ 100 006a 7B69     		ldr	r3, [r7, #20]
+ 101 006c FA6A     		ldr	r2, [r7, #44]
+ 102 006e DA64     		str	r2, [r3, #76]
+  87:../MQXLITE/psp/cortex_m/stack_bu.c **** #if PSP_MQX_CPU_IS_ARM_CORTEX_M4
+  88:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.PENDSVPRIOR = 0;
+  89:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.BASEPRI     = status_register;
+  90:../MQXLITE/psp/cortex_m/stack_bu.c ****    stack_start_ptr->INITIAL_CONTEXT.LR2         = 0xfffffffd;
+  91:../MQXLITE/psp/cortex_m/stack_bu.c **** #endif
+  92:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  93:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+  94:../MQXLITE/psp/cortex_m/stack_bu.c **** #if MQXCFG_ENABLE_FP && PSP_HAS_FPU
+  95:../MQXLITE/psp/cortex_m/stack_bu.c ****    if (td_ptr->FLAGS & MQX_FLOATING_POINT_TASK) {
+  96:../MQXLITE/psp/cortex_m/stack_bu.c ****       res = _psp_build_float_context(td_ptr);
+  97:../MQXLITE/psp/cortex_m/stack_bu.c ****    }
+  98:../MQXLITE/psp/cortex_m/stack_bu.c **** #endif /* MQXCFG_ENABLE_FP && PSP_HAS_FPU */
+  99:../MQXLITE/psp/cortex_m/stack_bu.c **** 
+ 100:../MQXLITE/psp/cortex_m/stack_bu.c ****    return res;
+ 103              		.loc 1 100 0
+ 104 0070 FB69     		ldr	r3, [r7, #28]
+ 101:../MQXLITE/psp/cortex_m/stack_bu.c **** }
+ 105              		.loc 1 101 0
+ 106 0072 181C     		mov	r0, r3
+ 107 0074 BD46     		mov	sp, r7
+ 108 0076 08B0     		add	sp, sp, #32
+ 109              		@ sp needed for prologue
+ 110 0078 80BD     		pop	{r7, pc}
+ 111              	.L4:
+ 112 007a C046     		.align	2
+ 113              	.L3:
+ 114 007c 00000000 		.word	_task_exit_function_internal
+ 115              		.cfi_endproc
+ 116              	.LFE0:
+ 118              		.text
+ 119              	.Letext0:
+ 120              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 121              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 122              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 123              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 124              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 stack_bu.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfNNLB2.s:18     .text._psp_build_stack_frame:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfNNLB2.s:23     .text._psp_build_stack_frame:00000000 _psp_build_stack_frame
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfNNLB2.s:114    .text._psp_build_stack_frame:0000007c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mem_zero
+_task_exit_function_internal

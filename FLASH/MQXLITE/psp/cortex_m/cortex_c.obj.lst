@@ -1,0 +1,428 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"cortex.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._cortex_int_init,"ax",%progbits
+  18              		.align	2
+  19              		.global	_cortex_int_init
+  20              		.code	16
+  21              		.thumb_func
+  23              	_cortex_int_init:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/psp/cortex_m/cortex.c"
+   1:../MQXLITE/psp/cortex_m/cortex.c **** /**HEADER********************************************************************
+   2:../MQXLITE/psp/cortex_m/cortex.c **** *
+   3:../MQXLITE/psp/cortex_m/cortex.c **** * Copyright (c) 2010 Freescale Semiconductor;
+   4:../MQXLITE/psp/cortex_m/cortex.c **** * All Rights Reserved
+   5:../MQXLITE/psp/cortex_m/cortex.c **** *
+   6:../MQXLITE/psp/cortex_m/cortex.c **** ***************************************************************************
+   7:../MQXLITE/psp/cortex_m/cortex.c **** *
+   8:../MQXLITE/psp/cortex_m/cortex.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+   9:../MQXLITE/psp/cortex_m/cortex.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  10:../MQXLITE/psp/cortex_m/cortex.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  11:../MQXLITE/psp/cortex_m/cortex.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  12:../MQXLITE/psp/cortex_m/cortex.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  13:../MQXLITE/psp/cortex_m/cortex.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  14:../MQXLITE/psp/cortex_m/cortex.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  15:../MQXLITE/psp/cortex_m/cortex.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  16:../MQXLITE/psp/cortex_m/cortex.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  17:../MQXLITE/psp/cortex_m/cortex.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  18:../MQXLITE/psp/cortex_m/cortex.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  19:../MQXLITE/psp/cortex_m/cortex.c **** *
+  20:../MQXLITE/psp/cortex_m/cortex.c **** **************************************************************************
+  21:../MQXLITE/psp/cortex_m/cortex.c **** *
+  22:../MQXLITE/psp/cortex_m/cortex.c **** * $FileName: cortex.c$
+  23:../MQXLITE/psp/cortex_m/cortex.c **** * $Version : 3.8.11.2$
+  24:../MQXLITE/psp/cortex_m/cortex.c **** * $Date    : Feb-22-2012$
+  25:../MQXLITE/psp/cortex_m/cortex.c **** *
+  26:../MQXLITE/psp/cortex_m/cortex.c **** * Comments:
+  27:../MQXLITE/psp/cortex_m/cortex.c **** *
+  28:../MQXLITE/psp/cortex_m/cortex.c **** *   This file contains the type definitions for the ARM Cortex processors.
+  29:../MQXLITE/psp/cortex_m/cortex.c **** *
+  30:../MQXLITE/psp/cortex_m/cortex.c **** *END************************************************************************/
+  31:../MQXLITE/psp/cortex_m/cortex.c **** 
+  32:../MQXLITE/psp/cortex_m/cortex.c **** #include "mqx_inc.h"
+  33:../MQXLITE/psp/cortex_m/cortex.c **** #include "cortex.h"
+  34:../MQXLITE/psp/cortex_m/cortex.c **** 
+  35:../MQXLITE/psp/cortex_m/cortex.c **** #if MQX_ENABLE_USER_MODE
+  36:../MQXLITE/psp/cortex_m/cortex.c **** #include "lwevent.h"
+  37:../MQXLITE/psp/cortex_m/cortex.c **** 
+  38:../MQXLITE/psp/cortex_m/cortex.c **** #if MQX_USE_LWEVENTS
+  39:../MQXLITE/psp/cortex_m/cortex.c **** #include "lwevent_prv.h"
+  40:../MQXLITE/psp/cortex_m/cortex.c **** #endif /* MQX_USE_LWEVENTS */
+  41:../MQXLITE/psp/cortex_m/cortex.c **** 
+  42:../MQXLITE/psp/cortex_m/cortex.c **** #if MQX_USE_LWMSGQ
+  43:../MQXLITE/psp/cortex_m/cortex.c **** #include "lwmsgq.h"
+  44:../MQXLITE/psp/cortex_m/cortex.c **** #include "lwmsgq_prv.h"
+  45:../MQXLITE/psp/cortex_m/cortex.c **** #endif
+  46:../MQXLITE/psp/cortex_m/cortex.c **** 
+  47:../MQXLITE/psp/cortex_m/cortex.c **** #if MQX_USE_LWMEM
+  48:../MQXLITE/psp/cortex_m/cortex.c **** #include "lwmem.h"
+  49:../MQXLITE/psp/cortex_m/cortex.c **** #endif
+  50:../MQXLITE/psp/cortex_m/cortex.c **** 
+  51:../MQXLITE/psp/cortex_m/cortex.c **** #endif /* MQX_ENABLE_USER_MODE */
+  52:../MQXLITE/psp/cortex_m/cortex.c **** 
+  53:../MQXLITE/psp/cortex_m/cortex.c **** #if !MQX_USE_IDLE_TASK
+  54:../MQXLITE/psp/cortex_m/cortex.c **** #error "MQX for ARM Cortex M requires to enable MQX_USE_IDLE_TASK"
+  55:../MQXLITE/psp/cortex_m/cortex.c **** #endif
+  56:../MQXLITE/psp/cortex_m/cortex.c **** 
+  57:../MQXLITE/psp/cortex_m/cortex.c **** /*FUNCTION*-----------------------------------------------------------------
+  58:../MQXLITE/psp/cortex_m/cortex.c **** *
+  59:../MQXLITE/psp/cortex_m/cortex.c **** * Function Name   : _cortex_int_init
+  60:../MQXLITE/psp/cortex_m/cortex.c **** * Returned Value  : uint_32
+  61:../MQXLITE/psp/cortex_m/cortex.c **** *       MQX_OK or error code
+  62:../MQXLITE/psp/cortex_m/cortex.c **** * Comments        :
+  63:../MQXLITE/psp/cortex_m/cortex.c **** *  	Initialize a specific interrupt in the cortex core nvic
+  64:../MQXLITE/psp/cortex_m/cortex.c **** *
+  65:../MQXLITE/psp/cortex_m/cortex.c **** *END*---------------------------------------------------------------------*/
+  66:../MQXLITE/psp/cortex_m/cortex.c **** 
+  67:../MQXLITE/psp/cortex_m/cortex.c **** uint_32 _cortex_int_init
+  68:../MQXLITE/psp/cortex_m/cortex.c ****    (
+  69:../MQXLITE/psp/cortex_m/cortex.c ****       // [IN} Interrupt number
+  70:../MQXLITE/psp/cortex_m/cortex.c ****       _mqx_uint     irq,
+  71:../MQXLITE/psp/cortex_m/cortex.c **** 
+  72:../MQXLITE/psp/cortex_m/cortex.c ****       // [IN} Interrupt priority
+  73:../MQXLITE/psp/cortex_m/cortex.c ****       _int_priority prior,
+  74:../MQXLITE/psp/cortex_m/cortex.c **** 
+  75:../MQXLITE/psp/cortex_m/cortex.c ****       // [IN] enable the interrupt now?
+  76:../MQXLITE/psp/cortex_m/cortex.c ****       boolean       enable
+  77:../MQXLITE/psp/cortex_m/cortex.c ****    )
+  78:../MQXLITE/psp/cortex_m/cortex.c **** {
+  26              		.loc 1 78 0
+  27              		.cfi_startproc
+  28 0000 90B5     		push	{r4, r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 12
+  31              		.cfi_offset 4, -12
+  32              		.cfi_offset 7, -8
+  33              		.cfi_offset 14, -4
+  34 0002 87B0     		sub	sp, sp, #28
+  35              	.LCFI1:
+  36              		.cfi_def_cfa_offset 40
+  37 0004 00AF     		add	r7, sp, #0
+  38              	.LCFI2:
+  39              		.cfi_def_cfa_register 7
+  40 0006 F860     		str	r0, [r7, #12]
+  41 0008 7A60     		str	r2, [r7, #4]
+  42 000a 3B1C     		mov	r3, r7
+  43 000c 0B33     		add	r3, r3, #11
+  44 000e 0A1C     		add	r2, r1, #0
+  45 0010 1A70     		strb	r2, [r3]
+  79:../MQXLITE/psp/cortex_m/cortex.c **** 	VCORTEX_NVIC_STRUCT_PTR nvic = (VCORTEX_NVIC_STRUCT_PTR)&(((CORTEX_SCS_STRUCT_PTR)CORTEX_PRI_PERIP
+  46              		.loc 1 79 0
+  47 0012 204B     		ldr	r3, .L6
+  48 0014 7B61     		str	r3, [r7, #20]
+  80:../MQXLITE/psp/cortex_m/cortex.c ****     uint_32 ext_irq_no = irq - 16;
+  49              		.loc 1 80 0
+  50 0016 FB68     		ldr	r3, [r7, #12]
+  51 0018 103B     		sub	r3, r3, #16
+  52 001a 3B61     		str	r3, [r7, #16]
+  81:../MQXLITE/psp/cortex_m/cortex.c **** 
+  82:../MQXLITE/psp/cortex_m/cortex.c **** 	if (irq >= PSP_INT_FIRST_INTERNAL && irq <= PSP_INT_LAST_INTERNAL) {
+  53              		.loc 1 82 0
+  54 001c FB68     		ldr	r3, [r7, #12]
+  55 001e 202B     		cmp	r3, #32
+  56 0020 30D8     		bhi	.L2
+  83:../MQXLITE/psp/cortex_m/cortex.c **** 		nvic->PRIORITY[ext_irq_no >> 2] = (nvic->PRIORITY[ext_irq_no >> 2] & ~(0xff << ((ext_irq_no & 3) 
+  57              		.loc 1 83 0
+  58 0022 3B69     		ldr	r3, [r7, #16]
+  59 0024 9A08     		lsr	r2, r3, #2
+  60 0026 3B69     		ldr	r3, [r7, #16]
+  61 0028 9908     		lsr	r1, r3, #2
+  62 002a 7B69     		ldr	r3, [r7, #20]
+  63 002c C031     		add	r1, r1, #192
+  64 002e 8900     		lsl	r1, r1, #2
+  65 0030 CB58     		ldr	r3, [r1, r3]
+  66 0032 3869     		ldr	r0, [r7, #16]
+  67 0034 0321     		mov	r1, #3
+  68 0036 0140     		and	r1, r0
+  69 0038 C900     		lsl	r1, r1, #3
+  70 003a FF20     		mov	r0, #255
+  71 003c 041C     		mov	r4, r0
+  72 003e 8C40     		lsl	r4, r4, r1
+  73 0040 211C     		mov	r1, r4
+  74 0042 C943     		mvn	r1, r1
+  75 0044 1940     		and	r1, r3
+  76 0046 3B1C     		mov	r3, r7
+  77 0048 0B33     		add	r3, r3, #11
+  78 004a 1B78     		ldrb	r3, [r3]
+  79 004c D801     		lsl	r0, r3, #7
+  80 004e FF23     		mov	r3, #255
+  81 0050 1840     		and	r0, r3
+  82 0052 3C69     		ldr	r4, [r7, #16]
+  83 0054 0323     		mov	r3, #3
+  84 0056 2340     		and	r3, r4
+  85 0058 DB00     		lsl	r3, r3, #3
+  86 005a 041C     		mov	r4, r0
+  87 005c 9C40     		lsl	r4, r4, r3
+  88 005e 231C     		mov	r3, r4
+  89 0060 1943     		orr	r1, r3
+  90 0062 7B69     		ldr	r3, [r7, #20]
+  91 0064 C032     		add	r2, r2, #192
+  92 0066 9200     		lsl	r2, r2, #2
+  93 0068 D150     		str	r1, [r2, r3]
+  84:../MQXLITE/psp/cortex_m/cortex.c **** 
+  85:../MQXLITE/psp/cortex_m/cortex.c **** 		if (enable)
+  94              		.loc 1 85 0
+  95 006a 7B68     		ldr	r3, [r7, #4]
+  96 006c 002B     		cmp	r3, #0
+  97 006e 04D0     		beq	.L3
+  86:../MQXLITE/psp/cortex_m/cortex.c **** 			_cortex_int_enable(irq);
+  98              		.loc 1 86 0
+  99 0070 FB68     		ldr	r3, [r7, #12]
+ 100 0072 181C     		mov	r0, r3
+ 101 0074 FFF7FEFF 		bl	_cortex_int_enable
+ 102 0078 06E0     		b	.L4
+ 103              	.L3:
+  87:../MQXLITE/psp/cortex_m/cortex.c **** 		else
+  88:../MQXLITE/psp/cortex_m/cortex.c **** 			_cortex_int_disable(irq);
+ 104              		.loc 1 88 0
+ 105 007a FB68     		ldr	r3, [r7, #12]
+ 106 007c 181C     		mov	r0, r3
+ 107 007e FFF7FEFF 		bl	_cortex_int_disable
+ 108 0082 01E0     		b	.L4
+ 109              	.L2:
+  89:../MQXLITE/psp/cortex_m/cortex.c **** 
+  90:../MQXLITE/psp/cortex_m/cortex.c ****     }
+  91:../MQXLITE/psp/cortex_m/cortex.c ****     else
+  92:../MQXLITE/psp/cortex_m/cortex.c ****         return MQX_INVALID_PARAMETER;
+ 110              		.loc 1 92 0
+ 111 0084 0C23     		mov	r3, #12
+ 112 0086 00E0     		b	.L5
+ 113              	.L4:
+  93:../MQXLITE/psp/cortex_m/cortex.c **** 
+  94:../MQXLITE/psp/cortex_m/cortex.c ****     return MQX_OK;
+ 114              		.loc 1 94 0
+ 115 0088 0023     		mov	r3, #0
+ 116              	.L5:
+  95:../MQXLITE/psp/cortex_m/cortex.c **** }
+ 117              		.loc 1 95 0
+ 118 008a 181C     		mov	r0, r3
+ 119 008c BD46     		mov	sp, r7
+ 120 008e 07B0     		add	sp, sp, #28
+ 121              		@ sp needed for prologue
+ 122 0090 90BD     		pop	{r4, r7, pc}
+ 123              	.L7:
+ 124 0092 C046     		.align	2
+ 125              	.L6:
+ 126 0094 00E100E0 		.word	-536813312
+ 127              		.cfi_endproc
+ 128              	.LFE0:
+ 130              		.section	.text._cortex_int_enable,"ax",%progbits
+ 131              		.align	2
+ 132              		.global	_cortex_int_enable
+ 133              		.code	16
+ 134              		.thumb_func
+ 136              	_cortex_int_enable:
+ 137              	.LFB1:
+  96:../MQXLITE/psp/cortex_m/cortex.c **** 
+  97:../MQXLITE/psp/cortex_m/cortex.c **** /*FUNCTION*-----------------------------------------------------------------
+  98:../MQXLITE/psp/cortex_m/cortex.c **** *
+  99:../MQXLITE/psp/cortex_m/cortex.c **** * Function Name   : _cortex_int_enable
+ 100:../MQXLITE/psp/cortex_m/cortex.c **** * Returned Value  : uint_32
+ 101:../MQXLITE/psp/cortex_m/cortex.c **** *       MQX_OK or error code
+ 102:../MQXLITE/psp/cortex_m/cortex.c **** * Comments        :
+ 103:../MQXLITE/psp/cortex_m/cortex.c **** * 	Enable interrupt on cortex core NVIC
+ 104:../MQXLITE/psp/cortex_m/cortex.c **** *
+ 105:../MQXLITE/psp/cortex_m/cortex.c **** *END*---------------------------------------------------------------------*/
+ 106:../MQXLITE/psp/cortex_m/cortex.c **** uint_32 _cortex_int_enable
+ 107:../MQXLITE/psp/cortex_m/cortex.c ****    (
+ 108:../MQXLITE/psp/cortex_m/cortex.c ****       // [IN] Interrupt number
+ 109:../MQXLITE/psp/cortex_m/cortex.c ****       _mqx_uint  irq
+ 110:../MQXLITE/psp/cortex_m/cortex.c ****    )
+ 111:../MQXLITE/psp/cortex_m/cortex.c **** {
+ 138              		.loc 1 111 0
+ 139              		.cfi_startproc
+ 140 0000 80B5     		push	{r7, lr}
+ 141              	.LCFI3:
+ 142              		.cfi_def_cfa_offset 8
+ 143              		.cfi_offset 7, -8
+ 144              		.cfi_offset 14, -4
+ 145 0002 84B0     		sub	sp, sp, #16
+ 146              	.LCFI4:
+ 147              		.cfi_def_cfa_offset 24
+ 148 0004 00AF     		add	r7, sp, #0
+ 149              	.LCFI5:
+ 150              		.cfi_def_cfa_register 7
+ 151 0006 7860     		str	r0, [r7, #4]
+ 112:../MQXLITE/psp/cortex_m/cortex.c ****     VCORTEX_NVIC_STRUCT_PTR nvic = (VCORTEX_NVIC_STRUCT_PTR)&(((CORTEX_SCS_STRUCT_PTR)CORTEX_PRI_PE
+ 152              		.loc 1 112 0
+ 153 0008 0D4B     		ldr	r3, .L11
+ 154 000a FB60     		str	r3, [r7, #12]
+ 113:../MQXLITE/psp/cortex_m/cortex.c ****     uint_32 ext_irq_no = irq - 16;
+ 155              		.loc 1 113 0
+ 156 000c 7B68     		ldr	r3, [r7, #4]
+ 157 000e 103B     		sub	r3, r3, #16
+ 158 0010 BB60     		str	r3, [r7, #8]
+ 114:../MQXLITE/psp/cortex_m/cortex.c **** 
+ 115:../MQXLITE/psp/cortex_m/cortex.c ****     if (ext_irq_no >= PSP_INT_FIRST_INTERNAL && ext_irq_no <= PSP_INT_LAST_INTERNAL) {
+ 159              		.loc 1 115 0
+ 160 0012 BB68     		ldr	r3, [r7, #8]
+ 161 0014 202B     		cmp	r3, #32
+ 162 0016 0ED8     		bhi	.L9
+ 116:../MQXLITE/psp/cortex_m/cortex.c ****         nvic->ENABLE[ext_irq_no >> 5] = 1 << (ext_irq_no & 0x1f);
+ 163              		.loc 1 116 0
+ 164 0018 BB68     		ldr	r3, [r7, #8]
+ 165 001a 5A09     		lsr	r2, r3, #5
+ 166 001c B968     		ldr	r1, [r7, #8]
+ 167 001e 1F23     		mov	r3, #31
+ 168 0020 0B40     		and	r3, r1
+ 169 0022 0121     		mov	r1, #1
+ 170 0024 081C     		mov	r0, r1
+ 171 0026 9840     		lsl	r0, r0, r3
+ 172 0028 031C     		mov	r3, r0
+ 173 002a 191C     		mov	r1, r3
+ 174 002c FB68     		ldr	r3, [r7, #12]
+ 175 002e 9200     		lsl	r2, r2, #2
+ 176 0030 D150     		str	r1, [r2, r3]
+ 117:../MQXLITE/psp/cortex_m/cortex.c ****     }
+ 118:../MQXLITE/psp/cortex_m/cortex.c ****     else
+ 119:../MQXLITE/psp/cortex_m/cortex.c ****         return MQX_INVALID_PARAMETER;
+ 120:../MQXLITE/psp/cortex_m/cortex.c **** 
+ 121:../MQXLITE/psp/cortex_m/cortex.c ****     return MQX_OK;
+ 177              		.loc 1 121 0
+ 178 0032 0023     		mov	r3, #0
+ 179 0034 00E0     		b	.L10
+ 180              	.L9:
+ 119:../MQXLITE/psp/cortex_m/cortex.c ****         return MQX_INVALID_PARAMETER;
+ 181              		.loc 1 119 0
+ 182 0036 0C23     		mov	r3, #12
+ 183              	.L10:
+ 122:../MQXLITE/psp/cortex_m/cortex.c **** }
+ 184              		.loc 1 122 0
+ 185 0038 181C     		mov	r0, r3
+ 186 003a BD46     		mov	sp, r7
+ 187 003c 04B0     		add	sp, sp, #16
+ 188              		@ sp needed for prologue
+ 189 003e 80BD     		pop	{r7, pc}
+ 190              	.L12:
+ 191              		.align	2
+ 192              	.L11:
+ 193 0040 00E100E0 		.word	-536813312
+ 194              		.cfi_endproc
+ 195              	.LFE1:
+ 197              		.section	.text._cortex_int_disable,"ax",%progbits
+ 198              		.align	2
+ 199              		.global	_cortex_int_disable
+ 200              		.code	16
+ 201              		.thumb_func
+ 203              	_cortex_int_disable:
+ 204              	.LFB2:
+ 123:../MQXLITE/psp/cortex_m/cortex.c **** 
+ 124:../MQXLITE/psp/cortex_m/cortex.c **** /*FUNCTION*-----------------------------------------------------------------
+ 125:../MQXLITE/psp/cortex_m/cortex.c **** *
+ 126:../MQXLITE/psp/cortex_m/cortex.c **** * Function Name   : _cortex_int_disable
+ 127:../MQXLITE/psp/cortex_m/cortex.c **** * Returned Value  : uint_32
+ 128:../MQXLITE/psp/cortex_m/cortex.c **** *       MQX_OK or error code
+ 129:../MQXLITE/psp/cortex_m/cortex.c **** * Comments        :
+ 130:../MQXLITE/psp/cortex_m/cortex.c **** * 	Disable interrupt on cortex core NVIC
+ 131:../MQXLITE/psp/cortex_m/cortex.c **** *
+ 132:../MQXLITE/psp/cortex_m/cortex.c **** *END*---------------------------------------------------------------------*/
+ 133:../MQXLITE/psp/cortex_m/cortex.c **** 
+ 134:../MQXLITE/psp/cortex_m/cortex.c **** uint_32 _cortex_int_disable
+ 135:../MQXLITE/psp/cortex_m/cortex.c ****    (
+ 136:../MQXLITE/psp/cortex_m/cortex.c ****       // [IN] Interrupt number
+ 137:../MQXLITE/psp/cortex_m/cortex.c ****       _mqx_uint  irq
+ 138:../MQXLITE/psp/cortex_m/cortex.c ****    )
+ 139:../MQXLITE/psp/cortex_m/cortex.c **** {
+ 205              		.loc 1 139 0
+ 206              		.cfi_startproc
+ 207 0000 80B5     		push	{r7, lr}
+ 208              	.LCFI6:
+ 209              		.cfi_def_cfa_offset 8
+ 210              		.cfi_offset 7, -8
+ 211              		.cfi_offset 14, -4
+ 212 0002 84B0     		sub	sp, sp, #16
+ 213              	.LCFI7:
+ 214              		.cfi_def_cfa_offset 24
+ 215 0004 00AF     		add	r7, sp, #0
+ 216              	.LCFI8:
+ 217              		.cfi_def_cfa_register 7
+ 218 0006 7860     		str	r0, [r7, #4]
+ 140:../MQXLITE/psp/cortex_m/cortex.c ****     VCORTEX_NVIC_STRUCT_PTR nvic = (VCORTEX_NVIC_STRUCT_PTR)&(((CORTEX_SCS_STRUCT_PTR)CORTEX_PRI_PE
+ 219              		.loc 1 140 0
+ 220 0008 0E4B     		ldr	r3, .L16
+ 221 000a FB60     		str	r3, [r7, #12]
+ 141:../MQXLITE/psp/cortex_m/cortex.c ****     uint_32 ext_irq_no = irq - 16;
+ 222              		.loc 1 141 0
+ 223 000c 7B68     		ldr	r3, [r7, #4]
+ 224 000e 103B     		sub	r3, r3, #16
+ 225 0010 BB60     		str	r3, [r7, #8]
+ 142:../MQXLITE/psp/cortex_m/cortex.c **** 
+ 143:../MQXLITE/psp/cortex_m/cortex.c ****     if (ext_irq_no >= PSP_INT_FIRST_INTERNAL && ext_irq_no <= PSP_INT_LAST_INTERNAL) {
+ 226              		.loc 1 143 0
+ 227 0012 BB68     		ldr	r3, [r7, #8]
+ 228 0014 202B     		cmp	r3, #32
+ 229 0016 0FD8     		bhi	.L14
+ 144:../MQXLITE/psp/cortex_m/cortex.c ****         nvic->DISABLE[ext_irq_no >> 5] = 1 << (ext_irq_no & 0x1f);
+ 230              		.loc 1 144 0
+ 231 0018 BB68     		ldr	r3, [r7, #8]
+ 232 001a 5A09     		lsr	r2, r3, #5
+ 233 001c B968     		ldr	r1, [r7, #8]
+ 234 001e 1F23     		mov	r3, #31
+ 235 0020 0B40     		and	r3, r1
+ 236 0022 0121     		mov	r1, #1
+ 237 0024 081C     		mov	r0, r1
+ 238 0026 9840     		lsl	r0, r0, r3
+ 239 0028 031C     		mov	r3, r0
+ 240 002a 191C     		mov	r1, r3
+ 241 002c FB68     		ldr	r3, [r7, #12]
+ 242 002e 2032     		add	r2, r2, #32
+ 243 0030 9200     		lsl	r2, r2, #2
+ 244 0032 D150     		str	r1, [r2, r3]
+ 145:../MQXLITE/psp/cortex_m/cortex.c ****     }
+ 146:../MQXLITE/psp/cortex_m/cortex.c ****     else
+ 147:../MQXLITE/psp/cortex_m/cortex.c ****         return MQX_INVALID_PARAMETER;
+ 148:../MQXLITE/psp/cortex_m/cortex.c **** 
+ 149:../MQXLITE/psp/cortex_m/cortex.c ****     return MQX_OK;
+ 245              		.loc 1 149 0
+ 246 0034 0023     		mov	r3, #0
+ 247 0036 00E0     		b	.L15
+ 248              	.L14:
+ 147:../MQXLITE/psp/cortex_m/cortex.c ****         return MQX_INVALID_PARAMETER;
+ 249              		.loc 1 147 0
+ 250 0038 0C23     		mov	r3, #12
+ 251              	.L15:
+ 150:../MQXLITE/psp/cortex_m/cortex.c **** }
+ 252              		.loc 1 150 0
+ 253 003a 181C     		mov	r0, r3
+ 254 003c BD46     		mov	sp, r7
+ 255 003e 04B0     		add	sp, sp, #16
+ 256              		@ sp needed for prologue
+ 257 0040 80BD     		pop	{r7, pc}
+ 258              	.L17:
+ 259 0042 C046     		.align	2
+ 260              	.L16:
+ 261 0044 00E100E0 		.word	-536813312
+ 262              		.cfi_endproc
+ 263              	.LFE2:
+ 265              		.text
+ 266              	.Letext0:
+ 267              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 268              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 cortex.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:18     .text._cortex_int_init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:23     .text._cortex_int_init:00000000 _cortex_int_init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:136    .text._cortex_int_enable:00000000 _cortex_int_enable
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:203    .text._cortex_int_disable:00000000 _cortex_int_disable
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:126    .text._cortex_int_init:00000094 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:131    .text._cortex_int_enable:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:193    .text._cortex_int_enable:00000040 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:198    .text._cortex_int_disable:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccSqqoWe.s:261    .text._cortex_int_disable:00000044 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

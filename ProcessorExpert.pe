@@ -3,7 +3,7 @@
   <Header>
     <Name>ProcessorExpert</Name>
     <SavedBy>SNAKU.LEE</SavedBy>
-    <ModificationStamp>53</ModificationStamp>
+    <ModificationStamp>61</ModificationStamp>
     <Date>2013-03-14</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion />
@@ -27,7 +27,7 @@
     <UseExistingModules>true</UseExistingModules>
     <RenamePeripheries>false</RenamePeripheries>
     <Autodependency>true</Autodependency>
-    <ProjectCompNumb>37</ProjectCompNumb>
+    <ProjectCompNumb>40</ProjectCompNumb>
     <DelUnusedPreviouslyGenFiles>true</DelUnusedPreviouslyGenFiles>
     <GeneratedCodeFrozen>false</GeneratedCodeFrozen>
     <AssignInitComponentNameToPrph>false</AssignInitComponentNameToPrph>
@@ -4653,7 +4653,7 @@
               <ItemSymbol>TaskPriority</ItemSymbol>
               <ReadOnly>false</ReadOnly>
               <UserReadOnly>false</UserReadOnly>
-              <Value>11</Value>
+              <Value>9</Value>
               <Base>DEC</Base>
             </ItemState>
             <ItemState>
@@ -4672,8 +4672,8 @@
               <ItemSymbol>TaskAttribute0</ItemSymbol>
               <ReadOnly>false</ReadOnly>
               <UserReadOnly>false</UserReadOnly>
-              <Index>1</Index>
-              <Value>false</Value>
+              <Index>0</Index>
+              <Value>true</Value>
             </ItemState>
             <ItemState>
               <ItemSymbol>CondGroup</ItemSymbol>

@@ -1,0 +1,85 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Vectors.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	__vect_table
+  18              		.section	.vectortable,"a",%progbits
+  19              		.align	2
+  22              	__vect_table:
+  23 0000 00000000 		.word	__SP_INIT
+  24 0004 00000000 		.word	__boot
+  25 0008 00000000 		.word	Cpu_INT_NMIInterrupt
+  26 000c 00000000 		.word	Cpu_Interrupt
+  27 0010 00000000 		.word	Cpu_Interrupt
+  28 0014 00000000 		.word	Cpu_Interrupt
+  29 0018 00000000 		.word	Cpu_Interrupt
+  30 001c 00000000 		.word	Cpu_Interrupt
+  31 0020 00000000 		.word	Cpu_Interrupt
+  32 0024 00000000 		.word	Cpu_Interrupt
+  33 0028 00000000 		.word	Cpu_Interrupt
+  34 002c 00000000 		.word	Cpu_Interrupt
+  35 0030 00000000 		.word	Cpu_Interrupt
+  36 0034 00000000 		.word	Cpu_Interrupt
+  37 0038 00000000 		.word	Cpu_Interrupt
+  38 003c 00000000 		.word	_int_kernel_isr
+  39 0040 00000000 		.word	_int_kernel_isr
+  40 0044 00000000 		.word	_int_kernel_isr
+  41 0048 00000000 		.word	_int_kernel_isr
+  42 004c 00000000 		.word	_int_kernel_isr
+  43 0050 00000000 		.word	_int_kernel_isr
+  44 0054 00000000 		.word	_int_kernel_isr
+  45 0058 00000000 		.word	_int_kernel_isr
+  46 005c 00000000 		.word	_int_kernel_isr
+  47 0060 00000000 		.word	_int_kernel_isr
+  48 0064 00000000 		.word	_int_kernel_isr
+  49 0068 00000000 		.word	_int_kernel_isr
+  50 006c 00000000 		.word	_int_kernel_isr
+  51 0070 00000000 		.word	_int_kernel_isr
+  52 0074 00000000 		.word	_int_kernel_isr
+  53 0078 00000000 		.word	_int_kernel_isr
+  54 007c 00000000 		.word	_int_kernel_isr
+  55 0080 00000000 		.word	_int_kernel_isr
+  56 0084 00000000 		.word	_int_kernel_isr
+  57 0088 00000000 		.word	_int_kernel_isr
+  58 008c 00000000 		.word	_int_kernel_isr
+  59 0090 00000000 		.word	_int_kernel_isr
+  60 0094 00000000 		.word	_int_kernel_isr
+  61 0098 00000000 		.word	_int_kernel_isr
+  62 009c 00000000 		.word	_int_kernel_isr
+  63 00a0 00000000 		.word	_int_kernel_isr
+  64 00a4 00000000 		.word	_int_kernel_isr
+  65 00a8 00000000 		.word	_int_kernel_isr
+  66 00ac 00000000 		.word	_int_kernel_isr
+  67 00b0 00000000 		.word	_int_kernel_isr
+  68 00b4 00000000 		.word	_int_kernel_isr
+  69 00b8 00000000 		.word	_int_kernel_isr
+  70 00bc 00000000 		.word	_int_kernel_isr
+  71              		.text
+  72              	.Letext0:
+  73              		.file 1 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+  74              		.file 2 "../Generated_Code/Cpu.h"
+  75              		.file 3 "../Generated_Code/Vectors.c"
+  76              		.file 4 "../Generated_Code/IO_Map.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 Vectors.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwab3Dd.s:22     .vectortable:00000000 __vect_table
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwab3Dd.s:19     .vectortable:00000000 $d
+
+UNDEFINED SYMBOLS
+__SP_INIT
+__boot
+Cpu_INT_NMIInterrupt
+Cpu_Interrupt
+_int_kernel_isr

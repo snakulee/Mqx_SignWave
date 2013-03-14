@@ -1,0 +1,267 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"qu_test.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._queue_test,"ax",%progbits
+  18              		.align	2
+  19              		.global	_queue_test
+  20              		.code	16
+  21              		.thumb_func
+  23              	_queue_test:
+  24              	.LFB0:
+  25              		.file 1 "../MQXLITE/kernel/qu_test.c"
+   1:../MQXLITE/kernel/qu_test.c **** /*HEADER*********************************************************************
+   2:../MQXLITE/kernel/qu_test.c **** *
+   3:../MQXLITE/kernel/qu_test.c **** * Copyright (c) 2008 Freescale Semiconductor;
+   4:../MQXLITE/kernel/qu_test.c **** * All Rights Reserved
+   5:../MQXLITE/kernel/qu_test.c **** *
+   6:../MQXLITE/kernel/qu_test.c **** * Copyright (c) 2004-2008 Embedded Access Inc.;
+   7:../MQXLITE/kernel/qu_test.c **** * All Rights Reserved
+   8:../MQXLITE/kernel/qu_test.c **** *
+   9:../MQXLITE/kernel/qu_test.c **** * Copyright (c) 1989-2008 ARC International;
+  10:../MQXLITE/kernel/qu_test.c **** * All Rights Reserved
+  11:../MQXLITE/kernel/qu_test.c **** *
+  12:../MQXLITE/kernel/qu_test.c **** ***************************************************************************
+  13:../MQXLITE/kernel/qu_test.c **** *
+  14:../MQXLITE/kernel/qu_test.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15:../MQXLITE/kernel/qu_test.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16:../MQXLITE/kernel/qu_test.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17:../MQXLITE/kernel/qu_test.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18:../MQXLITE/kernel/qu_test.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19:../MQXLITE/kernel/qu_test.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20:../MQXLITE/kernel/qu_test.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21:../MQXLITE/kernel/qu_test.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22:../MQXLITE/kernel/qu_test.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23:../MQXLITE/kernel/qu_test.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24:../MQXLITE/kernel/qu_test.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  25:../MQXLITE/kernel/qu_test.c **** *
+  26:../MQXLITE/kernel/qu_test.c **** **************************************************************************
+  27:../MQXLITE/kernel/qu_test.c **** *
+  28:../MQXLITE/kernel/qu_test.c **** * $FileName: qu_test.c$
+  29:../MQXLITE/kernel/qu_test.c **** * $Version : 3.0.4.0$
+  30:../MQXLITE/kernel/qu_test.c **** * $Date    : Nov-21-2008$
+  31:../MQXLITE/kernel/qu_test.c **** *
+  32:../MQXLITE/kernel/qu_test.c **** * Comments:
+  33:../MQXLITE/kernel/qu_test.c **** *
+  34:../MQXLITE/kernel/qu_test.c **** *   This file contains the function for testing a queue.
+  35:../MQXLITE/kernel/qu_test.c **** *
+  36:../MQXLITE/kernel/qu_test.c **** *END************************************************************************/
+  37:../MQXLITE/kernel/qu_test.c **** 
+  38:../MQXLITE/kernel/qu_test.c **** #define MQX_FORCE_USE_INLINE_MACROS 1
+  39:../MQXLITE/kernel/qu_test.c **** 
+  40:../MQXLITE/kernel/qu_test.c **** #include "mqx_inc.h"
+  41:../MQXLITE/kernel/qu_test.c **** 
+  42:../MQXLITE/kernel/qu_test.c **** /*!
+  43:../MQXLITE/kernel/qu_test.c ****  * \brief Tests the queue for consitstency and validity.
+  44:../MQXLITE/kernel/qu_test.c ****  *
+  45:../MQXLITE/kernel/qu_test.c ****  * The function checks the queue pointers to ensure that they form a circular,
+  46:../MQXLITE/kernel/qu_test.c ****  * doubly linked list, with the same number of elements that the queue header
+  47:../MQXLITE/kernel/qu_test.c ****  * specifies.
+  48:../MQXLITE/kernel/qu_test.c ****  *
+  49:../MQXLITE/kernel/qu_test.c ****  * \param[in]  q_ptr                Pointer to the queue to test. Queue must be
+  50:../MQXLITE/kernel/qu_test.c ****  * initialized with _queue_init().
+  51:../MQXLITE/kernel/qu_test.c ****  * \param[out] element_in_error_ptr Pointer to the first element with an error
+  52:../MQXLITE/kernel/qu_test.c ****  * (initialized only if an error is found).
+  53:../MQXLITE/kernel/qu_test.c ****  *
+  54:../MQXLITE/kernel/qu_test.c ****  * \return MQX_OK (No errors Were found.)
+  55:../MQXLITE/kernel/qu_test.c ****  * \return MQX_CORRUPT_QUEUE (An error was found.)
+  56:../MQXLITE/kernel/qu_test.c ****  *
+  57:../MQXLITE/kernel/qu_test.c ****  * \see _queue_init
+  58:../MQXLITE/kernel/qu_test.c ****  * \see QUEUE_STRUCT
+  59:../MQXLITE/kernel/qu_test.c ****  */
+  60:../MQXLITE/kernel/qu_test.c **** _mqx_uint _queue_test
+  61:../MQXLITE/kernel/qu_test.c ****    (
+  62:../MQXLITE/kernel/qu_test.c ****       QUEUE_STRUCT_PTR q_ptr,
+  63:../MQXLITE/kernel/qu_test.c ****       pointer _PTR_    element_in_error_ptr
+  64:../MQXLITE/kernel/qu_test.c ****    )
+  65:../MQXLITE/kernel/qu_test.c **** { /* Body */
+  26              		.loc 1 65 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 86B0     		sub	sp, sp, #24
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 32
+  36 0004 00AF     		add	r7, sp, #0
+  37              	.LCFI2:
+  38              		.cfi_def_cfa_register 7
+  39 0006 7860     		str	r0, [r7, #4]
+  40 0008 3960     		str	r1, [r7]
+  66:../MQXLITE/kernel/qu_test.c ****    QUEUE_ELEMENT_STRUCT_PTR element_ptr;
+  67:../MQXLITE/kernel/qu_test.c ****    QUEUE_ELEMENT_STRUCT_PTR prev_ptr;
+  68:../MQXLITE/kernel/qu_test.c ****    _mqx_uint                size;
+  69:../MQXLITE/kernel/qu_test.c **** 
+  70:../MQXLITE/kernel/qu_test.c ****    _int_disable();
+  41              		.loc 1 70 0
+  42 000a FFF7FEFF 		bl	_int_disable
+  71:../MQXLITE/kernel/qu_test.c ****    size = _QUEUE_GET_SIZE(q_ptr) + 1;
+  43              		.loc 1 71 0
+  44 000e 7B68     		ldr	r3, [r7, #4]
+  45 0010 1B89     		ldrh	r3, [r3, #8]
+  46 0012 0133     		add	r3, r3, #1
+  47 0014 FB60     		str	r3, [r7, #12]
+  72:../MQXLITE/kernel/qu_test.c ****    element_ptr = q_ptr->NEXT;
+  48              		.loc 1 72 0
+  49 0016 7B68     		ldr	r3, [r7, #4]
+  50 0018 1B68     		ldr	r3, [r3]
+  51 001a 7B61     		str	r3, [r7, #20]
+  73:../MQXLITE/kernel/qu_test.c ****    prev_ptr    = (QUEUE_ELEMENT_STRUCT_PTR)((pointer)q_ptr);
+  52              		.loc 1 73 0
+  53 001c 7B68     		ldr	r3, [r7, #4]
+  54 001e 3B61     		str	r3, [r7, #16]
+  74:../MQXLITE/kernel/qu_test.c ****    while (--size) {
+  55              		.loc 1 74 0
+  56 0020 1BE0     		b	.L2
+  57              	.L6:
+  75:../MQXLITE/kernel/qu_test.c ****       if (element_ptr == (pointer)q_ptr) {
+  58              		.loc 1 75 0
+  59 0022 7A69     		ldr	r2, [r7, #20]
+  60 0024 7B68     		ldr	r3, [r7, #4]
+  61 0026 9A42     		cmp	r2, r3
+  62 0028 06D1     		bne	.L3
+  76:../MQXLITE/kernel/qu_test.c ****          _int_enable();
+  63              		.loc 1 76 0
+  64 002a FFF7FEFF 		bl	_int_enable
+  77:../MQXLITE/kernel/qu_test.c ****          /* Size too big for # elements on queue */
+  78:../MQXLITE/kernel/qu_test.c ****          *element_in_error_ptr = element_ptr;
+  65              		.loc 1 78 0
+  66 002e 3B68     		ldr	r3, [r7]
+  67 0030 7A69     		ldr	r2, [r7, #20]
+  68 0032 1A60     		str	r2, [r3]
+  79:../MQXLITE/kernel/qu_test.c ****          return(MQX_CORRUPT_QUEUE);
+  69              		.loc 1 79 0
+  70 0034 1D23     		mov	r3, #29
+  71 0036 30E0     		b	.L4
+  72              	.L3:
+  80:../MQXLITE/kernel/qu_test.c ****       } /* Endif */
+  81:../MQXLITE/kernel/qu_test.c ****       if (element_ptr->PREV != prev_ptr) {
+  73              		.loc 1 81 0
+  74 0038 7B69     		ldr	r3, [r7, #20]
+  75 003a 5A68     		ldr	r2, [r3, #4]
+  76 003c 3B69     		ldr	r3, [r7, #16]
+  77 003e 9A42     		cmp	r2, r3
+  78 0040 06D0     		beq	.L5
+  82:../MQXLITE/kernel/qu_test.c ****          _int_enable();
+  79              		.loc 1 82 0
+  80 0042 FFF7FEFF 		bl	_int_enable
+  83:../MQXLITE/kernel/qu_test.c ****          *element_in_error_ptr = element_ptr;
+  81              		.loc 1 83 0
+  82 0046 3B68     		ldr	r3, [r7]
+  83 0048 7A69     		ldr	r2, [r7, #20]
+  84 004a 1A60     		str	r2, [r3]
+  84:../MQXLITE/kernel/qu_test.c ****          return(MQX_CORRUPT_QUEUE);
+  85              		.loc 1 84 0
+  86 004c 1D23     		mov	r3, #29
+  87 004e 24E0     		b	.L4
+  88              	.L5:
+  85:../MQXLITE/kernel/qu_test.c ****       } /* Endif */
+  86:../MQXLITE/kernel/qu_test.c ****       prev_ptr    = element_ptr;
+  89              		.loc 1 86 0
+  90 0050 7B69     		ldr	r3, [r7, #20]
+  91 0052 3B61     		str	r3, [r7, #16]
+  87:../MQXLITE/kernel/qu_test.c ****       element_ptr = element_ptr->NEXT;
+  92              		.loc 1 87 0
+  93 0054 7B69     		ldr	r3, [r7, #20]
+  94 0056 1B68     		ldr	r3, [r3]
+  95 0058 7B61     		str	r3, [r7, #20]
+  96              	.L2:
+  74:../MQXLITE/kernel/qu_test.c ****    while (--size) {
+  97              		.loc 1 74 0
+  98 005a FB68     		ldr	r3, [r7, #12]
+  99 005c 013B     		sub	r3, r3, #1
+ 100 005e FB60     		str	r3, [r7, #12]
+ 101 0060 FB68     		ldr	r3, [r7, #12]
+ 102 0062 002B     		cmp	r3, #0
+ 103 0064 DDD1     		bne	.L6
+  88:../MQXLITE/kernel/qu_test.c ****    } /* Endwhile */
+  89:../MQXLITE/kernel/qu_test.c **** 
+  90:../MQXLITE/kernel/qu_test.c ****    /* Does the last element in the ring point back to the queue head */
+  91:../MQXLITE/kernel/qu_test.c ****    if ((pointer)element_ptr != (pointer)q_ptr) {
+ 104              		.loc 1 91 0
+ 105 0066 7A69     		ldr	r2, [r7, #20]
+ 106 0068 7B68     		ldr	r3, [r7, #4]
+ 107 006a 9A42     		cmp	r2, r3
+ 108 006c 06D0     		beq	.L7
+  92:../MQXLITE/kernel/qu_test.c ****       _int_enable();
+ 109              		.loc 1 92 0
+ 110 006e FFF7FEFF 		bl	_int_enable
+  93:../MQXLITE/kernel/qu_test.c ****       *element_in_error_ptr = element_ptr;
+ 111              		.loc 1 93 0
+ 112 0072 3B68     		ldr	r3, [r7]
+ 113 0074 7A69     		ldr	r2, [r7, #20]
+ 114 0076 1A60     		str	r2, [r3]
+  94:../MQXLITE/kernel/qu_test.c ****       return(MQX_CORRUPT_QUEUE);
+ 115              		.loc 1 94 0
+ 116 0078 1D23     		mov	r3, #29
+ 117 007a 0EE0     		b	.L4
+ 118              	.L7:
+  95:../MQXLITE/kernel/qu_test.c ****    } /* Endif */
+  96:../MQXLITE/kernel/qu_test.c **** 
+  97:../MQXLITE/kernel/qu_test.c ****    /* Is the last element in ring pointed to by queues PREV field */
+  98:../MQXLITE/kernel/qu_test.c ****    if (q_ptr->PREV != prev_ptr) {
+ 119              		.loc 1 98 0
+ 120 007c 7B68     		ldr	r3, [r7, #4]
+ 121 007e 5A68     		ldr	r2, [r3, #4]
+ 122 0080 3B69     		ldr	r3, [r7, #16]
+ 123 0082 9A42     		cmp	r2, r3
+ 124 0084 06D0     		beq	.L8
+  99:../MQXLITE/kernel/qu_test.c ****       _int_enable();
+ 125              		.loc 1 99 0
+ 126 0086 FFF7FEFF 		bl	_int_enable
+ 100:../MQXLITE/kernel/qu_test.c ****       *element_in_error_ptr = element_ptr;
+ 127              		.loc 1 100 0
+ 128 008a 3B68     		ldr	r3, [r7]
+ 129 008c 7A69     		ldr	r2, [r7, #20]
+ 130 008e 1A60     		str	r2, [r3]
+ 101:../MQXLITE/kernel/qu_test.c ****       return(MQX_CORRUPT_QUEUE);
+ 131              		.loc 1 101 0
+ 132 0090 1D23     		mov	r3, #29
+ 133 0092 02E0     		b	.L4
+ 134              	.L8:
+ 102:../MQXLITE/kernel/qu_test.c ****    } /* Endif */
+ 103:../MQXLITE/kernel/qu_test.c **** 
+ 104:../MQXLITE/kernel/qu_test.c ****    _int_enable();
+ 135              		.loc 1 104 0
+ 136 0094 FFF7FEFF 		bl	_int_enable
+ 105:../MQXLITE/kernel/qu_test.c ****    return(MQX_OK);
+ 137              		.loc 1 105 0
+ 138 0098 0023     		mov	r3, #0
+ 139              	.L4:
+ 106:../MQXLITE/kernel/qu_test.c **** 
+ 107:../MQXLITE/kernel/qu_test.c **** } /* Endbody */
+ 140              		.loc 1 107 0
+ 141 009a 181C     		mov	r0, r3
+ 142 009c BD46     		mov	sp, r7
+ 143 009e 06B0     		add	sp, sp, #24
+ 144              		@ sp needed for prologue
+ 145 00a0 80BD     		pop	{r7, pc}
+ 146              		.cfi_endproc
+ 147              	.LFE0:
+ 149 00a2 C046     		.text
+ 150              	.Letext0:
+ 151              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 152              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 qu_test.c
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccoQrVfi.s:18     .text._queue_test:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccoQrVfi.s:23     .text._queue_test:00000000 _queue_test
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_int_disable
+_int_enable

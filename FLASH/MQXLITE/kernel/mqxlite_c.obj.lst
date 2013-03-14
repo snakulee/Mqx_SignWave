@@ -1,0 +1,1081 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"mqxlite.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.comm	_mqx_zero_tick_struct,12,4
+  18              		.global	_mqx_version_number
+  19              		.section	.rodata._mqx_version_number,"a",%progbits
+  20              		.align	2
+  23              	_mqx_version_number:
+  24 0000 00000004 		.word	67108864
+  25              		.global	_mqx_version
+  26              		.section	.rodata
+  27              		.align	2
+  28              	.LC0:
+  29 0000 342E302E 		.ascii	"4.0.0\000"
+  29      3000
+  30              		.section	.rodata._mqx_version,"a",%progbits
+  31              		.align	2
+  34              	_mqx_version:
+  35 0000 00000000 		.word	.LC0
+  36              		.global	_mqx_vendor
+  37              		.section	.rodata
+  38 0006 0000     		.align	2
+  39              	.LC1:
+  40 0008 46726565 		.ascii	"Freescale/Freescale MQX\000"
+  40      7363616C 
+  40      652F4672 
+  40      65657363 
+  40      616C6520 
+  41              		.section	.rodata._mqx_vendor,"a",%progbits
+  42              		.align	2
+  45              	_mqx_vendor:
+  46 0000 08000000 		.word	.LC1
+  47              		.global	_mqx_path
+  48              		.section	.rodata
+  49              		.align	2
+  50              	.LC2:
+  51 0020 433A2F46 		.ascii	"C:/Freescale/CW MCU v10.3/MCU/ProcessorExpert/lib/m"
+  51      72656573 
+  51      63616C65 
+  51      2F435720 
+  51      4D435520 
+  52 0053 71786C69 		.ascii	"qxlite/V1.0.1/\000"
+  52      74652F56 
+  52      312E302E 
+  52      312F00
+  53              		.section	.rodata._mqx_path,"a",%progbits
+  54              		.align	2
+  57              	_mqx_path:
+  58 0000 20000000 		.word	.LC2
+  59              		.global	_mqx_generic_revision
+  60              		.section	.rodata
+  61 0062 0000     		.align	2
+  62              	.LC3:
+  63 0064 47454E5F 		.ascii	"GEN_REVISION\000"
+  63      52455649 
+  63      53494F4E 
+  63      00
+  64              		.section	.rodata._mqx_generic_revision,"a",%progbits
+  65              		.align	2
+  68              	_mqx_generic_revision:
+  69 0000 64000000 		.word	.LC3
+  70              		.global	_mqx_psp_revision
+  71              		.section	.rodata
+  72 0071 000000   		.align	2
+  73              	.LC4:
+  74 0074 5053505F 		.ascii	"PSP_REVISION\000"
+  74      52455649 
+  74      53494F4E 
+  74      00
+  75              		.section	.rodata._mqx_psp_revision,"a",%progbits
+  76              		.align	2
+  79              	_mqx_psp_revision:
+  80 0000 74000000 		.word	.LC4
+  81              		.global	_mqx_copyright
+  82              		.section	.rodata
+  83 0081 000000   		.align	2
+  84              	.LC5:
+  85 0084 28632920 		.ascii	"(c) 2011 Freescale Semiconductor. All rights reserv"
+  85      32303131 
+  85      20467265 
+  85      65736361 
+  85      6C652053 
+  86 00b7 65642E00 		.ascii	"ed.\000"
+  87              		.section	.rodata._mqx_copyright,"a",%progbits
+  88              		.align	2
+  91              	_mqx_copyright:
+  92 0000 84000000 		.word	.LC5
+  93              		.global	_mqx_date
+  94              		.section	.rodata
+  95 00bb 00       		.align	2
+  96              	.LC6:
+  97 00bc 4D617220 		.ascii	"Mar 14 2013 at 18:22:51\000"
+  97      31342032 
+  97      30313320 
+  97      61742031 
+  97      383A3232 
+  98              		.section	.rodata._mqx_date,"a",%progbits
+  99              		.align	2
+ 102              	_mqx_date:
+ 103 0000 BC000000 		.word	.LC6
+ 104              		.global	_mqxlite_version_number
+ 105              		.section	.rodata._mqxlite_version_number,"a",%progbits
+ 106              		.align	2
+ 109              	_mqxlite_version_number:
+ 110 0000 01000001 		.word	16777217
+ 111              		.global	_mqxlite_version
+ 112              		.section	.rodata
+ 113              		.align	2
+ 114              	.LC7:
+ 115 00d4 56312E30 		.ascii	"V1.0.1\000"
+ 115      2E3100
+ 116 00db 00       		.section	.rodata._mqxlite_version,"a",%progbits
+ 117              		.align	2
+ 120              	_mqxlite_version:
+ 121 0000 D4000000 		.word	.LC7
+ 122              		.global	_mqx_kernel_data
+ 123              		.section	.data._mqx_kernel_data,"aw",%progbits
+ 124              		.align	2
+ 127              	_mqx_kernel_data:
+ 128 0000 FFFFFFFF 		.word	-1
+ 129              		.comm	_mqx_system_stack,4,4
+ 130              		.comm	_mqx_exit_jump_buffer_internal,64,4
+ 131              		.section	.text._mqxlite_init,"ax",%progbits
+ 132              		.align	2
+ 133              		.global	_mqxlite_init
+ 134              		.code	16
+ 135              		.thumb_func
+ 137              	_mqxlite_init:
+ 138              	.LFB0:
+ 139              		.file 1 "../MQXLITE/kernel/mqxlite.c"
+   1:../MQXLITE/kernel/mqxlite.c **** /*HEADER**********************************************************************
+   2:../MQXLITE/kernel/mqxlite.c **** *
+   3:../MQXLITE/kernel/mqxlite.c **** * Copyright (c) 2008-2010 Freescale Semiconductor;
+   4:../MQXLITE/kernel/mqxlite.c **** * All Rights Reserved
+   5:../MQXLITE/kernel/mqxlite.c **** *
+   6:../MQXLITE/kernel/mqxlite.c **** * Copyright (c) 2004-2008 Embedded Access Inc.;
+   7:../MQXLITE/kernel/mqxlite.c **** * All Rights Reserved
+   8:../MQXLITE/kernel/mqxlite.c **** *
+   9:../MQXLITE/kernel/mqxlite.c **** * Copyright (c) 1989-2008 ARC International;
+  10:../MQXLITE/kernel/mqxlite.c **** * All Rights Reserved
+  11:../MQXLITE/kernel/mqxlite.c **** *
+  12:../MQXLITE/kernel/mqxlite.c **** ******************************************************************************
+  13:../MQXLITE/kernel/mqxlite.c **** *
+  14:../MQXLITE/kernel/mqxlite.c **** * THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+  15:../MQXLITE/kernel/mqxlite.c **** * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  16:../MQXLITE/kernel/mqxlite.c **** * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  17:../MQXLITE/kernel/mqxlite.c **** * IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  18:../MQXLITE/kernel/mqxlite.c **** * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  19:../MQXLITE/kernel/mqxlite.c **** * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  20:../MQXLITE/kernel/mqxlite.c **** * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  21:../MQXLITE/kernel/mqxlite.c **** * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  22:../MQXLITE/kernel/mqxlite.c **** * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  23:../MQXLITE/kernel/mqxlite.c **** * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  24:../MQXLITE/kernel/mqxlite.c **** * THE POSSIBILITY OF SUCH DAMAGE.
+  25:../MQXLITE/kernel/mqxlite.c **** *
+  26:../MQXLITE/kernel/mqxlite.c **** ******************************************************************************
+  27:../MQXLITE/kernel/mqxlite.c **** *
+  28:../MQXLITE/kernel/mqxlite.c **** * $FileName: mqx.c$
+  29:../MQXLITE/kernel/mqxlite.c **** * $Version : 3.8.31.3$
+  30:../MQXLITE/kernel/mqxlite.c **** * $Date    : Feb-24-2012$
+  31:../MQXLITE/kernel/mqxlite.c **** *
+  32:../MQXLITE/kernel/mqxlite.c **** * Comments:
+  33:../MQXLITE/kernel/mqxlite.c **** *
+  34:../MQXLITE/kernel/mqxlite.c **** *   This file contains the source for the main MQX function _mqx().
+  35:../MQXLITE/kernel/mqxlite.c **** *
+  36:../MQXLITE/kernel/mqxlite.c **** *END*************************************************************************/
+  37:../MQXLITE/kernel/mqxlite.c **** 
+  38:../MQXLITE/kernel/mqxlite.c **** #ifndef __NO_SETJMP
+  39:../MQXLITE/kernel/mqxlite.c **** #include <setjmp.h>
+  40:../MQXLITE/kernel/mqxlite.c **** #endif
+  41:../MQXLITE/kernel/mqxlite.c **** 
+  42:../MQXLITE/kernel/mqxlite.c **** #include "mqx_inc.h"
+  43:../MQXLITE/kernel/mqxlite.c **** 
+  44:../MQXLITE/kernel/mqxlite.c **** /*
+  45:../MQXLITE/kernel/mqxlite.c ****  * A global zero initialized MQX tick structure.
+  46:../MQXLITE/kernel/mqxlite.c ****  * It is used by various MQX functions that need
+  47:../MQXLITE/kernel/mqxlite.c ****  * to zero initialize local tick structures. An
+  48:../MQXLITE/kernel/mqxlite.c ****  * extern to it is provided in MQX.H so applications
+  49:../MQXLITE/kernel/mqxlite.c ****  * can use it as well.
+  50:../MQXLITE/kernel/mqxlite.c ****  */
+  51:../MQXLITE/kernel/mqxlite.c **** const MQX_TICK_STRUCT _mqx_zero_tick_struct;
+  52:../MQXLITE/kernel/mqxlite.c **** 
+  53:../MQXLITE/kernel/mqxlite.c **** /* Version/vendor identification also used by TAD to determine paths to its context files */
+  54:../MQXLITE/kernel/mqxlite.c **** const uint_32      _mqx_version_number      = 0x04000000;
+  55:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_version             = "4.0.0";
+  56:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_vendor              = "Freescale/Freescale MQX";
+  57:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_path                = MQX_PATH;
+  58:../MQXLITE/kernel/mqxlite.c **** /* Version strings */
+  59:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_generic_revision    = REAL_NUM_TO_STR(GEN_REVISION);
+  60:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_psp_revision        = REAL_NUM_TO_STR(PSP_REVISION);
+  61:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_copyright           = "(c) 2011 Freescale Semiconductor. All rights reserve
+  62:../MQXLITE/kernel/mqxlite.c **** const char * const _mqx_date                = __DATE__ " at " __TIME__;
+  63:../MQXLITE/kernel/mqxlite.c **** 
+  64:../MQXLITE/kernel/mqxlite.c **** /* Identify MQX Lite version number and version to source files (generated in user_config.h) */
+  65:../MQXLITE/kernel/mqxlite.c **** const uint_32      _mqxlite_version_number  = MQX_LITE_VERSION_NUMBER;
+  66:../MQXLITE/kernel/mqxlite.c **** const char * const _mqxlite_version         = MQX_LITE_VERSION;
+  67:../MQXLITE/kernel/mqxlite.c **** 
+  68:../MQXLITE/kernel/mqxlite.c **** 
+  69:../MQXLITE/kernel/mqxlite.c **** /* A global pointer to the location of the kernel data structure */
+  70:../MQXLITE/kernel/mqxlite.c **** KERNEL_ACCESS struct   kernel_data_struct * _mqx_kernel_data = (pointer)-1;
+  71:../MQXLITE/kernel/mqxlite.c **** KERNEL_ACCESS volatile pointer              _mqx_system_stack;
+  72:../MQXLITE/kernel/mqxlite.c **** 
+  73:../MQXLITE/kernel/mqxlite.c **** /* Error return jump buffer for kernel errors */
+  74:../MQXLITE/kernel/mqxlite.c **** #if MQX_EXIT_ENABLED || MQX_CRIPPLED_EVALUATION
+  75:../MQXLITE/kernel/mqxlite.c **** jmp_buf _mqx_exit_jump_buffer_internal;
+  76:../MQXLITE/kernel/mqxlite.c **** #endif
+  77:../MQXLITE/kernel/mqxlite.c **** 
+  78:../MQXLITE/kernel/mqxlite.c **** 
+  79:../MQXLITE/kernel/mqxlite.c **** /*!
+  80:../MQXLITE/kernel/mqxlite.c ****  * \brief Initializes MQXLite on the processor.
+  81:../MQXLITE/kernel/mqxlite.c ****  *
+  82:../MQXLITE/kernel/mqxlite.c ****  * The function does the following:
+  83:../MQXLITE/kernel/mqxlite.c ****  * \n - Initializes kernel data.
+  84:../MQXLITE/kernel/mqxlite.c ****  * \n - Creates the interrupt stack.
+  85:../MQXLITE/kernel/mqxlite.c ****  * \n - Creates the ready queues.
+  86:../MQXLITE/kernel/mqxlite.c ****  * \n - Creates a lightweight semaphore for task creation/destruction.
+  87:../MQXLITE/kernel/mqxlite.c ****  * \n - Initializes interrupts.
+  88:../MQXLITE/kernel/mqxlite.c ****  * \n - Initializes system timer.
+  89:../MQXLITE/kernel/mqxlite.c ****  *
+  90:../MQXLITE/kernel/mqxlite.c ****  * \param[in] mqx_init Pointer to the MQXLITE initialization structure for the
+  91:../MQXLITE/kernel/mqxlite.c ****  * processor.
+  92:../MQXLITE/kernel/mqxlite.c ****  *
+  93:../MQXLITE/kernel/mqxlite.c ****  * \return MQX_OK
+  94:../MQXLITE/kernel/mqxlite.c ****  * \return Initialization error code
+  95:../MQXLITE/kernel/mqxlite.c ****  *
+  96:../MQXLITE/kernel/mqxlite.c ****  * \warning Must be called exactly once per processor.
+  97:../MQXLITE/kernel/mqxlite.c ****  *
+  98:../MQXLITE/kernel/mqxlite.c ****  * \see _mqxlite
+  99:../MQXLITE/kernel/mqxlite.c ****  * \see _mqx_exit
+ 100:../MQXLITE/kernel/mqxlite.c ****  * \see MQXLITE_INITIALIZATION_STRUCT
+ 101:../MQXLITE/kernel/mqxlite.c ****  */
+ 102:../MQXLITE/kernel/mqxlite.c **** _mqx_uint _mqxlite_init
+ 103:../MQXLITE/kernel/mqxlite.c **** (
+ 104:../MQXLITE/kernel/mqxlite.c ****     MQXLITE_INITIALIZATION_STRUCT const * mqx_init
+ 105:../MQXLITE/kernel/mqxlite.c **** )
+ 106:../MQXLITE/kernel/mqxlite.c **** { /* Body */
+ 140              		.loc 1 106 0
+ 141              		.cfi_startproc
+ 142 0000 90B5     		push	{r4, r7, lr}
+ 143              	.LCFI0:
+ 144              		.cfi_def_cfa_offset 12
+ 145              		.cfi_offset 4, -12
+ 146              		.cfi_offset 7, -8
+ 147              		.cfi_offset 14, -4
+ 148 0002 8BB0     		sub	sp, sp, #44
+ 149              	.LCFI1:
+ 150              		.cfi_def_cfa_offset 56
+ 151 0004 00AF     		add	r7, sp, #0
+ 152              	.LCFI2:
+ 153              		.cfi_def_cfa_register 7
+ 154 0006 7860     		str	r0, [r7, #4]
+ 107:../MQXLITE/kernel/mqxlite.c ****     KERNEL_DATA_STRUCT_PTR  kernel_data;
+ 108:../MQXLITE/kernel/mqxlite.c ****     TD_STRUCT_PTR           td_ptr;
+ 109:../MQXLITE/kernel/mqxlite.c ****     pointer                 stack_ptr;
+ 110:../MQXLITE/kernel/mqxlite.c ****     pointer                 sys_td_stack_ptr;
+ 111:../MQXLITE/kernel/mqxlite.c ****     uchar_ptr               sys_stack_base_ptr;
+ 112:../MQXLITE/kernel/mqxlite.c ****     _mqx_uint               result = MQX_OK;
+ 155              		.loc 1 112 0
+ 156 0008 0023     		mov	r3, #0
+ 157 000a 7B62     		str	r3, [r7, #36]
+ 113:../MQXLITE/kernel/mqxlite.c **** 
+ 114:../MQXLITE/kernel/mqxlite.c ****     /*
+ 115:../MQXLITE/kernel/mqxlite.c ****      * The kernel data structure starts at the start of kernel memory,
+ 116:../MQXLITE/kernel/mqxlite.c ****      * as specified in the initialization structure. Make sure address
+ 117:../MQXLITE/kernel/mqxlite.c ****      * specified is aligned
+ 118:../MQXLITE/kernel/mqxlite.c ****      */
+ 119:../MQXLITE/kernel/mqxlite.c ****     kernel_data = (KERNEL_DATA_STRUCT_PTR) (mqx_init->START_OF_KERNEL_MEMORY);
+ 158              		.loc 1 119 0
+ 159 000c 7B68     		ldr	r3, [r7, #4]
+ 160 000e 5B68     		ldr	r3, [r3, #4]
+ 161 0010 3B62     		str	r3, [r7, #32]
+ 120:../MQXLITE/kernel/mqxlite.c **** 
+ 121:../MQXLITE/kernel/mqxlite.c ****     /* Set the global pointer to the kernel data structure */
+ 122:../MQXLITE/kernel/mqxlite.c ****     _SET_KERNEL_DATA(kernel_data);
+ 162              		.loc 1 122 0
+ 163 0012 534B     		ldr	r3, .L7
+ 164 0014 3A6A     		ldr	r2, [r7, #32]
+ 165 0016 1A60     		str	r2, [r3]
+ 166              	.LBB2:
+ 123:../MQXLITE/kernel/mqxlite.c **** 
+ 124:../MQXLITE/kernel/mqxlite.c ****     /* The following assignments are done to force the linker to include
+ 125:../MQXLITE/kernel/mqxlite.c ****      * the symbols, which are required by TAD.
+ 126:../MQXLITE/kernel/mqxlite.c ****      * Note that we should use address of the variable so it is not optimized
+ 127:../MQXLITE/kernel/mqxlite.c ****      * as direct constant assignment when optimization level is high.
+ 128:../MQXLITE/kernel/mqxlite.c ****      * Note that counter will be immediately reset to zero on the subsequent
+ 129:../MQXLITE/kernel/mqxlite.c ****      * _mem_zero call. */
+ 130:../MQXLITE/kernel/mqxlite.c ****     {
+ 131:../MQXLITE/kernel/mqxlite.c ****         MQX_INITIALIZATION_STRUCT  * MQX_init_struct_ptr;
+ 132:../MQXLITE/kernel/mqxlite.c **** 
+ 133:../MQXLITE/kernel/mqxlite.c ****         *(volatile pointer*) kernel_data = (pointer) & _mqx_version_number;
+ 167              		.loc 1 133 0
+ 168 0018 3B6A     		ldr	r3, [r7, #32]
+ 169 001a 524A     		ldr	r2, .L7+4
+ 170 001c 1A60     		str	r2, [r3]
+ 134:../MQXLITE/kernel/mqxlite.c ****         *(volatile pointer*) kernel_data = (pointer) & _mqx_vendor;
+ 171              		.loc 1 134 0
+ 172 001e 3B6A     		ldr	r3, [r7, #32]
+ 173 0020 514A     		ldr	r2, .L7+8
+ 174 0022 1A60     		str	r2, [r3]
+ 135:../MQXLITE/kernel/mqxlite.c ****         *(volatile pointer*) kernel_data = (pointer) & _mqx_path;
+ 175              		.loc 1 135 0
+ 176 0024 3B6A     		ldr	r3, [r7, #32]
+ 177 0026 514A     		ldr	r2, .L7+12
+ 178 0028 1A60     		str	r2, [r3]
+ 136:../MQXLITE/kernel/mqxlite.c ****         *(volatile pointer*) kernel_data = (pointer) & _mqxlite_version_number;
+ 179              		.loc 1 136 0
+ 180 002a 3B6A     		ldr	r3, [r7, #32]
+ 181 002c 504A     		ldr	r2, .L7+16
+ 182 002e 1A60     		str	r2, [r3]
+ 137:../MQXLITE/kernel/mqxlite.c ****         *(volatile pointer*) kernel_data = (pointer) & MQX_init_struct_ptr;
+ 183              		.loc 1 137 0
+ 184 0030 3B6A     		ldr	r3, [r7, #32]
+ 185 0032 3A1C     		mov	r2, r7
+ 186 0034 0C32     		add	r2, r2, #12
+ 187 0036 1A60     		str	r2, [r3]
+ 188              	.LBE2:
+ 138:../MQXLITE/kernel/mqxlite.c ****     }
+ 139:../MQXLITE/kernel/mqxlite.c ****     /* Initialize the kernel data to zero. */
+ 140:../MQXLITE/kernel/mqxlite.c ****     _mem_zero((pointer) kernel_data, (_mem_size) sizeof(KERNEL_DATA_STRUCT));
+ 189              		.loc 1 140 0
+ 190 0038 3A6A     		ldr	r2, [r7, #32]
+ 191 003a 9023     		mov	r3, #144
+ 192 003c 9B00     		lsl	r3, r3, #2
+ 193 003e 101C     		mov	r0, r2
+ 194 0040 191C     		mov	r1, r3
+ 195 0042 FFF7FEFF 		bl	_mem_zero
+ 141:../MQXLITE/kernel/mqxlite.c **** 
+ 142:../MQXLITE/kernel/mqxlite.c **** #if MQX_CHECK_ERRORS && MQX_VERIFY_KERNEL_DATA
+ 143:../MQXLITE/kernel/mqxlite.c ****     /* Verify that kernel data can be read and written correctly without
+ 144:../MQXLITE/kernel/mqxlite.c ****      * errors.  This is necessary during BSP development to validate the
+ 145:../MQXLITE/kernel/mqxlite.c ****      * DRAM controller is initialized properly.
+ 146:../MQXLITE/kernel/mqxlite.c ****      */
+ 147:../MQXLITE/kernel/mqxlite.c ****     if (PSP_KERNEL_DATA_VERIFY_ENABLE) {
+ 148:../MQXLITE/kernel/mqxlite.c ****         /* This memory check is dangerous, because can destroy boot stack
+ 149:../MQXLITE/kernel/mqxlite.c ****          * stack which is used !!! -> MQX will failed !
+ 150:../MQXLITE/kernel/mqxlite.c ****          * Set PSP_KERNEL_DATA_VERIFY_ENABLE to 1
+ 151:../MQXLITE/kernel/mqxlite.c ****          * only if your boot stack is out of MQX memory heap
+ 152:../MQXLITE/kernel/mqxlite.c ****          */
+ 153:../MQXLITE/kernel/mqxlite.c **** 
+ 154:../MQXLITE/kernel/mqxlite.c ****         result = _mem_verify((uchar_ptr)kernel_data + sizeof(KERNEL_DATA_STRUCT),
+ 155:../MQXLITE/kernel/mqxlite.c ****                         mqx_init->END_OF_KERNEL_MEMORY);
+ 156:../MQXLITE/kernel/mqxlite.c ****         if ( result != MQX_OK ) {
+ 157:../MQXLITE/kernel/mqxlite.c ****             return (result); /* RETURN TO USER */
+ 158:../MQXLITE/kernel/mqxlite.c ****         }
+ 159:../MQXLITE/kernel/mqxlite.c ****     }
+ 160:../MQXLITE/kernel/mqxlite.c **** #endif /* MQX_CHECK_ERRORS && MQX_VERIFY_KERNEL_DATA */
+ 161:../MQXLITE/kernel/mqxlite.c ****     /* Copy the MQX initialization structure into kernel data. */
+ 162:../MQXLITE/kernel/mqxlite.c ****     kernel_data->INIT = *mqx_init;
+ 196              		.loc 1 162 0
+ 197 0046 396A     		ldr	r1, [r7, #32]
+ 198 0048 A823     		mov	r3, #168
+ 199 004a 5B00     		lsl	r3, r3, #1
+ 200 004c 7A68     		ldr	r2, [r7, #4]
+ 201 004e CB18     		add	r3, r1, r3
+ 202 0050 13CA     		ldmia	r2!, {r0, r1, r4}
+ 203 0052 13C3     		stmia	r3!, {r0, r1, r4}
+ 204 0054 13CA     		ldmia	r2!, {r0, r1, r4}
+ 205 0056 13C3     		stmia	r3!, {r0, r1, r4}
+ 206 0058 13CA     		ldmia	r2!, {r0, r1, r4}
+ 207 005a 13C3     		stmia	r3!, {r0, r1, r4}
+ 163:../MQXLITE/kernel/mqxlite.c **** 
+ 164:../MQXLITE/kernel/mqxlite.c ****     /* init kernel data structures */
+ 165:../MQXLITE/kernel/mqxlite.c ****     _mqx_init_kernel_data_internal();
+ 208              		.loc 1 165 0
+ 209 005c FFF7FEFF 		bl	_mqx_init_kernel_data_internal
+ 166:../MQXLITE/kernel/mqxlite.c **** 
+ 167:../MQXLITE/kernel/mqxlite.c **** #if MQX_USE_INTERRUPTS
+ 168:../MQXLITE/kernel/mqxlite.c **** 
+ 169:../MQXLITE/kernel/mqxlite.c ****     /* Now obtain the interrupt stack */
+ 170:../MQXLITE/kernel/mqxlite.c ****     if (kernel_data->INIT.INTERRUPT_STACK_LOCATION) {
+ 210              		.loc 1 170 0
+ 211 0060 3A6A     		ldr	r2, [r7, #32]
+ 212 0062 B223     		mov	r3, #178
+ 213 0064 5B00     		lsl	r3, r3, #1
+ 214 0066 D358     		ldr	r3, [r2, r3]
+ 215 0068 002B     		cmp	r3, #0
+ 216 006a 54D0     		beq	.L2
+ 171:../MQXLITE/kernel/mqxlite.c ****         stack_ptr = kernel_data->INIT.INTERRUPT_STACK_LOCATION;
+ 217              		.loc 1 171 0
+ 218 006c 3A6A     		ldr	r2, [r7, #32]
+ 219 006e B223     		mov	r3, #178
+ 220 0070 5B00     		lsl	r3, r3, #1
+ 221 0072 D358     		ldr	r3, [r2, r3]
+ 222 0074 FB61     		str	r3, [r7, #28]
+ 172:../MQXLITE/kernel/mqxlite.c ****         result = kernel_data->INIT.INTERRUPT_STACK_SIZE;
+ 223              		.loc 1 172 0
+ 224 0076 3A6A     		ldr	r2, [r7, #32]
+ 225 0078 B023     		mov	r3, #176
+ 226 007a 5B00     		lsl	r3, r3, #1
+ 227 007c D358     		ldr	r3, [r2, r3]
+ 228 007e 7B62     		str	r3, [r7, #36]
+ 173:../MQXLITE/kernel/mqxlite.c ****     }
+ 174:../MQXLITE/kernel/mqxlite.c ****     else
+ 175:../MQXLITE/kernel/mqxlite.c ****     {
+ 176:../MQXLITE/kernel/mqxlite.c ****         return (MQX_INVALID_PARAMETER);
+ 177:../MQXLITE/kernel/mqxlite.c ****     } /* Endif */
+ 178:../MQXLITE/kernel/mqxlite.c **** 
+ 179:../MQXLITE/kernel/mqxlite.c **** #if MQX_MONITOR_STACK
+ 180:../MQXLITE/kernel/mqxlite.c ****     _task_fill_stack_internal((_mqx_uint_ptr)stack_ptr, result);
+ 229              		.loc 1 180 0
+ 230 0080 FA69     		ldr	r2, [r7, #28]
+ 231 0082 7B6A     		ldr	r3, [r7, #36]
+ 232 0084 101C     		mov	r0, r2
+ 233 0086 191C     		mov	r1, r3
+ 234 0088 FFF7FEFF 		bl	_task_fill_stack_internal
+ 181:../MQXLITE/kernel/mqxlite.c **** #endif
+ 182:../MQXLITE/kernel/mqxlite.c **** 
+ 183:../MQXLITE/kernel/mqxlite.c ****     kernel_data->INTERRUPT_STACK_PTR = _GET_STACK_BASE(stack_ptr, result);
+ 235              		.loc 1 183 0
+ 236 008c 7B6A     		ldr	r3, [r7, #36]
+ 237 008e 013B     		sub	r3, r3, #1
+ 238 0090 FA69     		ldr	r2, [r7, #28]
+ 239 0092 D318     		add	r3, r2, r3
+ 240 0094 0F22     		mov	r2, #15
+ 241 0096 9343     		bic	r3, r2
+ 242 0098 1A1C     		mov	r2, r3
+ 243 009a 3B6A     		ldr	r3, [r7, #32]
+ 244 009c DA63     		str	r2, [r3, #60]
+ 184:../MQXLITE/kernel/mqxlite.c **** 
+ 185:../MQXLITE/kernel/mqxlite.c **** #endif /* MQX_USE_INTERRUPTS */
+ 186:../MQXLITE/kernel/mqxlite.c **** 
+ 187:../MQXLITE/kernel/mqxlite.c ****     /*
+ 188:../MQXLITE/kernel/mqxlite.c ****      * Set the stack for the system TD, in case the idle task gets blocked
+ 189:../MQXLITE/kernel/mqxlite.c ****      * by an exception or if idle task is not used.
+ 190:../MQXLITE/kernel/mqxlite.c ****      */
+ 191:../MQXLITE/kernel/mqxlite.c ****     sys_td_stack_ptr = &mqx_system_stack[0];
+ 245              		.loc 1 191 0
+ 246 009e 354B     		ldr	r3, .L7+20
+ 247 00a0 BB61     		str	r3, [r7, #24]
+ 192:../MQXLITE/kernel/mqxlite.c ****     sys_stack_base_ptr = (uchar_ptr) _GET_STACK_BASE(sys_td_stack_ptr, PSP_MINSTACKSIZE);
+ 248              		.loc 1 192 0
+ 249 00a2 BB69     		ldr	r3, [r7, #24]
+ 250 00a4 9733     		add	r3, r3, #151
+ 251 00a6 0F22     		mov	r2, #15
+ 252 00a8 9343     		bic	r3, r2
+ 253 00aa 7B61     		str	r3, [r7, #20]
+ 193:../MQXLITE/kernel/mqxlite.c ****     td_ptr = SYSTEM_TD_PTR(kernel_data);
+ 254              		.loc 1 193 0
+ 255 00ac 3B6A     		ldr	r3, [r7, #32]
+ 256 00ae 4833     		add	r3, r3, #72
+ 257 00b0 3B61     		str	r3, [r7, #16]
+ 194:../MQXLITE/kernel/mqxlite.c ****     td_ptr->STACK_PTR = (pointer)(sys_stack_base_ptr - sizeof(PSP_STACK_START_STRUCT));
+ 258              		.loc 1 194 0
+ 259 00b2 7B69     		ldr	r3, [r7, #20]
+ 260 00b4 1A1C     		mov	r2, r3
+ 261 00b6 583A     		sub	r2, r2, #88
+ 262 00b8 3B69     		ldr	r3, [r7, #16]
+ 263 00ba 5A61     		str	r2, [r3, #20]
+ 195:../MQXLITE/kernel/mqxlite.c ****     td_ptr->STACK_BASE = sys_stack_base_ptr;
+ 264              		.loc 1 195 0
+ 265 00bc 3B69     		ldr	r3, [r7, #16]
+ 266 00be 7A69     		ldr	r2, [r7, #20]
+ 267 00c0 1A61     		str	r2, [r3, #16]
+ 196:../MQXLITE/kernel/mqxlite.c **** #if MQX_TD_HAS_STACK_LIMIT
+ 197:../MQXLITE/kernel/mqxlite.c ****     td_ptr->STACK_LIMIT = _GET_STACK_LIMIT(sys_td_stack_ptr, PSP_MINSTACKSIZE);
+ 268              		.loc 1 197 0
+ 269 00c2 BB69     		ldr	r3, [r7, #24]
+ 270 00c4 0F33     		add	r3, r3, #15
+ 271 00c6 0F22     		mov	r2, #15
+ 272 00c8 9343     		bic	r3, r2
+ 273 00ca 1A1C     		mov	r2, r3
+ 274 00cc 3B69     		ldr	r3, [r7, #16]
+ 275 00ce 9A61     		str	r2, [r3, #24]
+ 198:../MQXLITE/kernel/mqxlite.c **** #endif
+ 199:../MQXLITE/kernel/mqxlite.c ****     _mqx_system_stack = td_ptr->STACK_PTR;
+ 276              		.loc 1 199 0
+ 277 00d0 3B69     		ldr	r3, [r7, #16]
+ 278 00d2 5A69     		ldr	r2, [r3, #20]
+ 279 00d4 284B     		ldr	r3, .L7+24
+ 280 00d6 1A60     		str	r2, [r3]
+ 200:../MQXLITE/kernel/mqxlite.c **** 
+ 201:../MQXLITE/kernel/mqxlite.c ****     /* Build the MQX ready to run queues */
+ 202:../MQXLITE/kernel/mqxlite.c ****     result = _psp_init_readyqs();
+ 281              		.loc 1 202 0
+ 282 00d8 FFF7FEFF 		bl	_psp_init_readyqs
+ 283 00dc 031C     		mov	r3, r0
+ 284 00de 7B62     		str	r3, [r7, #36]
+ 203:../MQXLITE/kernel/mqxlite.c **** #if MQX_CHECK_MEMORY_ALLOCATION_ERRORS
+ 204:../MQXLITE/kernel/mqxlite.c ****     if ( result != MQX_OK ) {
+ 205:../MQXLITE/kernel/mqxlite.c ****         return (result); /* RETURN TO USER */
+ 206:../MQXLITE/kernel/mqxlite.c ****     } /* Endif */
+ 207:../MQXLITE/kernel/mqxlite.c **** #endif
+ 208:../MQXLITE/kernel/mqxlite.c **** 
+ 209:../MQXLITE/kernel/mqxlite.c **** #if MQX_USE_COMPONENTS
+ 210:../MQXLITE/kernel/mqxlite.c ****     /* Create a light wait semaphore for component creation */
+ 211:../MQXLITE/kernel/mqxlite.c ****     _lwsem_create((LWSEM_STRUCT_PTR)&kernel_data->COMPONENT_CREATE_LWSEM, 1);
+ 285              		.loc 1 211 0
+ 286 00e0 3B6A     		ldr	r3, [r7, #32]
+ 287 00e2 7533     		add	r3, r3, #117
+ 288 00e4 FF33     		add	r3, r3, #255
+ 289 00e6 181C     		mov	r0, r3
+ 290 00e8 0121     		mov	r1, #1
+ 291 00ea FFF7FEFF 		bl	_lwsem_create
+ 212:../MQXLITE/kernel/mqxlite.c **** #endif
+ 213:../MQXLITE/kernel/mqxlite.c **** 
+ 214:../MQXLITE/kernel/mqxlite.c ****     /* Create a light wait semaphore for task creation/destruction creation */
+ 215:../MQXLITE/kernel/mqxlite.c ****     _lwsem_create((LWSEM_STRUCT_PTR) & kernel_data->TASK_CREATE_LWSEM, 1);
+ 292              		.loc 1 215 0
+ 293 00ee 3B6A     		ldr	r3, [r7, #32]
+ 294 00f0 F433     		add	r3, r3, #244
+ 295 00f2 181C     		mov	r0, r3
+ 296 00f4 0121     		mov	r1, #1
+ 297 00f6 FFF7FEFF 		bl	_lwsem_create
+ 216:../MQXLITE/kernel/mqxlite.c **** 
+ 217:../MQXLITE/kernel/mqxlite.c ****     /* Set the CPU type */
+ 218:../MQXLITE/kernel/mqxlite.c ****     _mqx_set_cpu_type(MQX_CPU);
+ 298              		.loc 1 218 0
+ 299 00fa 204B     		ldr	r3, .L7+28
+ 300 00fc 181C     		mov	r0, r3
+ 301 00fe FFF7FEFF 		bl	_mqx_set_cpu_type
+ 219:../MQXLITE/kernel/mqxlite.c **** 
+ 220:../MQXLITE/kernel/mqxlite.c ****     result = _psp_int_init(FIRST_INTERRUPT_VECTOR_USED, LAST_INTERRUPT_VECTOR_USED);
+ 302              		.loc 1 220 0
+ 303 0102 0F20     		mov	r0, #15
+ 304 0104 2321     		mov	r1, #35
+ 305 0106 FFF7FEFF 		bl	_psp_int_init
+ 306 010a 031C     		mov	r3, r0
+ 307 010c 7B62     		str	r3, [r7, #36]
+ 221:../MQXLITE/kernel/mqxlite.c ****     if (result != MQX_OK) {
+ 308              		.loc 1 221 0
+ 309 010e 7B6A     		ldr	r3, [r7, #36]
+ 310 0110 002B     		cmp	r3, #0
+ 311 0112 02D1     		bne	.L3
+ 312 0114 03E0     		b	.L6
+ 313              	.L2:
+ 176:../MQXLITE/kernel/mqxlite.c ****         return (MQX_INVALID_PARAMETER);
+ 314              		.loc 1 176 0
+ 315 0116 0C23     		mov	r3, #12
+ 316 0118 1DE0     		b	.L5
+ 317              	.L3:
+ 222:../MQXLITE/kernel/mqxlite.c ****         return(result); /* RETURN TO USER */
+ 318              		.loc 1 222 0
+ 319 011a 7B6A     		ldr	r3, [r7, #36]
+ 320 011c 1BE0     		b	.L5
+ 321              	.L6:
+ 223:../MQXLITE/kernel/mqxlite.c ****     }
+ 224:../MQXLITE/kernel/mqxlite.c **** 
+ 225:../MQXLITE/kernel/mqxlite.c ****     /* set possible new interrupt vector table
+ 226:../MQXLITE/kernel/mqxlite.c ****      * if MQX_ROM_VECTORS = 0 switch to ram interrupt table which
+ 227:../MQXLITE/kernel/mqxlite.c ****      * was initialized in _psp_int_init)
+ 228:../MQXLITE/kernel/mqxlite.c ****      */
+ 229:../MQXLITE/kernel/mqxlite.c ****     _int_set_vector_table((uint32_t)(&__vect_table));
+ 322              		.loc 1 229 0
+ 323 011e 184B     		ldr	r3, .L7+32
+ 324 0120 181C     		mov	r0, r3
+ 325 0122 FFF7FEFF 		bl	_int_set_vector_table
+ 230:../MQXLITE/kernel/mqxlite.c **** 
+ 231:../MQXLITE/kernel/mqxlite.c ****     /*
+ 232:../MQXLITE/kernel/mqxlite.c ****      * Initialize System Timer and Ticks parameters in kernel_data structure
+ 233:../MQXLITE/kernel/mqxlite.c ****      */
+ 234:../MQXLITE/kernel/mqxlite.c ****     {
+ 235:../MQXLITE/kernel/mqxlite.c ****         MQXLITE_SYSTEM_TIMER_INIT(NULL);
+ 326              		.loc 1 235 0
+ 327 0126 0020     		mov	r0, #0
+ 328 0128 FFF7FEFF 		bl	SystemTimer1_Init
+ 236:../MQXLITE/kernel/mqxlite.c **** 
+ 237:../MQXLITE/kernel/mqxlite.c ****         MQXLITE_SYSTEM_TIMER_GET_PERIOD_TICKS(NULL, (uint32_t *)&kernel_data->HW_TICKS_PER_TICK);
+ 329              		.loc 1 237 0
+ 330 012c 3B6A     		ldr	r3, [r7, #32]
+ 331 012e 4533     		add	r3, r3, #69
+ 332 0130 FF33     		add	r3, r3, #255
+ 333 0132 0020     		mov	r0, #0
+ 334 0134 191C     		mov	r1, r3
+ 335 0136 FFF7FEFF 		bl	SystemTimer1_GetPeriodTicks
+ 238:../MQXLITE/kernel/mqxlite.c **** 
+ 239:../MQXLITE/kernel/mqxlite.c ****         kernel_data->TICKS_PER_SECOND = MQXLITE_SYSTEM_TIMER_GET_TICS_PER_SECOND(NULL);
+ 336              		.loc 1 239 0
+ 337 013a 0020     		mov	r0, #0
+ 338 013c FFF7FEFF 		bl	SystemTimer1_GetTicsPerSecond
+ 339 0140 011C     		mov	r1, r0
+ 340 0142 3A6A     		ldr	r2, [r7, #32]
+ 341 0144 9E23     		mov	r3, #158
+ 342 0146 5B00     		lsl	r3, r3, #1
+ 343 0148 D150     		str	r1, [r2, r3]
+ 240:../MQXLITE/kernel/mqxlite.c **** 
+ 241:../MQXLITE/kernel/mqxlite.c ****         MQXLITE_SYSTEM_TIMER_SET_HWTICKS_FUNCTION(NULL);
+ 344              		.loc 1 241 0
+ 345 014a 0E4B     		ldr	r3, .L7+36
+ 346 014c 181C     		mov	r0, r3
+ 347 014e 0021     		mov	r1, #0
+ 348 0150 FFF7FEFF 		bl	_time_set_hwtick_function
+ 242:../MQXLITE/kernel/mqxlite.c ****     }
+ 243:../MQXLITE/kernel/mqxlite.c **** 
+ 244:../MQXLITE/kernel/mqxlite.c ****     return MQX_OK; /* To satisfy lint */
+ 349              		.loc 1 244 0
+ 350 0154 0023     		mov	r3, #0
+ 351              	.L5:
+ 245:../MQXLITE/kernel/mqxlite.c **** 
+ 246:../MQXLITE/kernel/mqxlite.c **** } /* Endbody */
+ 352              		.loc 1 246 0
+ 353 0156 181C     		mov	r0, r3
+ 354 0158 BD46     		mov	sp, r7
+ 355 015a 0BB0     		add	sp, sp, #44
+ 356              		@ sp needed for prologue
+ 357 015c 90BD     		pop	{r4, r7, pc}
+ 358              	.L8:
+ 359 015e C046     		.align	2
+ 360              	.L7:
+ 361 0160 00000000 		.word	_mqx_kernel_data
+ 362 0164 00000000 		.word	_mqx_version_number
+ 363 0168 00000000 		.word	_mqx_vendor
+ 364 016c 00000000 		.word	_mqx_path
+ 365 0170 00000000 		.word	_mqxlite_version_number
+ 366 0174 00000000 		.word	mqx_system_stack
+ 367 0178 00000000 		.word	_mqx_system_stack
+ 368 017c 2F420000 		.word	16943
+ 369 0180 00000000 		.word	__vect_table
+ 370 0184 00000000 		.word	SystemTimer1_GetCounterValue
+ 371              		.cfi_endproc
+ 372              	.LFE0:
+ 374              		.section	.text._mqxlite,"ax",%progbits
+ 375              		.align	2
+ 376              		.global	_mqxlite
+ 377              		.code	16
+ 378              		.thumb_func
+ 380              	_mqxlite:
+ 381              	.LFB1:
+ 247:../MQXLITE/kernel/mqxlite.c **** 
+ 248:../MQXLITE/kernel/mqxlite.c **** /*!
+ 249:../MQXLITE/kernel/mqxlite.c ****  * \brief Starts MQXLite on the processor.
+ 250:../MQXLITE/kernel/mqxlite.c ****  *
+ 251:../MQXLITE/kernel/mqxlite.c ****  * The function does the following:
+ 252:../MQXLITE/kernel/mqxlite.c ****  * \n - Starts system timer.
+ 253:../MQXLITE/kernel/mqxlite.c ****  * \n - Starts MQX tasks.
+ 254:../MQXLITE/kernel/mqxlite.c ****  * \n - Starts autostart application tasks.
+ 255:../MQXLITE/kernel/mqxlite.c ****  *
+ 256:../MQXLITE/kernel/mqxlite.c ****  * \return Does not return (Success.)
+ 257:../MQXLITE/kernel/mqxlite.c ****  * \return If application calls _mqx_exit(), error code that it passed to _mqx_exit().
+ 258:../MQXLITE/kernel/mqxlite.c ****  *
+ 259:../MQXLITE/kernel/mqxlite.c ****  * \warning Must be called exactly once per processor.
+ 260:../MQXLITE/kernel/mqxlite.c ****  *
+ 261:../MQXLITE/kernel/mqxlite.c ****  * \see _mqxlite_init
+ 262:../MQXLITE/kernel/mqxlite.c ****  * \see _mqx_exit
+ 263:../MQXLITE/kernel/mqxlite.c ****  */
+ 264:../MQXLITE/kernel/mqxlite.c **** _mqx_uint _mqxlite(void)
+ 265:../MQXLITE/kernel/mqxlite.c **** { /* Body */
+ 382              		.loc 1 265 0
+ 383              		.cfi_startproc
+ 384 0000 90B5     		push	{r4, r7, lr}
+ 385              	.LCFI3:
+ 386              		.cfi_def_cfa_offset 12
+ 387              		.cfi_offset 4, -12
+ 388              		.cfi_offset 7, -8
+ 389              		.cfi_offset 14, -4
+ 390 0002 87B0     		sub	sp, sp, #28
+ 391              	.LCFI4:
+ 392              		.cfi_def_cfa_offset 40
+ 393 0004 02AF     		add	r7, sp, #8
+ 394              	.LCFI5:
+ 395              		.cfi_def_cfa 7, 32
+ 266:../MQXLITE/kernel/mqxlite.c ****     KERNEL_DATA_STRUCT_PTR              kernel_data;
+ 267:../MQXLITE/kernel/mqxlite.c ****     TD_STRUCT_PTR                       td_ptr;
+ 268:../MQXLITE/kernel/mqxlite.c **** 
+ 269:../MQXLITE/kernel/mqxlite.c **** #if MQX_EXIT_ENABLED || MQX_CRIPPLED_EVALUATION
+ 270:../MQXLITE/kernel/mqxlite.c ****     /* Setup a longjmp buffer using setjmp, so that if an error occurs
+ 271:../MQXLITE/kernel/mqxlite.c ****      * in mqx initialization, we can perform a longjmp to this location.
+ 272:../MQXLITE/kernel/mqxlite.c ****      *
+ 273:../MQXLITE/kernel/mqxlite.c ****      * Also _mqx_exit will use this jumpbuffer to longjmp to here in order
+ 274:../MQXLITE/kernel/mqxlite.c ****      * to cleanly exit MQX.
+ 275:../MQXLITE/kernel/mqxlite.c ****      */
+ 276:../MQXLITE/kernel/mqxlite.c ****     if ( MQX_SETJMP( _mqx_exit_jump_buffer_internal ) ) {
+ 396              		.loc 1 276 0
+ 397 0006 3A4B     		ldr	r3, .L16
+ 398 0008 181C     		mov	r0, r3
+ 399 000a FFF7FEFF 		bl	__setjmp
+ 400 000e 031C     		mov	r3, r0
+ 401 0010 002B     		cmp	r3, #0
+ 402 0012 0ED0     		beq	.L10
+ 277:../MQXLITE/kernel/mqxlite.c ****         _GET_KERNEL_DATA(kernel_data);
+ 403              		.loc 1 277 0
+ 404 0014 374B     		ldr	r3, .L16+4
+ 405 0016 1B68     		ldr	r3, [r3]
+ 406 0018 7B60     		str	r3, [r7, #4]
+ 278:../MQXLITE/kernel/mqxlite.c ****         _int_set_vector_table(kernel_data->USERS_VBR);
+ 407              		.loc 1 278 0
+ 408 001a 7A68     		ldr	r2, [r7, #4]
+ 409 001c 8D23     		mov	r3, #141
+ 410 001e 9B00     		lsl	r3, r3, #2
+ 411 0020 D358     		ldr	r3, [r2, r3]
+ 412 0022 181C     		mov	r0, r3
+ 413 0024 FFF7FEFF 		bl	_int_set_vector_table
+ 279:../MQXLITE/kernel/mqxlite.c ****         return kernel_data->USERS_ERROR;
+ 414              		.loc 1 279 0
+ 415 0028 7A68     		ldr	r2, [r7, #4]
+ 416 002a 8E23     		mov	r3, #142
+ 417 002c 9B00     		lsl	r3, r3, #2
+ 418 002e D358     		ldr	r3, [r2, r3]
+ 419 0030 5AE0     		b	.L11
+ 420              	.L10:
+ 280:../MQXLITE/kernel/mqxlite.c ****     } /* Endif */
+ 281:../MQXLITE/kernel/mqxlite.c **** #endif
+ 282:../MQXLITE/kernel/mqxlite.c **** 
+ 283:../MQXLITE/kernel/mqxlite.c **** 
+ 284:../MQXLITE/kernel/mqxlite.c ****     _GET_KERNEL_DATA(kernel_data);
+ 421              		.loc 1 284 0
+ 422 0032 304B     		ldr	r3, .L16+4
+ 423 0034 1B68     		ldr	r3, [r3]
+ 424 0036 7B60     		str	r3, [r7, #4]
+ 285:../MQXLITE/kernel/mqxlite.c **** 
+ 286:../MQXLITE/kernel/mqxlite.c ****     /* System timer start */
+ 287:../MQXLITE/kernel/mqxlite.c ****     MQXLITE_SYSTEM_TIMER_START(NULL);
+ 425              		.loc 1 287 0
+ 426 0038 0020     		mov	r0, #0
+ 427 003a FFF7FEFF 		bl	SystemTimer1_Enable
+ 288:../MQXLITE/kernel/mqxlite.c **** 
+ 289:../MQXLITE/kernel/mqxlite.c ****     /* Create the idle task */
+ 290:../MQXLITE/kernel/mqxlite.c **** #if MQX_USE_IDLE_TASK
+ 291:../MQXLITE/kernel/mqxlite.c ****     td_ptr = _task_init_internal((TASK_TEMPLATE_STRUCT_PTR)&kernel_data->IDLE_TASK_TEMPLATE,
+ 428              		.loc 1 291 0
+ 429 003e 7B68     		ldr	r3, [r7, #4]
+ 430 0040 8421     		mov	r1, #132
+ 431 0042 8900     		lsl	r1, r1, #2
+ 432 0044 5A18     		add	r2, r3, r1
+ 292:../MQXLITE/kernel/mqxlite.c ****                                 kernel_data->ACTIVE_PTR->TASK_ID,
+ 433              		.loc 1 292 0
+ 434 0046 7B68     		ldr	r3, [r7, #4]
+ 435 0048 DB69     		ldr	r3, [r3, #28]
+ 291:../MQXLITE/kernel/mqxlite.c ****     td_ptr = _task_init_internal((TASK_TEMPLATE_STRUCT_PTR)&kernel_data->IDLE_TASK_TEMPLATE,
+ 436              		.loc 1 291 0
+ 437 004a DB68     		ldr	r3, [r3, #12]
+ 293:../MQXLITE/kernel/mqxlite.c ****                                 #if MQX_ENABLE_LOW_POWER
+ 294:../MQXLITE/kernel/mqxlite.c ****                                     (uint_32)1,
+ 295:../MQXLITE/kernel/mqxlite.c ****                                 #else
+ 296:../MQXLITE/kernel/mqxlite.c ****                                     (uint_32)0,
+ 297:../MQXLITE/kernel/mqxlite.c ****                                 #endif
+ 298:../MQXLITE/kernel/mqxlite.c ****                                  FALSE,
+ 299:../MQXLITE/kernel/mqxlite.c ****                                  kernel_data->INIT.IDLE_TASK_STACK_LOCATION,
+ 438              		.loc 1 299 0
+ 439 004c 7868     		ldr	r0, [r7, #4]
+ 291:../MQXLITE/kernel/mqxlite.c ****     td_ptr = _task_init_internal((TASK_TEMPLATE_STRUCT_PTR)&kernel_data->IDLE_TASK_TEMPLATE,
+ 440              		.loc 1 291 0
+ 441 004e B621     		mov	r1, #182
+ 442 0050 4900     		lsl	r1, r1, #1
+ 443 0052 4058     		ldr	r0, [r0, r1]
+ 300:../MQXLITE/kernel/mqxlite.c ****                                  kernel_data->IDLE_TASK_TEMPLATE.TASK_STACKSIZE);
+ 444              		.loc 1 300 0
+ 445 0054 7C68     		ldr	r4, [r7, #4]
+ 291:../MQXLITE/kernel/mqxlite.c ****     td_ptr = _task_init_internal((TASK_TEMPLATE_STRUCT_PTR)&kernel_data->IDLE_TASK_TEMPLATE,
+ 446              		.loc 1 291 0
+ 447 0056 8621     		mov	r1, #134
+ 448 0058 8900     		lsl	r1, r1, #2
+ 449 005a 6158     		ldr	r1, [r4, r1]
+ 450 005c 0090     		str	r0, [sp]
+ 451 005e 0191     		str	r1, [sp, #4]
+ 452 0060 101C     		mov	r0, r2
+ 453 0062 191C     		mov	r1, r3
+ 454 0064 0022     		mov	r2, #0
+ 455 0066 0023     		mov	r3, #0
+ 456 0068 FFF7FEFF 		bl	_task_init_internal
+ 457 006c 031C     		mov	r3, r0
+ 458 006e 3B60     		str	r3, [r7]
+ 301:../MQXLITE/kernel/mqxlite.c ****     #if MQX_CHECK_ERRORS
+ 302:../MQXLITE/kernel/mqxlite.c ****         if (td_ptr == NULL) {
+ 459              		.loc 1 302 0
+ 460 0070 3B68     		ldr	r3, [r7]
+ 461 0072 002B     		cmp	r3, #0
+ 462 0074 02D1     		bne	.L12
+ 303:../MQXLITE/kernel/mqxlite.c ****             _mqx_exit(MQX_OUT_OF_MEMORY);
+ 463              		.loc 1 303 0
+ 464 0076 0420     		mov	r0, #4
+ 465 0078 FFF7FEFF 		bl	_mqx_exit
+ 466              	.L12:
+ 304:../MQXLITE/kernel/mqxlite.c ****         } /* Endif */
+ 305:../MQXLITE/kernel/mqxlite.c ****     #endif
+ 306:../MQXLITE/kernel/mqxlite.c ****     _task_ready_internal(td_ptr);
+ 467              		.loc 1 306 0
+ 468 007c 3B68     		ldr	r3, [r7]
+ 469 007e 181C     		mov	r0, r3
+ 470 0080 FFF7FEFF 		bl	_task_ready_internal
+ 471              	.LBB3:
+ 307:../MQXLITE/kernel/mqxlite.c **** #endif /* MQX_USE_IDLE_TASK */
+ 308:../MQXLITE/kernel/mqxlite.c **** 
+ 309:../MQXLITE/kernel/mqxlite.c ****     /* Check here for auto-create tasks, and create them here */
+ 310:../MQXLITE/kernel/mqxlite.c ****     {
+ 311:../MQXLITE/kernel/mqxlite.c ****         TASK_TEMPLATE_STRUCT_PTR    template_ptr;
+ 312:../MQXLITE/kernel/mqxlite.c ****         int                         task_index = 0;
+ 472              		.loc 1 312 0
+ 473 0084 0023     		mov	r3, #0
+ 474 0086 BB60     		str	r3, [r7, #8]
+ 313:../MQXLITE/kernel/mqxlite.c **** 
+ 314:../MQXLITE/kernel/mqxlite.c ****         template_ptr = kernel_data->INIT.TASK_TEMPLATE_LIST;
+ 475              		.loc 1 314 0
+ 476 0088 7A68     		ldr	r2, [r7, #4]
+ 477 008a B823     		mov	r3, #184
+ 478 008c 5B00     		lsl	r3, r3, #1
+ 479 008e D358     		ldr	r3, [r2, r3]
+ 480 0090 FB60     		str	r3, [r7, #12]
+ 315:../MQXLITE/kernel/mqxlite.c **** 
+ 316:../MQXLITE/kernel/mqxlite.c ****         while (template_ptr->TASK_TEMPLATE_INDEX) {
+ 481              		.loc 1 316 0
+ 482 0092 22E0     		b	.L13
+ 483              	.L15:
+ 317:../MQXLITE/kernel/mqxlite.c ****             if (template_ptr->TASK_ATTRIBUTES & MQX_AUTO_START_TASK) {
+ 484              		.loc 1 317 0
+ 485 0094 FB68     		ldr	r3, [r7, #12]
+ 486 0096 5A69     		ldr	r2, [r3, #20]
+ 487 0098 0123     		mov	r3, #1
+ 488 009a 1340     		and	r3, r2
+ 489 009c 17D0     		beq	.L14
+ 318:../MQXLITE/kernel/mqxlite.c ****                 td_ptr = _task_init_internal(template_ptr,
+ 319:../MQXLITE/kernel/mqxlite.c ****                                              kernel_data->ACTIVE_PTR->TASK_ID,
+ 490              		.loc 1 319 0
+ 491 009e 7B68     		ldr	r3, [r7, #4]
+ 492 00a0 DB69     		ldr	r3, [r3, #28]
+ 318:../MQXLITE/kernel/mqxlite.c ****                 td_ptr = _task_init_internal(template_ptr,
+ 493              		.loc 1 318 0
+ 494 00a2 D968     		ldr	r1, [r3, #12]
+ 320:../MQXLITE/kernel/mqxlite.c ****                                              template_ptr->CREATION_PARAMETER,
+ 495              		.loc 1 320 0
+ 496 00a4 FB68     		ldr	r3, [r7, #12]
+ 318:../MQXLITE/kernel/mqxlite.c ****                 td_ptr = _task_init_internal(template_ptr,
+ 497              		.loc 1 318 0
+ 498 00a6 9A69     		ldr	r2, [r3, #24]
+ 321:../MQXLITE/kernel/mqxlite.c ****                                              FALSE,
+ 322:../MQXLITE/kernel/mqxlite.c ****                                              (pointer)mqx_task_stack_pointers[task_index],
+ 499              		.loc 1 322 0
+ 500 00a8 134B     		ldr	r3, .L16+8
+ 501 00aa B868     		ldr	r0, [r7, #8]
+ 502 00ac 8000     		lsl	r0, r0, #2
+ 503 00ae C458     		ldr	r4, [r0, r3]
+ 323:../MQXLITE/kernel/mqxlite.c ****                                              (_mem_size)template_ptr->TASK_STACKSIZE);
+ 504              		.loc 1 323 0
+ 505 00b0 FB68     		ldr	r3, [r7, #12]
+ 318:../MQXLITE/kernel/mqxlite.c ****                 td_ptr = _task_init_internal(template_ptr,
+ 506              		.loc 1 318 0
+ 507 00b2 9868     		ldr	r0, [r3, #8]
+ 508 00b4 FB68     		ldr	r3, [r7, #12]
+ 509 00b6 0094     		str	r4, [sp]
+ 510 00b8 0190     		str	r0, [sp, #4]
+ 511 00ba 181C     		mov	r0, r3
+ 512 00bc 0023     		mov	r3, #0
+ 513 00be FFF7FEFF 		bl	_task_init_internal
+ 514 00c2 031C     		mov	r3, r0
+ 515 00c4 3B60     		str	r3, [r7]
+ 324:../MQXLITE/kernel/mqxlite.c ****     #if MQX_CHECK_MEMORY_ALLOCATION_ERRORS
+ 325:../MQXLITE/kernel/mqxlite.c ****                 if (td_ptr == NULL) {
+ 326:../MQXLITE/kernel/mqxlite.c ****                     _mqx_exit(MQX_OUT_OF_MEMORY);
+ 327:../MQXLITE/kernel/mqxlite.c ****                 } /* Endif */
+ 328:../MQXLITE/kernel/mqxlite.c ****     #endif
+ 329:../MQXLITE/kernel/mqxlite.c ****                 _task_ready_internal(td_ptr);
+ 516              		.loc 1 329 0
+ 517 00c6 3B68     		ldr	r3, [r7]
+ 518 00c8 181C     		mov	r0, r3
+ 519 00ca FFF7FEFF 		bl	_task_ready_internal
+ 520              	.L14:
+ 330:../MQXLITE/kernel/mqxlite.c ****             } /* Endif */
+ 331:../MQXLITE/kernel/mqxlite.c ****             ++template_ptr;
+ 521              		.loc 1 331 0
+ 522 00ce FB68     		ldr	r3, [r7, #12]
+ 523 00d0 1C33     		add	r3, r3, #28
+ 524 00d2 FB60     		str	r3, [r7, #12]
+ 332:../MQXLITE/kernel/mqxlite.c ****             ++task_index;
+ 525              		.loc 1 332 0
+ 526 00d4 BB68     		ldr	r3, [r7, #8]
+ 527 00d6 0133     		add	r3, r3, #1
+ 528 00d8 BB60     		str	r3, [r7, #8]
+ 529              	.L13:
+ 316:../MQXLITE/kernel/mqxlite.c ****         while (template_ptr->TASK_TEMPLATE_INDEX) {
+ 530              		.loc 1 316 0
+ 531 00da FB68     		ldr	r3, [r7, #12]
+ 532 00dc 1B68     		ldr	r3, [r3]
+ 533 00de 002B     		cmp	r3, #0
+ 534 00e0 D8D1     		bne	.L15
+ 535              	.LBE3:
+ 333:../MQXLITE/kernel/mqxlite.c ****         } /* Endwhile */
+ 334:../MQXLITE/kernel/mqxlite.c ****     }
+ 335:../MQXLITE/kernel/mqxlite.c **** 
+ 336:../MQXLITE/kernel/mqxlite.c ****     _sched_start_internal(); /* WILL NEVER RETURN FROM HERE */
+ 536              		.loc 1 336 0
+ 537 00e2 FFF7FEFF 		bl	_sched_start_internal
+ 337:../MQXLITE/kernel/mqxlite.c **** 
+ 338:../MQXLITE/kernel/mqxlite.c ****     return MQX_OK; /* To satisfy lint */
+ 538              		.loc 1 338 0
+ 539 00e6 0023     		mov	r3, #0
+ 540              	.L11:
+ 339:../MQXLITE/kernel/mqxlite.c **** } /* Endbody */
+ 541              		.loc 1 339 0
+ 542 00e8 181C     		mov	r0, r3
+ 543 00ea BD46     		mov	sp, r7
+ 544 00ec 05B0     		add	sp, sp, #20
+ 545              		@ sp needed for prologue
+ 546 00ee 90BD     		pop	{r4, r7, pc}
+ 547              	.L17:
+ 548              		.align	2
+ 549              	.L16:
+ 550 00f0 00000000 		.word	_mqx_exit_jump_buffer_internal
+ 551 00f4 00000000 		.word	_mqx_kernel_data
+ 552 00f8 00000000 		.word	mqx_task_stack_pointers
+ 553              		.cfi_endproc
+ 554              	.LFE1:
+ 556              		.section	.text._mqx_exit,"ax",%progbits
+ 557              		.align	2
+ 558              		.global	_mqx_exit
+ 559              		.code	16
+ 560              		.thumb_func
+ 562              	_mqx_exit:
+ 563              	.LFB2:
+ 340:../MQXLITE/kernel/mqxlite.c **** 
+ 341:../MQXLITE/kernel/mqxlite.c **** /*!
+ 342:../MQXLITE/kernel/mqxlite.c ****  * \brief Terminate the MQX application and return to the environment that started
+ 343:../MQXLITE/kernel/mqxlite.c ****  * the application.
+ 344:../MQXLITE/kernel/mqxlite.c ****  *
+ 345:../MQXLITE/kernel/mqxlite.c ****  * The function returns back to the environment that called _mqxlite(). If the
+ 346:../MQXLITE/kernel/mqxlite.c ****  * application has installed the MQX exit handler (_mqx_set_exit_handler()),
+ 347:../MQXLITE/kernel/mqxlite.c ****  * _mqx_exit() calls the MQX exit handler before it exits. By default,
+ 348:../MQXLITE/kernel/mqxlite.c ****  * _bsp_exit_handler() is installed as the MQX exit handler in each BSP.
+ 349:../MQXLITE/kernel/mqxlite.c ****  *
+ 350:../MQXLITE/kernel/mqxlite.c ****  * \note
+ 351:../MQXLITE/kernel/mqxlite.c ****  * It is important to ensure that the environment (boot call stack) the MQX is
+ 352:../MQXLITE/kernel/mqxlite.c ****  * returning to is in the consistent state. This is not provided by distributed
+ 353:../MQXLITE/kernel/mqxlite.c ****  * MQX BSPs, because the boot stack is reused (rewritten) by MQX Kernel data. Set
+ 354:../MQXLITE/kernel/mqxlite.c ****  * the boot stack outside of Kernel data section to support correct _mqx_exit
+ 355:../MQXLITE/kernel/mqxlite.c ****  * functionality.
+ 356:../MQXLITE/kernel/mqxlite.c ****  *
+ 357:../MQXLITE/kernel/mqxlite.c ****  * \param[in] error Error code to return to the function that called _mqxlite_init()
+ 358:../MQXLITE/kernel/mqxlite.c ****  * or _mqxlite().
+ 359:../MQXLITE/kernel/mqxlite.c ****  *
+ 360:../MQXLITE/kernel/mqxlite.c ****  * \warning Behavior depends on the BSP.
+ 361:../MQXLITE/kernel/mqxlite.c ****  *
+ 362:../MQXLITE/kernel/mqxlite.c ****  * \see mqxlite_init
+ 363:../MQXLITE/kernel/mqxlite.c ****  * \see mqxlite
+ 364:../MQXLITE/kernel/mqxlite.c ****  */
+ 365:../MQXLITE/kernel/mqxlite.c **** void _mqx_exit
+ 366:../MQXLITE/kernel/mqxlite.c **** (
+ 367:../MQXLITE/kernel/mqxlite.c ****     _mqx_uint error
+ 368:../MQXLITE/kernel/mqxlite.c **** )
+ 369:../MQXLITE/kernel/mqxlite.c **** { /* Body */
+ 564              		.loc 1 369 0
+ 565              		.cfi_startproc
+ 566 0000 80B5     		push	{r7, lr}
+ 567              	.LCFI6:
+ 568              		.cfi_def_cfa_offset 8
+ 569              		.cfi_offset 7, -8
+ 570              		.cfi_offset 14, -4
+ 571 0002 84B0     		sub	sp, sp, #16
+ 572              	.LCFI7:
+ 573              		.cfi_def_cfa_offset 24
+ 574 0004 00AF     		add	r7, sp, #0
+ 575              	.LCFI8:
+ 576              		.cfi_def_cfa_register 7
+ 577 0006 7860     		str	r0, [r7, #4]
+ 370:../MQXLITE/kernel/mqxlite.c ****     KERNEL_DATA_STRUCT_PTR kernel_data;
+ 371:../MQXLITE/kernel/mqxlite.c **** 
+ 372:../MQXLITE/kernel/mqxlite.c ****     _int_disable();
+ 578              		.loc 1 372 0
+ 579 0008 FFF7FEFF 		bl	_int_disable
+ 373:../MQXLITE/kernel/mqxlite.c **** 
+ 374:../MQXLITE/kernel/mqxlite.c ****     _GET_KERNEL_DATA(kernel_data);
+ 580              		.loc 1 374 0
+ 581 000c 0B4B     		ldr	r3, .L20
+ 582 000e 1B68     		ldr	r3, [r3]
+ 583 0010 FB60     		str	r3, [r7, #12]
+ 375:../MQXLITE/kernel/mqxlite.c ****     _KLOGE2(KLOG_mqx_exit, error);
+ 376:../MQXLITE/kernel/mqxlite.c **** 
+ 377:../MQXLITE/kernel/mqxlite.c **** #if MQX_EXIT_ENABLED
+ 378:../MQXLITE/kernel/mqxlite.c ****     kernel_data->USERS_ERROR = error;
+ 584              		.loc 1 378 0
+ 585 0012 FA68     		ldr	r2, [r7, #12]
+ 586 0014 8E23     		mov	r3, #142
+ 587 0016 9B00     		lsl	r3, r3, #2
+ 588 0018 7968     		ldr	r1, [r7, #4]
+ 589 001a D150     		str	r1, [r2, r3]
+ 379:../MQXLITE/kernel/mqxlite.c ****     if (kernel_data->EXIT_HANDLER) {
+ 590              		.loc 1 379 0
+ 591 001c FA68     		ldr	r2, [r7, #12]
+ 592 001e 8B23     		mov	r3, #139
+ 593 0020 9B00     		lsl	r3, r3, #2
+ 594 0022 D358     		ldr	r3, [r2, r3]
+ 595 0024 002B     		cmp	r3, #0
+ 596 0026 04D0     		beq	.L19
+ 380:../MQXLITE/kernel/mqxlite.c ****         (*kernel_data->EXIT_HANDLER)();
+ 597              		.loc 1 380 0
+ 598 0028 FA68     		ldr	r2, [r7, #12]
+ 599 002a 8B23     		mov	r3, #139
+ 600 002c 9B00     		lsl	r3, r3, #2
+ 601 002e D358     		ldr	r3, [r2, r3]
+ 602 0030 9847     		blx	r3
+ 603              	.L19:
+ 381:../MQXLITE/kernel/mqxlite.c ****     }/* Endif */
+ 382:../MQXLITE/kernel/mqxlite.c ****     MQX_LONGJMP( _mqx_exit_jump_buffer_internal, 1 );
+ 604              		.loc 1 382 0
+ 605 0032 034B     		ldr	r3, .L20+4
+ 606 0034 181C     		mov	r0, r3
+ 607 0036 0121     		mov	r1, #1
+ 608 0038 FFF7FEFF 		bl	longjmp
+ 609              	.L21:
+ 610              		.align	2
+ 611              	.L20:
+ 612 003c 00000000 		.word	_mqx_kernel_data
+ 613 0040 00000000 		.word	_mqx_exit_jump_buffer_internal
+ 614              		.cfi_endproc
+ 615              	.LFE2:
+ 617              		.text
+ 618              	.Letext0:
+ 619              		.file 2 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/arm/setjmp.ARM.h"
+ 620              		.file 3 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 621              		.file 4 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/Cpu.h"
+ 622              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
+ 623              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite.h"
+ 624              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
+ 625              		.file 8 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/lwsem.h"
+ 626              		.file 9 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/cortex.h"
+ 627              		.file 10 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
+ 628              		.file 11 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/MQX1.h"
+ 629              		.file 12 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/IO_Map.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 mqxlite.c
+                            *COM*:0000000c _mqx_zero_tick_struct
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:23     .rodata._mqx_version_number:00000000 _mqx_version_number
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:20     .rodata._mqx_version_number:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:34     .rodata._mqx_version:00000000 _mqx_version
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:27     .rodata:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:31     .rodata._mqx_version:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:45     .rodata._mqx_vendor:00000000 _mqx_vendor
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:42     .rodata._mqx_vendor:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:57     .rodata._mqx_path:00000000 _mqx_path
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:54     .rodata._mqx_path:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:68     .rodata._mqx_generic_revision:00000000 _mqx_generic_revision
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:65     .rodata._mqx_generic_revision:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:79     .rodata._mqx_psp_revision:00000000 _mqx_psp_revision
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:76     .rodata._mqx_psp_revision:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:91     .rodata._mqx_copyright:00000000 _mqx_copyright
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:88     .rodata._mqx_copyright:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:102    .rodata._mqx_date:00000000 _mqx_date
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:99     .rodata._mqx_date:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:109    .rodata._mqxlite_version_number:00000000 _mqxlite_version_number
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:106    .rodata._mqxlite_version_number:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:120    .rodata._mqxlite_version:00000000 _mqxlite_version
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:117    .rodata._mqxlite_version:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:127    .data._mqx_kernel_data:00000000 _mqx_kernel_data
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:124    .data._mqx_kernel_data:00000000 $d
+                            *COM*:00000004 _mqx_system_stack
+                            *COM*:00000040 _mqx_exit_jump_buffer_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:132    .text._mqxlite_init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:137    .text._mqxlite_init:00000000 _mqxlite_init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:361    .text._mqxlite_init:00000160 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:375    .text._mqxlite:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:380    .text._mqxlite:00000000 _mqxlite
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:562    .text._mqx_exit:00000000 _mqx_exit
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:550    .text._mqxlite:000000f0 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:557    .text._mqx_exit:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:612    .text._mqx_exit:0000003c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_mem_zero
+_mqx_init_kernel_data_internal
+_task_fill_stack_internal
+_psp_init_readyqs
+_lwsem_create
+_mqx_set_cpu_type
+_psp_int_init
+_int_set_vector_table
+SystemTimer1_Init
+SystemTimer1_GetPeriodTicks
+SystemTimer1_GetTicsPerSecond
+_time_set_hwtick_function
+mqx_system_stack
+__vect_table
+SystemTimer1_GetCounterValue
+__setjmp
+SystemTimer1_Enable
+_task_init_internal
+_task_ready_internal
+_sched_start_internal
+mqx_task_stack_pointers
+_int_disable
+longjmp
