@@ -119,9 +119,9 @@
   63              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 int_pvta.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccCgnHjw.s:18     .text._int_get_previous_vector_table:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccCgnHjw.s:23     .text._int_get_previous_vector_table:00000000 _int_get_previous_vector_table
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccCgnHjw.s:52     .text._int_get_previous_vector_table:00000014 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccaWMP4Y.s:18     .text._int_get_previous_vector_table:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccaWMP4Y.s:23     .text._int_get_previous_vector_table:00000000 _int_get_previous_vector_table
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccaWMP4Y.s:52     .text._int_get_previous_vector_table:00000014 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

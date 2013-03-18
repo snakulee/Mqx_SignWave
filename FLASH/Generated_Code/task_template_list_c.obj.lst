@@ -33,9 +33,9 @@
   30 0000 01000000 		.word	1
   31 0004 00000000 		.word	Task_Default
   32 0008 80040000 		.word	1152
-  33 000c 09000000 		.word	9
+  33 000c 0B000000 		.word	11
   34 0010 00000000 		.word	.LC0
-  35 0014 01000000 		.word	1
+  35 0014 00000000 		.word	0
   36 0018 00000000 		.word	0
   37 001c 02000000 		.word	2
   38 0020 00000000 		.word	Task_Dac
@@ -60,9 +60,9 @@
   57              		.file 5 "../Generated_Code/task_template_list.c"
 DEFINED SYMBOLS
                             *ABS*:00000000 task_template_list.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxc4uaj.s:29     .rodata.MQX_template_list:00000000 MQX_template_list
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxc4uaj.s:19     .rodata:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxc4uaj.s:26     .rodata.MQX_template_list:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccKVpxHg.s:29     .rodata.MQX_template_list:00000000 MQX_template_list
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccKVpxHg.s:19     .rodata:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccKVpxHg.s:26     .rodata.MQX_template_list:00000000 $d
 
 UNDEFINED SYMBOLS
 Task_Default

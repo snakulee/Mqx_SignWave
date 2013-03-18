@@ -258,10 +258,10 @@
  128              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 psp_supp.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:18     .text._psp_swap2byte:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:23     .text._psp_swap2byte:00000000 _psp_swap2byte
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:68     .text._psp_swap4byte:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccOORlUU.s:73     .text._psp_swap4byte:00000000 _psp_swap4byte
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccmaMzoK.s:18     .text._psp_swap2byte:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccmaMzoK.s:23     .text._psp_swap2byte:00000000 _psp_swap2byte
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccmaMzoK.s:68     .text._psp_swap4byte:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccmaMzoK.s:73     .text._psp_swap4byte:00000000 _psp_swap4byte
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

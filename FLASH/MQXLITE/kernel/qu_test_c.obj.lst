@@ -258,8 +258,8 @@
  152              		.file 3 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/queue.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 qu_test.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccoQrVfi.s:18     .text._queue_test:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccoQrVfi.s:23     .text._queue_test:00000000 _queue_test
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccoOy5Nh.s:18     .text._queue_test:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccoOy5Nh.s:23     .text._queue_test:00000000 _queue_test
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

@@ -102,11 +102,11 @@
   94              		.section	.rodata
   95 00bb 00       		.align	2
   96              	.LC6:
-  97 00bc 4D617220 		.ascii	"Mar 14 2013 at 18:22:51\000"
-  97      31342032 
+  97 00bc 4D617220 		.ascii	"Mar 18 2013 at 11:48:34\000"
+  97      31382032 
   97      30313320 
   97      61742031 
-  97      383A3232 
+  97      313A3438 
   98              		.section	.rodata._mqx_date,"a",%progbits
   99              		.align	2
  102              	_mqx_date:
@@ -1019,40 +1019,40 @@
 DEFINED SYMBOLS
                             *ABS*:00000000 mqxlite.c
                             *COM*:0000000c _mqx_zero_tick_struct
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:23     .rodata._mqx_version_number:00000000 _mqx_version_number
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:20     .rodata._mqx_version_number:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:34     .rodata._mqx_version:00000000 _mqx_version
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:27     .rodata:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:31     .rodata._mqx_version:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:45     .rodata._mqx_vendor:00000000 _mqx_vendor
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:42     .rodata._mqx_vendor:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:57     .rodata._mqx_path:00000000 _mqx_path
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:54     .rodata._mqx_path:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:68     .rodata._mqx_generic_revision:00000000 _mqx_generic_revision
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:65     .rodata._mqx_generic_revision:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:79     .rodata._mqx_psp_revision:00000000 _mqx_psp_revision
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:76     .rodata._mqx_psp_revision:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:91     .rodata._mqx_copyright:00000000 _mqx_copyright
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:88     .rodata._mqx_copyright:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:102    .rodata._mqx_date:00000000 _mqx_date
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:99     .rodata._mqx_date:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:109    .rodata._mqxlite_version_number:00000000 _mqxlite_version_number
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:106    .rodata._mqxlite_version_number:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:120    .rodata._mqxlite_version:00000000 _mqxlite_version
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:117    .rodata._mqxlite_version:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:127    .data._mqx_kernel_data:00000000 _mqx_kernel_data
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:124    .data._mqx_kernel_data:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:23     .rodata._mqx_version_number:00000000 _mqx_version_number
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:20     .rodata._mqx_version_number:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:34     .rodata._mqx_version:00000000 _mqx_version
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:27     .rodata:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:31     .rodata._mqx_version:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:45     .rodata._mqx_vendor:00000000 _mqx_vendor
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:42     .rodata._mqx_vendor:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:57     .rodata._mqx_path:00000000 _mqx_path
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:54     .rodata._mqx_path:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:68     .rodata._mqx_generic_revision:00000000 _mqx_generic_revision
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:65     .rodata._mqx_generic_revision:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:79     .rodata._mqx_psp_revision:00000000 _mqx_psp_revision
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:76     .rodata._mqx_psp_revision:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:91     .rodata._mqx_copyright:00000000 _mqx_copyright
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:88     .rodata._mqx_copyright:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:102    .rodata._mqx_date:00000000 _mqx_date
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:99     .rodata._mqx_date:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:109    .rodata._mqxlite_version_number:00000000 _mqxlite_version_number
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:106    .rodata._mqxlite_version_number:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:120    .rodata._mqxlite_version:00000000 _mqxlite_version
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:117    .rodata._mqxlite_version:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:127    .data._mqx_kernel_data:00000000 _mqx_kernel_data
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:124    .data._mqx_kernel_data:00000000 $d
                             *COM*:00000004 _mqx_system_stack
                             *COM*:00000040 _mqx_exit_jump_buffer_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:132    .text._mqxlite_init:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:137    .text._mqxlite_init:00000000 _mqxlite_init
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:361    .text._mqxlite_init:00000160 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:375    .text._mqxlite:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:380    .text._mqxlite:00000000 _mqxlite
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:562    .text._mqx_exit:00000000 _mqx_exit
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:550    .text._mqxlite:000000f0 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:557    .text._mqx_exit:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4JCvhR.s:612    .text._mqx_exit:0000003c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:132    .text._mqxlite_init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:137    .text._mqxlite_init:00000000 _mqxlite_init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:361    .text._mqxlite_init:00000160 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:375    .text._mqxlite:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:380    .text._mqxlite:00000000 _mqxlite
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:562    .text._mqx_exit:00000000 _mqx_exit
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:550    .text._mqxlite:000000f0 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:557    .text._mqx_exit:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc1euVc6.s:612    .text._mqx_exit:0000003c $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

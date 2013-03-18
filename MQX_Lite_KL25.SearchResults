@@ -1,3 +1,2 @@
----- task_dac Matches (2 in 2 files) ----
-mqx_tasks.c (Sources):	tid = _task_get_id_from_name("task_dac");
-task_template_list.c (Generated_Code):  /* Task name                        */  "task_dac",
+---- PI Matches (1 in 1 files) ----
+mqx_tasks.c (Sources):		u32_sin[u8_i] = 4096UL*(sin((PI*u8_i)/180));

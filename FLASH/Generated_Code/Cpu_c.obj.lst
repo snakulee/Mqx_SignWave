@@ -719,20 +719,20 @@
 DEFINED SYMBOLS
                             *ABS*:00000000 Cpu.c
                             *COM*:00000001 SR_reg
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:22     .bss.SR_lock:00000000 SR_lock
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:23     .bss.SR_lock:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:25     .text.Cpu_INT_NMIInterrupt:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:30     .text.Cpu_INT_NMIInterrupt:00000000 Cpu_INT_NMIInterrupt
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:53     .text.Cpu_Interrupt:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:58     .text.Cpu_Interrupt:00000000 Cpu_Interrupt
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:83     .text.__init_hardware:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:88     .text.__init_hardware:00000000 __init_hardware
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:304    .text.__init_hardware:00000144 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:321    .text.PE_low_level_init:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:326    .text.PE_low_level_init:00000000 PE_low_level_init
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:452    .text.PE_low_level_init:000000c8 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:468    .cfmconfig:00000000 _cfm
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccYvbIs6.s:465    .cfmconfig:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:22     .bss.SR_lock:00000000 SR_lock
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:23     .bss.SR_lock:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:25     .text.Cpu_INT_NMIInterrupt:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:30     .text.Cpu_INT_NMIInterrupt:00000000 Cpu_INT_NMIInterrupt
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:53     .text.Cpu_Interrupt:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:58     .text.Cpu_Interrupt:00000000 Cpu_Interrupt
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:83     .text.__init_hardware:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:88     .text.__init_hardware:00000000 __init_hardware
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:304    .text.__init_hardware:00000144 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:321    .text.PE_low_level_init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:326    .text.PE_low_level_init:00000000 PE_low_level_init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:452    .text.PE_low_level_init:000000c8 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:468    .cfmconfig:00000000 _cfm
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccLcmcXi.s:465    .cfmconfig:00000000 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

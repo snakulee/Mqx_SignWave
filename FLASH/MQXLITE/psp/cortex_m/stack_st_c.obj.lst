@@ -111,8 +111,8 @@
   59              		.file 6 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 stack_st.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccElqPEh.s:18     .text._psp_get_stack_start:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccElqPEh.s:23     .text._psp_get_stack_start:00000000 _psp_get_stack_start
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccshdTPh.s:18     .text._psp_get_stack_start:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccshdTPh.s:23     .text._psp_get_stack_start:00000000 _psp_get_stack_start
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

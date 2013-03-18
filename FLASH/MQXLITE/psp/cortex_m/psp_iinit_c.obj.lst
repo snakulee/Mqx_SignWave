@@ -133,8 +133,8 @@
   69              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 psp_iinit.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccY9ysmB.s:18     .text._psp_int_init:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccY9ysmB.s:23     .text._psp_int_init:00000000 _psp_int_init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccUfwcOD.s:18     .text._psp_int_init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccUfwcOD.s:23     .text._psp_int_init:00000000 _psp_int_init
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

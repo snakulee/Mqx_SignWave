@@ -52,6 +52,12 @@
 #define ADS1015_THRE_HI_REG		0x03U
 #define ADS1015_CTRL_REG_LEN	0x02U
 
+#define ADS1015_SELECT_AN0		0x40U
+#define ADS1015_SELECT_AN1		0x50U
+#define ADS1015_SELECT_AN0_1	0x00U	
+
+#define ADS1015_SPS_3300		0xE3U
+
 #define PI 3.14159265F
 #define DAC_2V	2482UL
 #define DAC_3V	3724UL
@@ -393,7 +399,8 @@ void Task_Dac(uint32_t task_init_data)
 	LDD_TError Error = 0;
 
 	#if 0	/* draw sign wave */
-	float f_sin = 0.0, f_val;
+	float f_sin = 0.0, f_val;
+
 	uint32 u32_tmp, u32_delay=86UL;
 	uint32 u32_sin[91];
 	uint32_t u32_val;
@@ -402,6 +409,7 @@ void Task_Dac(uint32_t task_init_data)
 	
 
 	int16_t s16_AdcData = 0;
+	uint8_t u8_v = 0U;
 
 
 	// TI ADS1015 ADC chip
@@ -413,7 +421,6 @@ void Task_Dac(uint32_t task_init_data)
 
 	#if 1
 
-	i2c1_buffer[0] = ADS1015_CTRL_REG;
 	Error = !I2c1_ReadAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LEN, i2c1_buffer);
 	if (!Error)
 	{
@@ -424,9 +431,9 @@ void Task_Dac(uint32_t task_init_data)
 		printf("READ TI ADS1015 control register FAILED.\n");
 	}
 
-	i2c1_buffer[0] &= ~0x01;
-
-	Error = !I2c0_WriteAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LEN, i2c1_buffer);
+	i2c1_buffer[0] = 0x02;
+	
+	Error = !I2c1_WriteAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LEN, i2c1_buffer);
 	if (!Error)
 	{
 		printf("WRITE TI ADS1015 control register PASS, MSB=0x%02X, LSB=0x%02X.\n", i2c1_buffer[0], i2c1_buffer[1]);
@@ -455,17 +462,75 @@ void Task_Dac(uint32_t task_init_data)
 
 		/* Write your code here ... */
 
+		
+		#if 1			/* test ADS1015 */
+
+		if(u8_v==0)
+		{
+			i2c1_buffer[0] = ADS1015_SELECT_AN0;		/* select input channel AN0 */
+			i2c1_buffer[1] = ADS1015_SPS_3300;
+			u8_v = 1U;
+		}
+		else
+		{
+			i2c1_buffer[0] = ADS1015_SELECT_AN0_1;		/* select input channel +:AN0, -AN1 */
+			i2c1_buffer[1] = ADS1015_SPS_3300;
+			u8_v = 0U;
+		}
+		
+		Error = !I2c1_WriteAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CTRL_REG, ADS1015_CTRL_REG_LEN, i2c1_buffer);
+		if (!Error)
+		{
+//			printf("TI ADS1015 select AN%d PASS, MSB=0x%02X, LSB=0x%02X.\n", u8_v, i2c1_buffer[0], i2c1_buffer[1]);
+		}
+		else
+		{
+			printf("TI ADS1015 select AN%d FAILED.\n", u8_v);
+		}
+
+		_time_delay_ticks(1);
+		
 		Error = !I2c1_ReadAccRegs(I2c1_DeviceData, &I2c1_DataState, ADS1015_CONV_REG, ADS1015_CONV_REG_LEN, i2c1_buffer);
 		if (!Error)
 		{
-			s16_AdcData = (int16_t*)i2c1_buffer;
+			uint16_t u16_tmp = 0U;
+			u16_tmp = (((int16_t)i2c1_buffer[0]) << 8) | i2c1_buffer[1];
+			s16_AdcData = (int16_t)u16_tmp;
 			s16_AdcData >>= 4;
-			printf("READ TI ADS1015 convert register PASS, MSB=0x%02X, LSB=0x%02X, DAC=%d.\n", i2c1_buffer[0], i2c1_buffer[1], s16_AdcData);
+			printf("READ TI ADS1015 AN%d convert register PASS, MSB=0x%02X, LSB=0x%02X, ADC=%d\n", 
+					u8_v, i2c1_buffer[0], i2c1_buffer[1], s16_AdcData);
 		}
 		else
 		{
 			printf("READ TI ADS1015 convert register FAILED.\n");
 		}
+
+
+		
+		
+		
+		#if 0
+		u8_v++;
+		u8_v %= 3;
+		switch(u8_v)
+		{
+			case 0:
+				DrvDac2V_SetValue(Dac0_DeviceData, 0);	// output 0 V
+				break;
+			case 1:
+				DrvDac2V_SetValue(Dac0_DeviceData, DAC_1V);	// output 1 V
+				break;
+			default:
+			case 2:
+				DrvDac2V_SetValue(Dac0_DeviceData, DAC_2V);	// output 2 V
+				break;
+		}
+		#endif
+
+		
+		
+		
+		#endif
 
 		#if 0		/* draw sign wave */
 		for(u8_j=0; u8_j<180; u8_j++)

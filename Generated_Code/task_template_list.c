@@ -5,7 +5,7 @@
 **     Processor   : MKL25Z128VLK4
 **     Version     : Component 01.093, Driver 01.00, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2013-03-14, 18:16, # CodeGen: 57
+**     Date/Time   : 2013-03-18, 11:32, # CodeGen: 64
 **
 **     Copyright : 1997 - 2012 Freescale, Inc. All Rights Reserved.
 **     
@@ -26,9 +26,9 @@ const TASK_TEMPLATE_STRUCT MQX_template_list[] =
   /* Task number                      */  TASK_DEFAULT_TASK,
   /* Entry point                      */  (TASK_FPTR)Task_Default,
   /* Stack size                       */  TASK_DEFAULT_TASK_STACK_SIZE,
-  /* Task priority                    */  9U,
+  /* Task priority                    */  11U,
   /* Task name                        */  "task_default",
-  /* Task attributes                  */  (MQX_AUTO_START_TASK),
+  /* Task attributes                  */  (0),
   /* Task parameter                   */  (uint32_t)(0)
   },
   /* Task: Task_Dac */

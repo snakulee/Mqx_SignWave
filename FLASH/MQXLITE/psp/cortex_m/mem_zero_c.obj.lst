@@ -474,10 +474,10 @@
  316              		.file 2 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 mem_zero.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cce2F5ev.s:18     .text._mem_zero:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cce2F5ev.s:23     .text._mem_zero:00000000 _mem_zero
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cce2F5ev.s:180    .rodata._mem_zero:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cce2F5ev.s:310    .text._mem_zero:0000014c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4QUhGf.s:18     .text._mem_zero:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4QUhGf.s:23     .text._mem_zero:00000000 _mem_zero
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4QUhGf.s:180    .rodata._mem_zero:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc4QUhGf.s:310    .text._mem_zero:0000014c $d
                      .debug_frame:00000010 $d
 
 NO UNDEFINED SYMBOLS

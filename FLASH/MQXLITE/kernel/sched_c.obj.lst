@@ -1373,27 +1373,27 @@
  640              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 sched.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:18     .text._sched_get_max_priority:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:23     .text._sched_get_max_priority:00000000 _sched_get_max_priority
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:52     .text._sched_get_min_priority:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:57     .text._sched_get_min_priority:00000000 _sched_get_min_priority
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:90     .text._sched_get_min_priority:0000001c $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:95     .text._sched_yield:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:100    .text._sched_yield:00000000 _sched_yield
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:234    .text._sched_yield:000000b0 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:239    .text._sched_boost_priority_internal:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:244    .text._sched_boost_priority_internal:00000000 _sched_boost_priority_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:513    .text._sched_set_priority_internal:00000000 _sched_set_priority_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:287    .text._sched_boost_priority_internal:00000030 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:292    .text._sched_unboost_priority_internal:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:297    .text._sched_unboost_priority_internal:00000000 _sched_unboost_priority_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:351    .text._sched_unboost_priority_internal:00000040 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:356    .text._sched_insert_priorityq_internal:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:361    .text._sched_insert_priorityq_internal:00000000 _sched_insert_priorityq_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:447    .text._sched_get_max_priority_on_q_internal:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:452    .text._sched_get_max_priority_on_q_internal:00000000 _sched_get_max_priority_on_q_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:508    .text._sched_set_priority_internal:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccpUGn0p.s:629    .text._sched_set_priority_internal:00000094 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:18     .text._sched_get_max_priority:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:23     .text._sched_get_max_priority:00000000 _sched_get_max_priority
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:52     .text._sched_get_min_priority:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:57     .text._sched_get_min_priority:00000000 _sched_get_min_priority
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:90     .text._sched_get_min_priority:0000001c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:95     .text._sched_yield:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:100    .text._sched_yield:00000000 _sched_yield
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:234    .text._sched_yield:000000b0 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:239    .text._sched_boost_priority_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:244    .text._sched_boost_priority_internal:00000000 _sched_boost_priority_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:513    .text._sched_set_priority_internal:00000000 _sched_set_priority_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:287    .text._sched_boost_priority_internal:00000030 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:292    .text._sched_unboost_priority_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:297    .text._sched_unboost_priority_internal:00000000 _sched_unboost_priority_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:351    .text._sched_unboost_priority_internal:00000040 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:356    .text._sched_insert_priorityq_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:361    .text._sched_insert_priorityq_internal:00000000 _sched_insert_priorityq_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:447    .text._sched_get_max_priority_on_q_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:452    .text._sched_get_max_priority_on_q_internal:00000000 _sched_get_max_priority_on_q_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:508    .text._sched_set_priority_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccGZ6fvo.s:629    .text._sched_set_priority_internal:00000094 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

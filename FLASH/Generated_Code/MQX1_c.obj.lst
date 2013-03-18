@@ -24,7 +24,7 @@
   26 0004 00000000 		.word	Task_Dac_task_stack
   27 0008 00000000 		.word	0
   28              		.comm	_mqx_kernel_data_struct,576,4
-  29              		.comm	mqx_static_ready_queue,192,4
+  29              		.comm	mqx_static_ready_queue,208,4
   30              		.comm	mqx_static_isr_table,252,4
   31              		.comm	mqx_interrupt_stack,272,4
   32              		.comm	mqx_idle_task_stack,288,4
@@ -231,20 +231,20 @@ DEFINED SYMBOLS
                             *ABS*:00000000 MQX1.c
                             *COM*:00000480 Task_Default_task_stack
                             *COM*:00000880 Task_Dac_task_stack
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:24     .data.mqx_task_stack_pointers:00000000 mqx_task_stack_pointers
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:21     .data.mqx_task_stack_pointers:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:24     .data.mqx_task_stack_pointers:00000000 mqx_task_stack_pointers
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:21     .data.mqx_task_stack_pointers:00000000 $d
                             *COM*:00000240 _mqx_kernel_data_struct
-                            *COM*:000000c0 mqx_static_ready_queue
+                            *COM*:000000d0 mqx_static_ready_queue
                             *COM*:000000fc mqx_static_isr_table
                             *COM*:00000110 mqx_interrupt_stack
                             *COM*:00000120 mqx_idle_task_stack
                             *COM*:000000a8 mqx_system_stack
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:39     .rodata.MQX_init_struct:00000000 MQX_init_struct
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:36     .rodata.MQX_init_struct:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:50     .text.SystemTimer1_OnCounterRestart:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:55     .text.SystemTimer1_OnCounterRestart:00000000 SystemTimer1_OnCounterRestart
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:84     .text.SystemTimer1_GetTicsPerSecond:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cclzlQlb.s:89     .text.SystemTimer1_GetTicsPerSecond:00000000 SystemTimer1_GetTicsPerSecond
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:39     .rodata.MQX_init_struct:00000000 MQX_init_struct
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:36     .rodata.MQX_init_struct:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:50     .text.SystemTimer1_OnCounterRestart:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:55     .text.SystemTimer1_OnCounterRestart:00000000 SystemTimer1_OnCounterRestart
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:84     .text.SystemTimer1_GetTicsPerSecond:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccw9XZ7j.s:89     .text.SystemTimer1_GetTicsPerSecond:00000000 SystemTimer1_GetTicsPerSecond
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

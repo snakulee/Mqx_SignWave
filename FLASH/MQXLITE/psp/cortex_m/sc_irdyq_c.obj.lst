@@ -452,12 +452,12 @@
  293              		.file 10 "E:/CW103_Work_Space/Mqx_Lite_Test/Generated_Code/MQX1.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 sc_irdyq.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:18     .text._psp_set_kernel_disable_level:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:23     .text._psp_set_kernel_disable_level:00000000 _psp_set_kernel_disable_level
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:143    .text._psp_set_kernel_disable_level:00000098 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:150    .text._psp_init_readyqs:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:155    .text._psp_init_readyqs:00000000 _psp_init_readyqs
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc7MEO8E.s:278    .text._psp_init_readyqs:000000ac $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxorzLD.s:18     .text._psp_set_kernel_disable_level:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxorzLD.s:23     .text._psp_set_kernel_disable_level:00000000 _psp_set_kernel_disable_level
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxorzLD.s:143    .text._psp_set_kernel_disable_level:00000098 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxorzLD.s:150    .text._psp_init_readyqs:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxorzLD.s:155    .text._psp_init_readyqs:00000000 _psp_init_readyqs
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxorzLD.s:278    .text._psp_init_readyqs:000000ac $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

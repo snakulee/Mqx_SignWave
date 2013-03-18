@@ -38,7 +38,7 @@
    6:../Generated_Code/DrvI2c1.c **** **     Component   : I2C_LDD
    7:../Generated_Code/DrvI2c1.c **** **     Version     : Component 01.011, Driver 01.06, CPU db: 3.00.000
    8:../Generated_Code/DrvI2c1.c **** **     Compiler    : GNU C Compiler
-   9:../Generated_Code/DrvI2c1.c **** **     Date/Time   : 2013-02-22, 18:04, # CodeGen: 20
+   9:../Generated_Code/DrvI2c1.c **** **     Date/Time   : 2013-03-18, 11:48, # CodeGen: 66
   10:../Generated_Code/DrvI2c1.c **** **     Abstract    :
   11:../Generated_Code/DrvI2c1.c **** **          This component encapsulates the internal I2C communication
   12:../Generated_Code/DrvI2c1.c **** **          interface. The implementation of the interface is based
@@ -79,12 +79,12 @@
   47:../Generated_Code/DrvI2c1.c **** **              High drive select                          : Disabled
   48:../Generated_Code/DrvI2c1.c **** **              Input Glitch filter                        : 0
   49:../Generated_Code/DrvI2c1.c **** **            Internal frequency (multiplier factor)       : 24 MHz
-  50:../Generated_Code/DrvI2c1.c **** **            Bits 0-2 of Frequency divider register       : 101
-  51:../Generated_Code/DrvI2c1.c **** **            Bits 3-5 of Frequency divider register       : 100
-  52:../Generated_Code/DrvI2c1.c **** **            SCL frequency                                : 75 kHz
-  53:../Generated_Code/DrvI2c1.c **** **            SDA Hold                                     : 2.042 us
-  54:../Generated_Code/DrvI2c1.c **** **            SCL start Hold                               : 6.583 us
-  55:../Generated_Code/DrvI2c1.c **** **            SCL stop Hold                                : 6.708 us
+  50:../Generated_Code/DrvI2c1.c **** **            Bits 0-2 of Frequency divider register       : 000
+  51:../Generated_Code/DrvI2c1.c **** **            Bits 3-5 of Frequency divider register       : 010
+  52:../Generated_Code/DrvI2c1.c **** **            SCL frequency                                : 500 kHz
+  53:../Generated_Code/DrvI2c1.c **** **            SDA Hold                                     : 0.375 us
+  54:../Generated_Code/DrvI2c1.c **** **            SCL start Hold                               : 0.75 us
+  55:../Generated_Code/DrvI2c1.c **** **            SCL stop Hold                                : 1.042 us
   56:../Generated_Code/DrvI2c1.c **** **            Control acknowledge bit                      : Disabled
   57:../Generated_Code/DrvI2c1.c **** **            Low timeout                                  : Disabled
   58:../Generated_Code/DrvI2c1.c **** **          Initialization                                 : 
@@ -916,11 +916,11 @@
  598 00ca 144B     		ldr	r3, .L20+16
  599 00cc 0822     		mov	r2, #8
  600 00ce 1A72     		strb	r2, [r3, #8]
- 320:../Generated_Code/DrvI2c1.c ****   /* I2C1_F: MULT=0,ICR=0x25 */
- 321:../Generated_Code/DrvI2c1.c ****   I2C1_F = I2C_F_ICR(0x25);            /* Set prescaler bits */
+ 320:../Generated_Code/DrvI2c1.c ****   /* I2C1_F: MULT=0,ICR=0x10 */
+ 321:../Generated_Code/DrvI2c1.c ****   I2C1_F = I2C_F_ICR(0x10);            /* Set prescaler bits */
  601              		.loc 1 321 0
  602 00d0 124B     		ldr	r3, .L20+16
- 603 00d2 2522     		mov	r2, #37
+ 603 00d2 1022     		mov	r2, #16
  604 00d4 5A70     		strb	r2, [r3, #1]
  322:../Generated_Code/DrvI2c1.c ****   I2C_PDD_EnableDevice(I2C1_BASE_PTR, PDD_ENABLE); /* Enable device */
  605              		.loc 1 322 0
@@ -2085,29 +2085,29 @@
  1443              		.file 5 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psptypes.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 DrvI2c1.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:18     .bss.DeviceDataPrv__DEFAULT_RTOS_ALLOC:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:21     .bss.DeviceDataPrv__DEFAULT_RTOS_ALLOC:00000000 DeviceDataPrv__DEFAULT_RTOS_ALLOC
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:24     .text.DrvI2c1_Interrupt:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:29     .text.DrvI2c1_Interrupt:00000000 DrvI2c1_Interrupt
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:457    .text.DrvI2c1_Interrupt:000002ac $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:462    .text.DrvI2c1_Init:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:467    .text.DrvI2c1_Init:00000000 DrvI2c1_Init
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:641    .text.DrvI2c1_Init:0000010c $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:655    .text.DrvI2c1_Deinit:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:660    .text.DrvI2c1_Deinit:00000000 DrvI2c1_Deinit
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:712    .text.DrvI2c1_Deinit:00000040 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:720    .text.DrvI2c1_MasterSendBlock:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:725    .text.DrvI2c1_MasterSendBlock:00000000 DrvI2c1_MasterSendBlock
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:954    .text.DrvI2c1_MasterSendBlock:00000154 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:959    .text.DrvI2c1_MasterReceiveBlock:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:964    .text.DrvI2c1_MasterReceiveBlock:00000000 DrvI2c1_MasterReceiveBlock
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1195   .text.DrvI2c1_MasterReceiveBlock:00000154 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1200   .text.DrvI2c1_SelectSlaveDevice:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1205   .text.DrvI2c1_SelectSlaveDevice:00000000 DrvI2c1_SelectSlaveDevice
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1380   .text.DrvI2c1_SelectSlaveDevice:000000fc $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1385   .text.DrvI2c1_CheckBus:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1390   .text.DrvI2c1_CheckBus:00000000 DrvI2c1_CheckBus
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccMOavKs.s:1434   .text.DrvI2c1_CheckBus:00000030 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:18     .bss.DeviceDataPrv__DEFAULT_RTOS_ALLOC:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:21     .bss.DeviceDataPrv__DEFAULT_RTOS_ALLOC:00000000 DeviceDataPrv__DEFAULT_RTOS_ALLOC
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:24     .text.DrvI2c1_Interrupt:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:29     .text.DrvI2c1_Interrupt:00000000 DrvI2c1_Interrupt
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:457    .text.DrvI2c1_Interrupt:000002ac $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:462    .text.DrvI2c1_Init:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:467    .text.DrvI2c1_Init:00000000 DrvI2c1_Init
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:641    .text.DrvI2c1_Init:0000010c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:655    .text.DrvI2c1_Deinit:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:660    .text.DrvI2c1_Deinit:00000000 DrvI2c1_Deinit
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:712    .text.DrvI2c1_Deinit:00000040 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:720    .text.DrvI2c1_MasterSendBlock:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:725    .text.DrvI2c1_MasterSendBlock:00000000 DrvI2c1_MasterSendBlock
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:954    .text.DrvI2c1_MasterSendBlock:00000154 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:959    .text.DrvI2c1_MasterReceiveBlock:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:964    .text.DrvI2c1_MasterReceiveBlock:00000000 DrvI2c1_MasterReceiveBlock
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1195   .text.DrvI2c1_MasterReceiveBlock:00000154 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1200   .text.DrvI2c1_SelectSlaveDevice:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1205   .text.DrvI2c1_SelectSlaveDevice:00000000 DrvI2c1_SelectSlaveDevice
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1380   .text.DrvI2c1_SelectSlaveDevice:000000fc $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1385   .text.DrvI2c1_CheckBus:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1390   .text.DrvI2c1_CheckBus:00000000 DrvI2c1_CheckBus
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccfy4NWL.s:1434   .text.DrvI2c1_CheckBus:00000030 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

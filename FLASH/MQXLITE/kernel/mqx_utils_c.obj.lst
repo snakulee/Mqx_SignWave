@@ -1018,33 +1018,33 @@
  627              		.file 7 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/include/mqxlite_prv.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 mqx_utils.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:18     .text._mqx_get_kernel_data:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:23     .text._mqx_get_kernel_data:00000000 _mqx_get_kernel_data
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:54     .text._mqx_get_kernel_data:00000018 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:59     .text._mqx_fatal_error:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:64     .text._mqx_fatal_error:00000000 _mqx_fatal_error
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:93     .text._mqx_get_cpu_type:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:98     .text._mqx_get_cpu_type:00000000 _mqx_get_cpu_type
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:129    .text._mqx_get_cpu_type:00000018 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:134    .text._mqx_set_cpu_type:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:139    .text._mqx_set_cpu_type:00000000 _mqx_set_cpu_type
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:172    .text._mqx_set_cpu_type:0000001c $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:177    .text._mqx_get_initialization:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:182    .text._mqx_get_initialization:00000000 _mqx_get_initialization
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:214    .text._mqx_get_initialization:0000001c $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:219    .text._mqx_get_exit_handler:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:224    .text._mqx_get_exit_handler:00000000 _mqx_get_exit_handler
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:257    .text._mqx_get_exit_handler:0000001c $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:262    .text._mqx_set_exit_handler:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:267    .text._mqx_set_exit_handler:00000000 _mqx_set_exit_handler
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:301    .text._mqx_set_exit_handler:00000020 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:306    .text._mqx_get_system_task_id:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:311    .text._mqx_get_system_task_id:00000000 _mqx_get_system_task_id
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:342    .text._mqx_get_system_task_id:00000018 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:347    .rodata:00000000 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:351    .text._mqx_init_kernel_data_internal:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:356    .text._mqx_init_kernel_data_internal:00000000 _mqx_init_kernel_data_internal
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccwumCJx.s:610    .text._mqx_init_kernel_data_internal:0000018c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:18     .text._mqx_get_kernel_data:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:23     .text._mqx_get_kernel_data:00000000 _mqx_get_kernel_data
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:54     .text._mqx_get_kernel_data:00000018 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:59     .text._mqx_fatal_error:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:64     .text._mqx_fatal_error:00000000 _mqx_fatal_error
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:93     .text._mqx_get_cpu_type:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:98     .text._mqx_get_cpu_type:00000000 _mqx_get_cpu_type
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:129    .text._mqx_get_cpu_type:00000018 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:134    .text._mqx_set_cpu_type:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:139    .text._mqx_set_cpu_type:00000000 _mqx_set_cpu_type
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:172    .text._mqx_set_cpu_type:0000001c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:177    .text._mqx_get_initialization:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:182    .text._mqx_get_initialization:00000000 _mqx_get_initialization
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:214    .text._mqx_get_initialization:0000001c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:219    .text._mqx_get_exit_handler:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:224    .text._mqx_get_exit_handler:00000000 _mqx_get_exit_handler
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:257    .text._mqx_get_exit_handler:0000001c $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:262    .text._mqx_set_exit_handler:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:267    .text._mqx_set_exit_handler:00000000 _mqx_set_exit_handler
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:301    .text._mqx_set_exit_handler:00000020 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:306    .text._mqx_get_system_task_id:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:311    .text._mqx_get_system_task_id:00000000 _mqx_get_system_task_id
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:342    .text._mqx_get_system_task_id:00000018 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:347    .rodata:00000000 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:351    .text._mqx_init_kernel_data_internal:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:356    .text._mqx_init_kernel_data_internal:00000000 _mqx_init_kernel_data_internal
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cchJkAWY.s:610    .text._mqx_init_kernel_data_internal:0000018c $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

@@ -378,12 +378,12 @@
  260              		.file 8 "E:/CW103_Work_Space/Mqx_Lite_Test/MQXLITE/psp/cortex_m/psp_ticks.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 psp_tisu.c
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:18     .text._psp_subtract_ticks:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:23     .text._psp_subtract_ticks:00000000 _psp_subtract_ticks
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:102    .text._psp_subtract_ticks:00000064 $d
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:107    .text._psp_subtract_ticks_int32:00000000 $t
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:112    .text._psp_subtract_ticks_int32:00000000 _psp_subtract_ticks_int32
-C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\cc9THC6J.s:247    .text._psp_subtract_ticks_int32:000000c0 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxk8cSb.s:18     .text._psp_subtract_ticks:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxk8cSb.s:23     .text._psp_subtract_ticks:00000000 _psp_subtract_ticks
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxk8cSb.s:102    .text._psp_subtract_ticks:00000064 $d
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxk8cSb.s:107    .text._psp_subtract_ticks_int32:00000000 $t
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxk8cSb.s:112    .text._psp_subtract_ticks_int32:00000000 _psp_subtract_ticks_int32
+C:\DOCUME~1\SNAKUL~1.DEL\LOCALS~1\Temp\ccxk8cSb.s:247    .text._psp_subtract_ticks_int32:000000c0 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS
